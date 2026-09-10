@@ -1,0 +1,18 @@
+# Node
+node_modules/
+.next/
+
+# Python
+backend/venv/
+__pycache__/
+*.pyc
+
+# Flutter
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Env variables
+.env
+.env.local
