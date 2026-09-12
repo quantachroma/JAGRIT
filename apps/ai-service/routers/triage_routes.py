@@ -1,8 +1,65 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 
 router = APIRouter(tags=["Zero-Shot Triage Classifier"])
+
+
+class PostmortemRequest(BaseModel):
+    project_id: str
+    dpr_summary: str
+    failure_notes: str
+    test_logs: str
+
+
+class PostmortemResponse(BaseModel):
+    project_id: str
+    failure_type: str
+    root_cause_analysis: str
+    attempted_solution_summary: str
+    lessons_learned: str
+    escalate_to_national_hackathon: bool
+
+
+@router.post("/api/v1/ai/generate-postmortem", response_model=PostmortemResponse)
+async def generate_postmortem(payload: PostmortemRequest):
+    """Synthesize project evidence into a searchable R&D failure post-mortem."""
+    evidence = " ".join(
+        [payload.failure_notes, payload.test_logs, payload.dpr_summary]
+    ).lower()
+    major_failure_keywords: List[str] = [
+        "catastrophic",
+        "unsafe",
+        "unusable",
+        "failed government project",
+        "complete failure",
+        "system failure",
+    ]
+    is_major_failure = any(keyword in evidence for keyword in major_failure_keywords)
+
+    failure_type = "MAJOR_FAILURE" if is_major_failure else "MINOR_FAILURE"
+    root_cause = (
+        f"The project evidence indicates a {failure_type.lower().replace('_', ' ')}. "
+        f"Failure notes: {payload.failure_notes or 'No failure notes provided.'} "
+        f"Test evidence: {payload.test_logs or 'No test logs provided.'}"
+    )
+    attempted_solution = (
+        f"The team attempted the approach described in the DPR: "
+        f"{payload.dpr_summary or 'No DPR summary provided.'}"
+    )
+    lessons_learned = (
+        "Validate failure conditions with staged field tests, document measurable acceptance "
+        "criteria, and incorporate the observed evidence before the next deployment."
+    )
+
+    return PostmortemResponse(
+        project_id=payload.project_id,
+        failure_type=failure_type,
+        root_cause_analysis=root_cause,
+        attempted_solution_summary=attempted_solution,
+        lessons_learned=lessons_learned,
+        escalate_to_national_hackathon=is_major_failure,
+    )
 
 class TriageRequest(BaseModel):
     title: str
