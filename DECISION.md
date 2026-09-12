@@ -89,3 +89,13 @@ Save this file as **`DECISION.md`** in your root directory. This document preven
 * **Decision:**
   * **Minor Failures:** Documented in the searchable `rnd_failure_repository` (original problem, attempted method, root cause of failure, and lessons learned).
   * **Major Failures & Failed Govt Projects:** Automatically escalated to become problem statements for the bi-annual Pan-India National Hackathon.
+
+  ---
+
+## ADR-010: Managed Cloud Database via Supabase (PostGIS + pgvector)
+* **Status:** APPROVED
+* **Context:** Local Docker installations create platform incompatibility (Windows WSL2, virtualization) and prevent team database sharing during rapid sprints.
+* **Decision:** We use a centralized, free-tier Supabase PostgreSQL instance.
+  * Extensions `postgis` and `vector` are enabled directly in the Supabase console.
+  * All 4 roles connect to the identical cloud database via `DATABASE_URL`.
+  * Local Docker containers are strictly decommissioned.

@@ -53,11 +53,11 @@
 - *Cline Verification:* `cd apps/web-institution && pnpm run dev` (Ensure HTTP 200 at `http://localhost:3001`).
 
 ### Role 3 (Core Backend & Escrow Lead)
-- [ ] **Task 3.0.1:** Verify `docker-compose.yml` runs PostgreSQL 16 with PostGIS and pgvector.
-- [ ] **Task 3.0.2:** Run `packages/db-schema/schema.sql` against the active database to create all 5 tables.
-- [ ] **Task 3.0.3:** Initialize NestJS / Express application in `apps/core-backend/` with database connection pooling.
-- [ ] **Task 3.0.4:** Implement dummy seed script in `packages/db-schema/seed.sql` (1 dummy user, 1 verified challenge).
-- *Cline Verification:* `docker-compose up -d && psql -h localhost -U jagrit_admin -d jagrit_db -c '\dt'`
+- [ ] **Task 3.0.1:** Create free Supabase project, enable `postgis` and `vector` extensions via Supabase SQL Editor.
+- [ ] **Task 3.0.2:** Paste and execute `packages/db-schema/schema.sql` in the Supabase SQL Editor to create all 5 tables and indexes.
+- [ ] **Task 3.0.3:** Initialize NestJS / Express application in `apps/core-backend/` with connection string from `DATABASE_URL`.
+- [ ] **Task 3.0.4:** Paste and execute `packages/db-schema/seed.sql` in the Supabase SQL Editor to hydrate test fixtures.
+- *Cline Verification:* `cd apps/core-backend && pnpm run start:dev` (Verifies successful database connection log).
 
 ### Role 4 (AI/ML & Microservices Lead)
 - [ ] **Task 4.0.1:** Set up Python virtual environment in `apps/ai-service/` and install `requirements.txt`.
