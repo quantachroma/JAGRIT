@@ -1,180 +1,916 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useCitizen } from '@/context/CitizenContext';
 import {
   MessageSquare,
-  ThumbsUp,
+  Heart,
   Share2,
   Mic,
   Send,
   User,
   MapPin,
   Sparkles,
+  Plus,
+  GraduationCap,
+  ShieldCheck,
+  Tag,
+  CheckCircle2,
+  X,
+  Camera,
+  Layers,
+  Flame,
+  Search,
+  MessageCircle,
+  HelpCircle,
+  Clock,
+  ArrowRight,
 } from 'lucide-react';
 
-interface SamvaadPost {
+export type AuthorRole = 'CITIZEN' | 'RESEARCHER' | 'GOVT_OFFICER' | 'STUDENT';
+export type TopicCategory = 'ALL' | 'WATER' | 'AGRITECH' | 'TRIBAL_LIVELIHOODS' | 'RURAL_ENERGY';
+
+export interface SamvaadComment {
   id: string;
   author: string;
-  location: string;
+  role: AuthorRole;
+  roleLabel: string;
   timeAgo: string;
   content: string;
-  upvotes: number;
-  repliesCount: number;
+}
+
+export interface SamvaadThread {
+  id: string;
+  author: string;
+  role: AuthorRole;
+  roleLabel: string;
+  institution?: string;
+  location: string;
+  timeAgo: string;
+  category: TopicCategory;
+  title: string;
+  content: string;
+  tags: string[];
+  likesCount: number;
+  isLiked?: boolean;
+  replies: SamvaadComment[];
+  attachmentUrl?: string;
+  attachmentCaption?: string;
   hasAudio?: boolean;
 }
 
+const INITIAL_THREADS: SamvaadThread[] = [
+  {
+    id: 'th-1',
+    author: 'अमित कुमार (Amit Kumar)',
+    role: 'RESEARCHER',
+    roleLabel: 'Researcher - BIT Mesra',
+    institution: 'Department of Chemical & Environmental Engineering',
+    location: 'Ranchi, Mesra',
+    timeAgo: '2 hours ago',
+    category: 'WATER',
+    title: 'कांके ब्लॉक हेतु कम लागत वाली मिट्टी आधारित फ्लोराइड फिल्टर झिल्ली का फील्ड परीक्षण',
+    content:
+      'हमारी टीम ने स्थानीय झारखण्ड की लाल मिट्टी एवं चावल की भूसी के नैनो-मिश्रण से एक कम लागत वाली सोखता झिल्ली (Porous Clay Membrane) तैयार की है। यह भूजल में 85% तक फ्लोराइड और गाद को फिल्टर करती है। क्या कांके पंचायत के वार्ड 4 के निवासी 5 परिवारों के लिए पायलट टेस्टिंग में सहयोग कर सकते हैं?',
+    tags: ['WaterSanitation', 'FluorideRemoval', 'BITMesra', 'KankePanchayat'],
+    likesCount: 38,
+    isLiked: false,
+    attachmentCaption: '🔬 Prototype Testing: Low-Cost Clay Fluoride Membrane in Lab',
+    replies: [
+      {
+        id: 'c-1-1',
+        author: 'सोमरा उरांव (Somra Oraon)',
+        role: 'CITIZEN',
+        roleLabel: 'Nagrik / Ward Member',
+        timeAgo: '1 hour ago',
+        content: 'जोहार अमित जी। वार्ड 4 के चापाकल नंबर 3 पर फ्लोराइड की भारी समस्या है। हम ग्राम सभा की ओर से टेस्टिंग के लिए पूर्ण सहयोग देने को तैयार हैं।',
+      },
+      {
+        id: 'c-1-2',
+        author: 'अंजना तिग्गा (Anjana Tigga)',
+        role: 'GOVT_OFFICER',
+        roleLabel: 'Govt Officer (DW&S Dept)',
+        timeAgo: '30 mins ago',
+        content: 'विभाग की तरफ से लैब वाटर टेस्टिंग किट उपलब्ध कराई जा सकती है। कृपया अपनी रिपोर्ट JAGRIT पोर्टल पर अपलोड करें।',
+      },
+    ],
+  },
+  {
+    id: 'th-2',
+    author: 'सोमरा उरांव (Somra Oraon)',
+    role: 'CITIZEN',
+    roleLabel: 'Nagrik / Citizen',
+    location: 'Ranchi, Kanke Panchayat',
+    timeAgo: '4 hours ago',
+    category: 'WATER',
+    title: 'कांके पंचायत के वार्ड 4 में नया सोलर चापाकल पायलट: ग्राम सभा की प्रतिक्रिया',
+    content:
+      'वार्ड 4 में लगाया गया सोलर चापाकल दिन में 1500 लीटर पानी दे रहा है। ग्रामीणों को 1 किमी दूर नहीं जाना पड़ रहा। क्या अन्य वार्डों में भी इसे बढ़ाया जा सकता है? हम सोलर पैनल की सुरक्षा हेतु सामुदायिक निगरानी समिति बना रहे हैं।',
+    tags: ['DrinkingWater', 'SolarPump', 'GramSabha', 'PESA'],
+    likesCount: 52,
+    isLiked: true,
+    hasAudio: true,
+    attachmentCaption: '🚰 Operational solar pump providing clean water to 40 households',
+    replies: [
+      {
+        id: 'c-2-1',
+        author: 'डॉ. पी. के. मुर्मू (Dr. P.K. Murmu)',
+        role: 'RESEARCHER',
+        roleLabel: 'Researcher - BIT Mesra',
+        timeAgo: '2 hours ago',
+        content: 'सराहनीय पहल! स्टेज 2 हैकथॉन के अंतर्गत 12 अतिरिक्त पंचायतों में इसे विस्तारित करने का प्रस्ताव तैयार है।',
+      },
+    ],
+  },
+  {
+    id: 'th-3',
+    author: 'रोहित मुर्मू (Rohit Murmu)',
+    role: 'STUDENT',
+    roleLabel: 'Student Lead - IIT ISM Dhanbad',
+    institution: 'Mining & Rural Energy Innovation Cell',
+    location: 'Dhanbad, Topchanchi',
+    timeAgo: '7 hours ago',
+    category: 'RURAL_ENERGY',
+    title: 'सोलर माइक्रोग्रिड बैटरी जीवन वृद्धि हेतु आईओटी आधारित लोड शेडिंग कंट्रोलर',
+    content:
+      'तोपचांची के सोलर ग्रिड में बार-बार बैटरी खराब होने की समस्या को हल करने हेतु हमने ₹450 की लागत वाला एक स्मार्ट रिले सर्किट बनाया है। यह शाम 8 बजे के बाद केवल प्राथमिक एलईडी बल्बों को पावर देता है और हैवी लोड स्वतः डिस्कनेक्ट करता है।',
+    tags: ['RuralEnergy', 'Microgrid', 'StudentHackathon', 'IIT_ISM'],
+    likesCount: 64,
+    isLiked: false,
+    attachmentCaption: '⚡ Bench-Scale Telemetry Controller Circuit Board',
+    replies: [],
+  },
+  {
+    id: 'th-4',
+    author: 'बिरसा मुंडा महिला स्वयं सहायता समूह',
+    role: 'CITIZEN',
+    roleLabel: 'Nagrik / Citizen',
+    location: 'Khunti, Murhu',
+    timeAgo: '1 day ago',
+    category: 'TRIBAL_LIVELIHOODS',
+    title: 'लाह (Lac) एवं महुआ प्रसंस्करण हेतु सौर ऊर्जा चालित डिसेंट्रलाइज्ड ड्रायर की आवश्यकता',
+    content:
+      'हमारे गांव में लाह और महुआ सुखाने में बारिश के कारण भारी नुकसान होता है। क्या किसी विश्वविद्यालय के पास ऐसा पोर्टेबल सोलर ड्रायर है जिसे स्वयं सहायता समूह आसानी से संचालित कर सके?',
+    tags: ['TribalLivelihoods', 'LacCultivation', 'SolarDryer', 'SHG'],
+    likesCount: 41,
+    isLiked: false,
+    attachmentCaption: '🌾 Forest Produce Storage & Weather Exposure in Murhu',
+    replies: [
+      {
+        id: 'c-4-1',
+        author: 'विकास कुमार (Vikas Kumar)',
+        role: 'RESEARCHER',
+        roleLabel: 'Researcher - BAU Ranchi',
+        timeAgo: '18 hours ago',
+        content: 'बिरसा कृषि विश्वविद्यालय (BAU) ने ₹3,200 लागत का फोल्डेबल सोलर टनल ड्रायर डिजाइन किया है। हम अगले सप्ताह प्रशिक्षण शिविर आयोजित कर रहे हैं।',
+      },
+    ],
+  },
+];
+
 export default function SamvaadPage() {
   const { t, language, currentLocation } = useCitizen();
-  const [newPostContent, setNewPostContent] = useState('');
-  const [posts, setPosts] = useState<SamvaadPost[]>([
-    {
-      id: '1',
-      author: 'सोमरा उरांव (PRI Member)',
-      location: 'Ranchi, Kanke',
-      timeAgo: '2 hours ago',
-      content:
-        language === 'hi'
-          ? 'कांके पंचायत के वार्ड 4 में नया सोलर चापाकल पायलट बहुत अच्छा काम कर रहा है। क्या अन्य वार्डों में भी इसे बढ़ाया जाएगा?'
-          : language === 'sat'
-          ? 'ᱠᱟᱸᱠᱮ ᱟᱹᱛᱩ ᱨᱮ ᱱᱟᱣᱟ ᱥᱮᱸᱜᱮᱞ ᱪᱟᱯᱟᱠᱚᱞ ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟ᱾ ᱟᱨ ᱮᱴᱟᱜ ᱴᱚᱞᱟ ᱨᱮ ᱦᱚᱸ ᱦᱩᱭᱩᱜ-ᱟ?'
-          : 'The new solar handpump pilot in Ward 4 of Kanke is running exceptionally well. Can we extend this to neighbouring wards?',
-      upvotes: 24,
-      repliesCount: 6,
-      hasAudio: true,
-    },
-    {
-      id: '2',
-      author: 'अमित कुमार (BIT Mesra Student)',
-      location: 'Ranchi, Mesra',
-      timeAgo: '5 hours ago',
-      content:
-        language === 'hi'
-          ? 'हमारी टीम ने फ्लोराइड निस्पंदन (Fluoride Filtration) के लिए कम लागत वाली मिट्टी-आधारित झिल्ली तैयार की है। हम फील्ड टेस्टिंग के लिए इच्छुक हैं।'
-          : language === 'sat'
-          ? 'ᱟᱞᱮ ᱫᱟᱜ ᱥᱟᱯᱷᱟ ᱞᱟᱹᱜᱤᱫ ᱠᱚᱢ ᱠᱷᱚᱨᱚᱪ ᱦᱟᱥᱟ ᱯᱷᱤᱞᱴᱟᱨ ᱵᱮᱱᱟᱣ ᱟᱠᱟᱫᱟᱞᱮ᱾'
-          : 'Our university team has engineered a low-cost clay membrane for fluoride filtration. Looking forward to Gram Sabha testing.',
-      upvotes: 41,
-      repliesCount: 11,
-    },
-  ]);
 
-  const handleCreatePost = (e: React.FormEvent) => {
+  // Feed State
+  const [threads, setThreads] = useState<SamvaadThread[]>(INITIAL_THREADS);
+  const [activeCategory, setActiveCategory] = useState<TopicCategory>('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Comment Expander / Drawer State: Map of threadId -> boolean
+  const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
+  const [replyInputText, setReplyInputText] = useState<Record<string, string>>({});
+
+  // Start Discussion Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newContent, setNewContent] = useState('');
+  const [newCategory, setNewCategory] = useState<TopicCategory>('WATER');
+  const [newRole, setNewRole] = useState<AuthorRole>('CITIZEN');
+  const [newTags, setNewTags] = useState('');
+  const [hasVoiceAttached, setHasVoiceAttached] = useState(false);
+  const [isRecordingSim, setIsRecordingSim] = useState(false);
+
+  // Toast State
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // Optimistic Like Action
+  const handleToggleLike = (threadId: string) => {
+    setThreads((prev) =>
+      prev.map((thread) => {
+        if (thread.id === threadId) {
+          const isLiked = !thread.isLiked;
+          const likesCount = isLiked ? thread.likesCount + 1 : thread.likesCount - 1;
+          return { ...thread, isLiked, likesCount };
+        }
+        return thread;
+      })
+    );
+  };
+
+  // Optimistic Reply Action
+  const handlePostReply = (threadId: string, e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPostContent.trim()) return;
+    const text = replyInputText[threadId]?.trim();
+    if (!text) return;
 
-    const newPost: SamvaadPost = {
-      id: Date.now().toString(),
-      author: language === 'hi' ? 'नागरिक सदस्य' : language === 'sat' ? 'ᱟᱹᱛᱩ ᱦᱚᱲ' : 'Citizen Participant',
-      location: `${currentLocation.district}, ${currentLocation.block || 'Kanke'}`,
+    const newReply: SamvaadComment = {
+      id: `rep-${Date.now()}`,
+      author: language === 'hi' ? 'नागरिक प्रतिभागी' : 'Citizen Contributor',
+      role: 'CITIZEN',
+      roleLabel: 'Nagrik / Citizen',
       timeAgo: 'Just now',
-      content: newPostContent,
-      upvotes: 1,
-      repliesCount: 0,
+      content: text,
     };
 
-    setPosts([newPost, ...posts]);
-    setNewPostContent('');
+    setThreads((prev) =>
+      prev.map((thread) => {
+        if (thread.id === threadId) {
+          return {
+            ...thread,
+            replies: [...thread.replies, newReply],
+          };
+        }
+        return thread;
+      })
+    );
+
+    setReplyInputText((prev) => ({ ...prev, [threadId]: '' }));
+    showToast(language === 'hi' ? 'आपकी टिप्पणी तुरंत पोस्ट हो गई!' : 'Reply posted successfully!');
+  };
+
+  // Share Action
+  const handleShareThread = async (thread: SamvaadThread) => {
+    const url = typeof window !== 'undefined' ? `${window.location.origin}/samvaad#${thread.id}` : '';
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: thread.title,
+          text: thread.content,
+          url,
+        });
+        return;
+      } catch {
+        // Fallback to clipboard
+      }
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+      showToast(language === 'hi' ? 'चर्चा का लिंक कॉपी किया गया!' : 'Thread link copied to clipboard!');
+    }
+  };
+
+  // Create Discussion Action
+  const handleCreateDiscussion = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle.trim() || !newContent.trim()) return;
+
+    const roleLabels: Record<AuthorRole, string> = {
+      CITIZEN: 'Nagrik / Citizen',
+      RESEARCHER: 'Researcher - BIT Mesra',
+      STUDENT: 'Student Lead - IIT ISM Dhanbad',
+      GOVT_OFFICER: 'Govt Officer (Panchayat / DW&S)',
+    };
+
+    const parsedTags = newTags
+      .split(',')
+      .map((t) => t.trim().replace(/^#/, ''))
+      .filter(Boolean);
+
+    const newThread: SamvaadThread = {
+      id: `th-${Date.now()}`,
+      author:
+        newRole === 'CITIZEN'
+          ? language === 'hi'
+            ? 'नागरिक सदस्य'
+            : 'Local Citizen'
+          : newRole === 'RESEARCHER'
+          ? 'शोधकर्ता प्रतिनिधि'
+          : newRole === 'STUDENT'
+          ? 'छात्र इनोवेटर'
+          : 'प्रशासनिक अधिकारी',
+      role: newRole,
+      roleLabel: roleLabels[newRole],
+      location: `${currentLocation.district}, ${currentLocation.block || 'Kanke'}`,
+      timeAgo: 'Just now',
+      category: newCategory,
+      title: newTitle,
+      content: newContent,
+      tags: parsedTags.length > 0 ? parsedTags : ['JanSamvaad', 'JharkhandInnovation'],
+      likesCount: 1,
+      isLiked: true,
+      replies: [],
+      hasAudio: hasVoiceAttached,
+      attachmentCaption: hasVoiceAttached ? '🎙️ Verified Voice Query Recorded' : undefined,
+    };
+
+    // Optimistic Prepend
+    setThreads([newThread, ...threads]);
+
+    // Reset Form
+    setNewTitle('');
+    setNewContent('');
+    setNewTags('');
+    setHasVoiceAttached(false);
+    setIsModalOpen(false);
+
+    showToast(
+      language === 'hi'
+        ? 'जन संवाद में आपकी चर्चा सफलतापूर्वक प्रकाशित हो गई!'
+        : 'Discussion published to Jan Samvaad community feed!'
+    );
+  };
+
+  // Filter logic
+  const filteredThreads = useMemo(() => {
+    return threads.filter((th) => {
+      if (activeCategory !== 'ALL' && th.category !== activeCategory) {
+        return false;
+      }
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const match =
+          th.title.toLowerCase().includes(q) ||
+          th.content.toLowerCase().includes(q) ||
+          th.author.toLowerCase().includes(q) ||
+          th.tags.some((t) => t.toLowerCase().includes(q));
+        if (!match) return false;
+      }
+      return true;
+    });
+  }, [threads, activeCategory, searchQuery]);
+
+  // Role Badge Helper
+  const renderRoleBadge = (role: AuthorRole, label: string) => {
+    switch (role) {
+      case 'RESEARCHER':
+        return (
+          <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-900 border border-purple-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+            <GraduationCap className="w-3.5 h-3.5 text-purple-700" />
+            <span>{label}</span>
+          </span>
+        );
+      case 'STUDENT':
+        return (
+          <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-900 border border-blue-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+            <Sparkles className="w-3.5 h-3.5 text-blue-700" />
+            <span>{label}</span>
+          </span>
+        );
+      case 'GOVT_OFFICER':
+        return (
+          <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+            <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+            <span>{label}</span>
+          </span>
+        );
+      case 'CITIZEN':
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-900 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+            <User className="w-3.5 h-3.5 text-[#044728]" />
+            <span>{label}</span>
+          </span>
+        );
+    }
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div>
-        <div className="inline-flex items-center space-x-1.5 text-xs font-semibold text-[#044728] bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-          <MessageSquare className="w-3.5 h-3.5" />
-          <span>{t('samvaad', 'title', 'Jan Samvaad — Citizen Community Forum')}</span>
+    <div className="max-w-4xl mx-auto space-y-6 pb-20 relative">
+      {/* Feedback Toast */}
+      {toastMessage && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-[#044728] text-white border-2 border-amber-400 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold shadow-2xl flex items-center space-x-2 animate-in fade-in slide-in-from-top duration-200 max-w-[90%] text-center">
+          <CheckCircle2 className="w-4 h-4 text-amber-300 flex-shrink-0" />
+          <span>{toastMessage}</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-2">
-          {language === 'hi' ? 'जन संवाद चौपाल' : language === 'sat' ? 'ᱵᱤᱪᱟᱹᱨ ᱟᱨ ᱨᱚᱯᱚᱲ (Jan Samvaad)' : 'Community Deliberation'}
-        </h1>
-        <p className="text-sm text-slate-600 mt-1">
-          {t('samvaad', 'subtitle', 'Collaborate with fellow residents, PRI officers, and university students.')}
-        </p>
+      )}
+
+      {/* Screen 11 Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center space-x-1.5 text-xs font-semibold text-[#044728] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+            <MessageSquare className="w-3.5 h-3.5 text-[#D97706]" />
+            <span>Screen 11: Samvaad / Threads Community Feed</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1.5">
+            {language === 'hi' ? 'जन संवाद चौपाल' : language === 'sat' ? 'ᱵᱤᱪᱟᱹᱨ ᱟᱨ ᱨᱚᱯᱚᱲ (Jan Samvaad)' : 'Jan Samvaad Community Forum'}
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl">
+            {language === 'hi'
+              ? 'ग्रामीण नागरिकों, शोधकर्ताओं एवं छात्र इनोवेटर्स के बीच तकनीकी विचार-विमर्श एवं समस्या समाधान।'
+              : 'Collaborative micro-blogging forum uniting citizens, university researchers, and student innovators.'}
+          </p>
+        </div>
+
+        {/* Start Discussion Trigger Button */}
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center justify-center space-x-2 bg-[#044728] hover:bg-[#03361e] text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold shadow-lg hover:shadow-xl transition-all self-start sm:self-auto active:scale-95 group"
+        >
+          <Plus className="w-4 h-4 text-amber-300 group-hover:rotate-90 transition-transform" />
+          <span>{language === 'hi' ? 'नई चर्चा शुरू करें' : 'Start a Discussion'}</span>
+        </button>
       </div>
 
-      {/* New Post Creator */}
-      <form onSubmit={handleCreatePost} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-3">
-        <textarea
-          rows={3}
-          value={newPostContent}
-          onChange={(e) => setNewPostContent(e.target.value)}
-          placeholder={
-            language === 'hi'
-              ? 'अपने गांव की समस्या अथवा समाधान पर विचार रखें...'
-              : language === 'sat'
-              ? 'ᱟᱹᱛᱩ ᱥᱚᱢᱚᱥᱭᱟ ᱵᱟᱵᱚᱛ ᱟᱢᱟᱜ ᱵᱤᱪᱟᱹᱨ ᱚᱞ ᱢᱮ...'
-              : 'Share your thoughts, local concerns, or ask university researchers...'
-          }
-          className="w-full text-xs sm:text-sm border border-slate-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#044728]"
-        />
-
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex items-center space-x-2 text-xs text-slate-500">
-            <MapPin className="w-3.5 h-3.5 text-slate-400" />
-            <span>{currentLocation.district}, {currentLocation.block || 'Kanke'}</span>
-          </div>
-
+      {/* Mandatory Filter Pills & Search */}
+      <div className="space-y-3 bg-white p-3.5 sm:p-4 rounded-3xl border border-slate-200 shadow-sm">
+        {/* Horizontal Scrollable Category Filter Pills */}
+        <div className="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar text-xs font-bold">
           <button
-            type="submit"
-            className="inline-flex items-center space-x-1.5 bg-[#044728] hover:bg-[#03361e] text-white px-4 py-2 rounded-lg text-xs font-semibold shadow-sm transition-all"
+            type="button"
+            onClick={() => setActiveCategory('ALL')}
+            className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
+              activeCategory === 'ALL'
+                ? 'bg-[#044728] text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+            }`}
           >
-            <Send className="w-3 h-3 text-[#D97706]" />
-            <span>{language === 'hi' ? 'साझा करें' : language === 'sat' ? 'ᱵᱷᱮᱡᱟᱭ ᱢᱮ' : 'Post'}</span>
+            {language === 'hi' ? 'सभी विषय (All Topics)' : 'All Topics'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveCategory('WATER')}
+            className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
+              activeCategory === 'WATER'
+                ? 'bg-[#044728] text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+            }`}
+          >
+            🚰 {language === 'hi' ? 'पेयजल एवं स्वच्छता' : 'Water Sanitation'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveCategory('AGRITECH')}
+            className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
+              activeCategory === 'AGRITECH'
+                ? 'bg-[#044728] text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+            }`}
+          >
+            🌾 {language === 'hi' ? 'कृषि तकनीक (Agritech)' : 'Agritech'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveCategory('TRIBAL_LIVELIHOODS')}
+            className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
+              activeCategory === 'TRIBAL_LIVELIHOODS'
+                ? 'bg-[#044728] text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+            }`}
+          >
+            🏹 {language === 'hi' ? 'जनजातीय आजीविका' : 'Tribal Livelihoods'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveCategory('RURAL_ENERGY')}
+            className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
+              activeCategory === 'RURAL_ENERGY'
+                ? 'bg-[#044728] text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+            }`}
+          >
+            ⚡ {language === 'hi' ? 'ग्रामीण ऊर्जा (Rural Energy)' : 'Rural Energy'}
           </button>
         </div>
-      </form>
 
-      {/* Posts Feed */}
+        {/* Search within discussions */}
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={
+              language === 'hi'
+                ? 'संवाद, कीवर्ड्स या शोधकर्ताओं को खोजें...'
+                : 'Search discussions, researcher tags, or villages...'
+            }
+            className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#044728] bg-slate-50/50"
+          />
+        </div>
+      </div>
+
+      {/* Threads List */}
       <div className="space-y-4">
-        {posts.map((post) => (
-          <div key={post.id} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-[#044728] font-bold text-xs">
-                  <User className="w-4 h-4" />
+        {filteredThreads.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+            <MessageCircle className="w-10 h-10 text-slate-400 mx-auto mb-2 opacity-60" />
+            <h3 className="text-sm font-bold text-slate-800">
+              {language === 'hi' ? 'इस श्रेणी में अभी कोई संवाद नहीं है' : 'No discussions in this topic yet'}
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Be the first to start a conversation with citizens and researchers!
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="mt-4 inline-flex items-center space-x-1.5 bg-[#044728] text-white px-4 py-2 rounded-xl text-xs font-bold"
+            >
+              <Plus className="w-3.5 h-3.5 text-amber-300" />
+              <span>{language === 'hi' ? 'चर्चा शुरू करें' : 'Start Discussion'}</span>
+            </button>
+          </div>
+        ) : (
+          filteredThreads.map((thread) => {
+            const isCommentsOpen = Boolean(expandedComments[thread.id]);
+
+            return (
+              <div
+                key={thread.id}
+                className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all space-y-4"
+              >
+                {/* Author Info & Role Badge */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-100 to-amber-100 flex items-center justify-center font-bold text-[#044728] text-sm shadow-inner flex-shrink-0">
+                      {thread.author.charAt(0)}
+                    </div>
+
+                    <div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <h3 className="text-xs sm:text-sm font-bold text-slate-900">
+                          {thread.author}
+                        </h3>
+                        {renderRoleBadge(thread.role, thread.roleLabel)}
+                      </div>
+
+                      <div className="flex items-center space-x-2 text-[11px] text-slate-400 mt-0.5">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-amber-600" />
+                          <span>{thread.location}</span>
+                        </span>
+                        <span>&bull;</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          <span>{thread.timeAgo}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {thread.hasAudio && (
+                    <span className="inline-flex items-center space-x-1 text-[10px] bg-amber-50 text-[#D97706] px-2 py-0.5 rounded-full border border-amber-200 font-bold">
+                      <Mic className="w-3 h-3 animate-pulse" />
+                      <span>Voice Note</span>
+                    </span>
+                  )}
+                </div>
+
+                {/* Post Title & Content */}
+                <div className="space-y-2">
+                  <h4 className="text-sm sm:text-base font-extrabold text-slate-900 leading-snug">
+                    {thread.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    {thread.content}
+                  </p>
+                </div>
+
+                {/* Optional Image Attachment Card */}
+                {thread.attachmentCaption && (
+                  <div className="bg-slate-900 text-white rounded-2xl p-4 space-y-2 border border-slate-800">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                      <span className="flex items-center gap-1.5 font-semibold text-emerald-400">
+                        <Camera className="w-3.5 h-3.5" />
+                        <span>Evidence / Prototype Attachment</span>
+                      </span>
+                      <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded">Verified</span>
+                    </div>
+
+                    <div className="h-28 bg-slate-950/80 rounded-xl flex items-center justify-center border border-slate-800 p-3 text-center">
+                      <p className="text-xs font-mono text-slate-300">
+                        {thread.attachmentCaption}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tag Pills */}
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {thread.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center text-[10px] sm:text-[11px] font-semibold text-[#044728] bg-emerald-50 hover:bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-200 transition-colors"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Interactive Action Bar: Like (Heart), Reply (Comment Drawer), Share */}
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-600">
+                  <div className="flex items-center space-x-4">
+                    {/* Like Action with Real-Time Optimistic Counter */}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleLike(thread.id)}
+                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl transition-all active:scale-90 ${
+                        thread.isLiked
+                          ? 'bg-rose-50 text-rose-600'
+                          : 'hover:bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      <Heart
+                        className={`w-4 h-4 transition-transform ${
+                          thread.isLiked ? 'fill-rose-600 text-rose-600 scale-110' : 'text-slate-400'
+                        }`}
+                      />
+                      <span>{thread.likesCount}</span>
+                      <span className="hidden sm:inline text-[11px] font-normal">
+                        {thread.isLiked ? 'Liked' : 'Support'}
+                      </span>
+                    </button>
+
+                    {/* Reply Action Opening Animated Comment Drawer */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedComments((prev) => ({
+                          ...prev,
+                          [thread.id]: !prev[thread.id],
+                        }))
+                      }
+                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl transition-all ${
+                        isCommentsOpen
+                          ? 'bg-emerald-50 text-[#044728]'
+                          : 'hover:bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      <MessageSquare className="w-4 h-4 text-[#044728]" />
+                      <span>{thread.replies.length}</span>
+                      <span className="hidden sm:inline text-[11px] font-normal">
+                        {language === 'hi' ? 'उत्तर' : 'Replies'}
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Share Action */}
+                  <button
+                    type="button"
+                    onClick={() => handleShareThread(thread.id as any)}
+                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    <span className="hidden sm:inline">{language === 'hi' ? 'साझा करें' : 'Share'}</span>
+                  </button>
+                </div>
+
+                {/* Animated Comment Drawer / Replies Section */}
+                {isCommentsOpen && (
+                  <div className="pt-3 border-t border-slate-100 space-y-3 animate-in fade-in duration-200">
+                    <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <MessageCircle className="w-3.5 h-3.5 text-[#044728]" />
+                      <span>
+                        {language === 'hi' ? 'चर्चा व प्रतिक्रियाएं' : 'Deliberation & Replies'}{' '}
+                        ({thread.replies.length})
+                      </span>
+                    </h5>
+
+                    {/* Previous Replies */}
+                    <div className="space-y-2 pl-2 sm:pl-4 border-l-2 border-emerald-100">
+                      {thread.replies.length === 0 ? (
+                        <p className="text-xs text-slate-400 py-1">
+                          No replies yet. Be the first to share an insight!
+                        </p>
+                      ) : (
+                        thread.replies.map((reply) => (
+                          <div
+                            key={reply.id}
+                            className="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 space-y-1 text-xs"
+                          >
+                            <div className="flex flex-wrap items-center justify-between gap-1">
+                              <div className="flex items-center space-x-2">
+                                <span className="font-bold text-slate-900">{reply.author}</span>
+                                {renderRoleBadge(reply.role, reply.roleLabel)}
+                              </div>
+                              <span className="text-[10px] text-slate-400">{reply.timeAgo}</span>
+                            </div>
+                            <p className="text-slate-700 leading-relaxed">{reply.content}</p>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Reply Input Form */}
+                    <form
+                      onSubmit={(e) => handlePostReply(thread.id, e)}
+                      className="flex items-center space-x-2 pt-1"
+                    >
+                      <input
+                        type="text"
+                        value={replyInputText[thread.id] || ''}
+                        onChange={(e) =>
+                          setReplyInputText((prev) => ({
+                            ...prev,
+                            [thread.id]: e.target.value,
+                          }))
+                        }
+                        placeholder={
+                          language === 'hi'
+                            ? 'अपनी राय या समाधान लिखें...'
+                            : 'Add to the discussion or propose an approach...'
+                        }
+                        className="flex-1 text-xs border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#044728] bg-slate-50/60"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-[#044728] hover:bg-[#03361e] text-white p-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center"
+                        title="Send Reply"
+                      >
+                        <Send className="w-4 h-4 text-amber-300" />
+                      </button>
+                    </form>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* "Start a Discussion" Modal Dialog */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-[#044728] flex items-center justify-center">
+                  <MessageSquare className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-xs sm:text-sm font-bold text-slate-900">{post.author}</h4>
-                  <div className="flex items-center space-x-1 text-[11px] text-slate-400">
-                    <MapPin className="w-3 h-3" />
-                    <span>{post.location}</span>
-                    <span>• {post.timeAgo}</span>
-                  </div>
+                  <h3 className="text-base font-bold text-slate-900">
+                    {language === 'hi' ? 'जन संवाद में नई चर्चा शुरू करें' : 'Start a Discussion'}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Share queries, research updates, or rural challenges
+                  </p>
                 </div>
               </div>
 
-              {post.hasAudio && (
-                <span className="inline-flex items-center space-x-1 text-[10px] bg-amber-50 text-[#D97706] px-2 py-0.5 rounded border border-amber-200 font-semibold">
-                  <Mic className="w-3 h-3" />
-                  <span>Voice Note</span>
-                </span>
-              )}
-            </div>
-
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">{post.content}</p>
-
-            <div className="pt-2 border-t border-slate-100 flex items-center space-x-4 text-xs text-slate-500">
               <button
-                onClick={() => {
-                  setPosts(
-                    posts.map((p) => (p.id === post.id ? { ...p, upvotes: p.upvotes + 1 } : p))
-                  );
-                }}
-                className="flex items-center space-x-1 hover:text-[#044728] font-medium"
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
               >
-                <ThumbsUp className="w-3.5 h-3.5 text-amber-600" />
-                <span>{post.upvotes} {t('samvaad', 'upvoteDiscussion', 'Support')}</span>
+                <X className="w-5 h-5" />
               </button>
-
-              <span className="flex items-center space-x-1">
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>{post.repliesCount} {t('samvaad', 'replies', 'Replies')}</span>
-              </span>
             </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleCreateDiscussion} className="space-y-4 text-xs">
+              {/* Role Selection */}
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Posting Role / आपकी भूमिका:
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNewRole('CITIZEN')}
+                    className={`p-2 rounded-xl border text-left font-bold transition-all flex items-center gap-1.5 ${
+                      newRole === 'CITIZEN'
+                        ? 'bg-emerald-50 text-[#044728] border-[#044728]'
+                        : 'bg-white text-slate-600 border-slate-200'
+                    }`}
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    <span>नागरिक / Citizen</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setNewRole('RESEARCHER')}
+                    className={`p-2 rounded-xl border text-left font-bold transition-all flex items-center gap-1.5 ${
+                      newRole === 'RESEARCHER'
+                        ? 'bg-purple-50 text-purple-900 border-purple-600'
+                        : 'bg-white text-slate-600 border-slate-200'
+                    }`}
+                  >
+                    <GraduationCap className="w-3.5 h-3.5" />
+                    <span>Researcher (HEI)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Topic Category */}
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Topic Domain / विषय श्रेणी:
+                </label>
+                <select
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value as TopicCategory)}
+                  className="w-full border border-slate-200 rounded-xl p-2.5 bg-white text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-[#044728]"
+                >
+                  <option value="WATER">Drinking Water &amp; Sanitation / पेयजल</option>
+                  <option value="AGRITECH">Agritech &amp; Irrigation / कृषि तकनीक</option>
+                  <option value="TRIBAL_LIVELIHOODS">Tribal Livelihoods / जनजातीय आजीविका</option>
+                  <option value="RURAL_ENERGY">Rural Energy &amp; Solar / ग्रामीण ऊर्जा</option>
+                </select>
+              </div>
+
+              {/* Title Input */}
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Discussion Title / मुख्य शीर्षक:
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="e.g. Need low-cost soil testing method for Kanke farmers..."
+                  className="w-full border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-[#044728]"
+                />
+              </div>
+
+              {/* Description Input */}
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Description / विस्तृत विवरण:
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={newContent}
+                  onChange={(e) => setNewContent(e.target.value)}
+                  placeholder="Explain your thought, ask for university guidance, or share field observations..."
+                  className="w-full border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-[#044728]"
+                />
+              </div>
+
+              {/* Tags Input */}
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Tags (Comma separated):
+                </label>
+                <input
+                  type="text"
+                  value={newTags}
+                  onChange={(e) => setNewTags(e.target.value)}
+                  placeholder="e.g. WaterTesting, Kanke, Filter, SHG"
+                  className="w-full border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-[#044728]"
+                />
+              </div>
+
+              {/* Simulated Voice Note Attachment */}
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                <div className="flex items-center space-x-2">
+                  <Mic className={`w-4 h-4 ${hasVoiceAttached ? 'text-amber-600' : 'text-slate-400'}`} />
+                  <div>
+                    <span className="font-bold text-slate-800">Voice Note / आवाज़ में रिकॉर्डिंग</span>
+                    <p className="text-[10px] text-slate-400">Attach oral context for non-literate members</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRecordingSim(true);
+                    setTimeout(() => {
+                      setIsRecordingSim(false);
+                      setHasVoiceAttached(!hasVoiceAttached);
+                    }, 600);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl font-bold transition-all ${
+                    hasVoiceAttached
+                      ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  {isRecordingSim ? 'Recording...' : hasVoiceAttached ? '✓ Attached' : '+ Record'}
+                </button>
+              </div>
+
+              {/* Submit Buttons */}
+              <div className="pt-2 flex items-center justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold"
+                >
+                  {language === 'hi' ? 'रद्द करें' : 'Cancel'}
+                </button>
+
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-[#044728] hover:bg-[#03361e] text-white font-bold shadow-md hover:shadow-lg transition-all flex items-center space-x-1.5"
+                >
+                  <Send className="w-3.5 h-3.5 text-amber-300" />
+                  <span>{language === 'hi' ? 'संवाद में प्रकाशित करें' : 'Publish Discussion'}</span>
+                </button>
+              </div>
+            </form>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
-

@@ -5,6 +5,7 @@ import type { ChallengeSubmissionPayload, GeoLocation } from '@jagrit/contracts'
 import { useCitizen, Language } from '@/context/CitizenContext';
 import AudioRecorder from '@/components/audio-recorder';
 import CVLaserScanner, { DetectedDefect } from '@/components/cv-laser-scanner';
+import SpatialRadarMap from '@/components/spatial-radar-map';
 import {
   AlertCircle,
   MapPin,
@@ -63,6 +64,7 @@ export default function ProblemSubmissionStudio() {
   const [activeDistrict, setActiveDistrict] = useState<string>(currentLocation.district || 'Ranchi');
   const [activeBlock, setActiveBlock] = useState<string>(currentLocation.block || 'Kanke');
   const [isDraggingPin, setIsDraggingPin] = useState(false);
+  const [mapTab, setMapTab] = useState<'radar' | 'pin'>('radar');
   const mapSvgRef = useRef<SVGSVGElement | null>(null);
 
   // Component D: CV Laser Scanner Defect metadata
@@ -645,88 +647,128 @@ export default function ProblemSubmissionStudio() {
               </div>
             </div>
 
-            {/* Interactive Visual Map Canvas with Draggable Pin */}
-            <div className="relative rounded-2xl overflow-hidden border border-slate-300 bg-slate-900 aspect-[16/9] max-h-[300px] select-none">
-              {/* Map SVG Canvas with Jharkhand Coordinate Projections */}
-              <svg
-                ref={mapSvgRef}
-                onClick={handleMapClickOrDrag}
-                onMouseMove={(e) => {
-                  if (isDraggingPin) handleMapClickOrDrag(e);
-                }}
-                onMouseUp={() => setIsDraggingPin(false)}
-                className="w-full h-full cursor-crosshair"
-                viewBox="0 0 800 450"
+            {/* Map Mode Switcher: 500m Radar Buffer vs Interactive Pin */}
+            <div className="flex items-center space-x-2 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start">
+              <button
+                type="button"
+                onClick={() => setMapTab('radar')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  mapTab === 'radar'
+                    ? 'bg-[#044728] text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
               >
-                {/* Background Map Contours */}
-                <rect width="800" height="450" fill="#0f172a" />
-                <path
-                  d="M 120 180 Q 240 60, 480 80 T 720 150 Q 760 300, 600 380 T 260 400 Q 80 320, 120 180 Z"
-                  fill="#1e293b"
-                  stroke="#334155"
-                  strokeWidth="2"
-                />
-
-                {/* Sub-Districts Mesh / Contours */}
-                <circle cx="420" cy="220" r="160" fill="rgba(4, 71, 40, 0.25)" stroke="#044728" strokeWidth="1" />
-                <path d="M 280 180 L 450 210 L 580 160" stroke="#475569" strokeWidth="1" strokeDasharray="4 4" />
-                <path d="M 450 210 L 520 320" stroke="#475569" strokeWidth="1" strokeDasharray="4 4" />
-
-                {/* Map Labels for Reference */}
-                <text x="420" y="210" fill="#94a3b8" fontSize="14" fontWeight="bold" textAnchor="middle">
-                  Ranchi Hub
-                </text>
-                <text x="620" y="160" fill="#64748b" fontSize="12" textAnchor="middle">
-                  Dhanbad / Bokaro
-                </text>
-                <text x="540" y="340" fill="#64748b" fontSize="12" textAnchor="middle">
-                  Jamshedpur (East Singhbhum)
-                </text>
-                <text x="240" y="140" fill="#64748b" fontSize="12" textAnchor="middle">
-                  Palamu / Latehar
-                </text>
-
-                {/* Draggable/Interactive Pin Marker */}
-                {(() => {
-                  // Normalize coordinates to 800x450 canvas
-                  const lonNorm = (mapCoords.lon - 83.3) / (87.9 - 83.3);
-                  const latNorm = 1 - (mapCoords.lat - 22.0) / (25.3 - 22.0);
-                  const pinX = Math.max(20, Math.min(lonNorm * 800, 780));
-                  const pinY = Math.max(20, Math.min(latNorm * 450, 430));
-
-                  return (
-                    <g
-                      transform={`translate(${pinX}, ${pinY})`}
-                      onMouseDown={() => setIsDraggingPin(true)}
-                      className="cursor-grab active:cursor-grabbing"
-                    >
-                      {/* Radar pulse around pin */}
-                      <circle r="22" fill="rgba(217, 119, 6, 0.2)" className="animate-ping" />
-                      <circle r="12" fill="rgba(217, 119, 6, 0.4)" />
-                      {/* Pin teardrop */}
-                      <path
-                        d="M 0 0 C -6 -12, -10 -16, -10 -22 C -10 -28, -5 -34, 0 -34 C 5 -34, 10 -28, 10 -22 C 10 -16, 6 -12, 0 0 Z"
-                        fill="#D97706"
-                        stroke="#FFF"
-                        strokeWidth="2"
-                        className="drop-shadow-md"
-                      />
-                      <circle cx="0" cy="-22" r="3.5" fill="#FFF" />
-                      {/* Pin label callout */}
-                      <rect x="-45" y="-56" width="90" height="18" rx="4" fill="#044728" stroke="#D97706" strokeWidth="1" />
-                      <text x="0" y="-43" fill="#FFF" fontSize="10" fontWeight="bold" textAnchor="middle">
-                        {activeDistrict} Pin
-                      </text>
-                    </g>
-                  );
-                })()}
-              </svg>
-
-              {/* Map UI Overlay Info */}
-              <div className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur px-2.5 py-1 rounded text-[10px] text-slate-300 border border-slate-800">
-                Click or drag pin anywhere to calibrate coordinates
-              </div>
+                <span>📡 PostGIS 500m Radar (ADR-002)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMapTab('pin')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  mapTab === 'pin'
+                    ? 'bg-[#044728] text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>📍 Interactive Pin Calibrator</span>
+              </button>
             </div>
+
+            {mapTab === 'radar' ? (
+              <SpatialRadarMap
+                centerLocation={{
+                  lat: mapCoords.lat,
+                  lon: mapCoords.lon,
+                  district: activeDistrict,
+                  block: activeBlock,
+                }}
+                nearbyRadiusMeters={500}
+                currentPhotoPreview={compressedPreviewUrl || undefined}
+                compact
+              />
+            ) : (
+              /* Interactive Visual Map Canvas with Draggable Pin */
+              <div className="relative rounded-2xl overflow-hidden border border-slate-300 bg-slate-900 aspect-[16/9] max-h-[300px] select-none">
+                {/* Map SVG Canvas with Jharkhand Coordinate Projections */}
+                <svg
+                  ref={mapSvgRef}
+                  onClick={handleMapClickOrDrag}
+                  onMouseMove={(e) => {
+                    if (isDraggingPin) handleMapClickOrDrag(e);
+                  }}
+                  onMouseUp={() => setIsDraggingPin(false)}
+                  className="w-full h-full cursor-crosshair"
+                  viewBox="0 0 800 450"
+                >
+                  {/* Background Map Contours */}
+                  <rect width="800" height="450" fill="#0f172a" />
+                  <path
+                    d="M 120 180 Q 240 60, 480 80 T 720 150 Q 760 300, 600 380 T 260 400 Q 80 320, 120 180 Z"
+                    fill="#1e293b"
+                    stroke="#334155"
+                    strokeWidth="2"
+                  />
+
+                  {/* Sub-Districts Mesh / Contours */}
+                  <circle cx="420" cy="220" r="160" fill="rgba(4, 71, 40, 0.25)" stroke="#044728" strokeWidth="1" />
+                  <path d="M 280 180 L 450 210 L 580 160" stroke="#475569" strokeWidth="1" strokeDasharray="4 4" />
+                  <path d="M 450 210 L 520 320" stroke="#475569" strokeWidth="1" strokeDasharray="4 4" />
+
+                  {/* Map Labels for Reference */}
+                  <text x="420" y="210" fill="#94a3b8" fontSize="14" fontWeight="bold" textAnchor="middle">
+                    Ranchi Hub
+                  </text>
+                  <text x="620" y="160" fill="#64748b" fontSize="12" textAnchor="middle">
+                    Dhanbad / Bokaro
+                  </text>
+                  <text x="540" y="340" fill="#64748b" fontSize="12" textAnchor="middle">
+                    Jamshedpur (East Singhbhum)
+                  </text>
+                  <text x="240" y="140" fill="#64748b" fontSize="12" textAnchor="middle">
+                    Palamu / Latehar
+                  </text>
+
+                  {/* Draggable/Interactive Pin Marker */}
+                  {(() => {
+                    // Normalize coordinates to 800x450 canvas
+                    const lonNorm = (mapCoords.lon - 83.3) / (87.9 - 83.3);
+                    const latNorm = 1 - (mapCoords.lat - 22.0) / (25.3 - 22.0);
+                    const pinX = Math.max(20, Math.min(lonNorm * 800, 780));
+                    const pinY = Math.max(20, Math.min(latNorm * 450, 430));
+
+                    return (
+                      <g
+                        transform={`translate(${pinX}, ${pinY})`}
+                        onMouseDown={() => setIsDraggingPin(true)}
+                        className="cursor-grab active:cursor-grabbing"
+                      >
+                        {/* Radar pulse around pin */}
+                        <circle r="22" fill="rgba(217, 119, 6, 0.2)" className="animate-ping" />
+                        <circle r="12" fill="rgba(217, 119, 6, 0.4)" />
+                        {/* Pin teardrop */}
+                        <path
+                          d="M 0 0 C -6 -12, -10 -16, -10 -22 C -10 -28, -5 -34, 0 -34 C 5 -34, 10 -28, 10 -22 C 10 -16, 6 -12, 0 0 Z"
+                          fill="#D97706"
+                          stroke="#FFF"
+                          strokeWidth="2"
+                          className="drop-shadow-md"
+                        />
+                        <circle cx="0" cy="-22" r="3.5" fill="#FFF" />
+                        {/* Pin label callout */}
+                        <rect x="-45" y="-56" width="90" height="18" rx="4" fill="#044728" stroke="#D97706" strokeWidth="1" />
+                        <text x="0" y="-43" fill="#FFF" fontSize="10" fontWeight="bold" textAnchor="middle">
+                          {activeDistrict} Pin
+                        </text>
+                      </g>
+                    );
+                  })()}
+                </svg>
+
+                {/* Map UI Overlay Info */}
+                <div className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur px-2.5 py-1 rounded text-[10px] text-slate-300 border border-slate-800">
+                  Click or drag pin anywhere to calibrate coordinates
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Section 6: Primary Submission CTA */}

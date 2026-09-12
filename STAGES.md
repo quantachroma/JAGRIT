@@ -117,12 +117,12 @@
 *Goal: 10-day bidding window, dynamic switching to 3-stage hackathon, and milestone tranche escrow.*
 
 ### Role 1 (Citizen Experience Lead)
-- [ ] **Task 1.2.1:** Build `spatial-radar-map.tsx`:
+- [x] **Task 1.2.1:** Build `spatial-radar-map.tsx`:
   - Mapbox map with pulsing 500m radius circle and nearby matched tickets.
-- [ ] **Task 1.2.2:** Build Screen 3 (Citizen Dashboard):
+- [x] **Task 1.2.2:** Build Screen 3 (Citizen Dashboard):
   - Metric counters (Resolved, In Progress, Escrow Disbursed).
   - Trending challenges list sorted by upvote count.
-- [ ] **Task 1.2.3:** Build Screen 11 (Samvaad / Threads Community Feed):
+- [x] **Task 1.2.3:** Build Screen 11 (Samvaad / Threads Community Feed):
   - Feed list, thread creation modal, tag filtering (`Agritech`, `Water`, `Livelihoods`).
 - *Cline Verification:* Navigate to `/samvaad`, create a test thread, and verify optimistic UI update.
 

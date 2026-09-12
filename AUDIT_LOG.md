@@ -5,10 +5,10 @@
 ---
 
 ## System Progress Summary
-* **Current Stage:** Stage 1 (Ingestion, AI Triage & Geospatial Deduplication)
-* **Active Tasks:** Tasks 1.1.1 – 1.1.4 (Role 1 Completed)
+* **Current Stage:** Stage 2 (HEI Bidding, Dynamic Hackathon & Tranche Escrow)
+* **Active Tasks:** Tasks 1.2.1 – 1.2.3 (Role 1 Completed)
 * **Repository Health:** Clean Build & Lint Passing
-* **Estimated Token Consumption:** ~32,000 / 500,000
+* **Estimated Token Consumption:** ~46,000 / 500,000
 
 ---
 
@@ -50,6 +50,19 @@
 
 ---
 
+### [LOG-003] Tasks 1.2.1 - 1.2.3: Stage 2 Citizen Dashboard, Spatial Radar Map & Samvaad Feed
+* **Timestamp:** 2026-09-12T22:38:00Z
+* **Role:** Role 1 (Citizen Experience Lead)
+* **Tasks Completed:** Tasks 1.2.1, 1.2.2, 1.2.3
+* **Modified Directories:** `apps/web-citizen/`
+* **Files Changed:** `src/components/spatial-radar-map.tsx`, `src/app/dashboard/page.tsx`, `src/app/samvaad/page.tsx`, `src/app/report/page.tsx`
+* **Verification Command Run:** `cd apps/web-citizen && pnpm run lint && pnpm run build`
+* **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero ESLint/TS errors)`
+* **Estimated Tokens Spent:** ~14,000 tokens
+* **Status:** SUCCESS
+
+---
+
 ### Log Entry Template (For Cline to Append)
 
 ```markdown
@@ -63,3 +76,4 @@
 * **Verification Output:** `<One-line output summary, e.g., HTTP 200 OK / 5 passing tests>`
 * **Estimated Tokens Spent:** <e.g., ~18,000 tokens>
 * **Status:** <SUCCESS | FAILED | REVERTED>
+```
