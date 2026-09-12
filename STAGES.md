@@ -191,9 +191,9 @@
 - *Cline Verification:* Execute the quorum evaluation API with test votes and observe state transition.
 
 ### Role 4 (AI/ML & Microservices Lead)
-- [ ] **Task 4.3.1:** Implement Quorum NLP Sentiment Parser (`POST /api/v1/ai/parse-feedback`):
+- [x] **Task 4.3.1:** Implement Quorum NLP Sentiment Parser (`POST /api/v1/ai/parse-feedback`):
   - Classify vernacular feedback into *Critical System Defects* vs *Cosmetic Grievances*.
-- [ ] **Task 4.3.2:** Implement Post-Mortem Root Cause Synthesizer (`POST /api/v1/ai/generate-postmortem`):
+- [x] **Task 4.3.2:** Implement Post-Mortem Root Cause Synthesizer (`POST /api/v1/ai/generate-postmortem`):
   - Synthesize DPR, citizen feedback, and evaluator notes into a concise failure summary.
 - *Cline Verification:* Send test citizen complaint text to `/api/v1/ai/parse-feedback` and verify JSON classification.
 
