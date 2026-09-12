@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JAGRIT - Product Requirements Document (PRD v1.0.0)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      --primary: #044728;
+      --primary-light: #e8f5e9;
+      --primary-border: #a5d6a7;
+      --navy: #0f172a;
+      --slate: #475569;
+      --light-bg: #f8fafc;
+      --border: #e2e8f0;
+      --accent: #d97706;
+      --accent-light: #fef3c7;
+      --danger: #b91c1c;
+      --danger-light: #fee2e2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--navy);
+      background-color: #fff;
+      font-size: 13px;
+      line-height: 1.55;
+      padding: 30px;
+    }
+
+    .no-print {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      background: var(--primary);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      transition: all 0.2s;
+    }
+    .no-print:hover {
+      background: #03331d;
+      transform: translateY(-2px);
+    }
+
+    /* Print Setup */
+    @page {
+      size: A4;
+      margin: 18mm 15mm 18mm 15mm;
+      @bottom-right {
+        content: "Page " counter(page);
+        font-size: 9px;
+        color: var(--slate);
+      }
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        font-size: 11.5px;
+        line-height: 1.5;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      pre, table, .card, .spec-box {
+        page-break-inside: avoid;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    }
+
+    /* Cover / Header Section */
+    .header-banner {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .header-title h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+    .header-title p {
+      font-size: 13px;
+      color: var(--slate);
+      font-weight: 500;
+      margin-top: 4px;
+    }
+    .header-badge {
+      background: var(--primary-light);
+      border: 1px solid var(--primary-border);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      text-align: right;
+    }
+
+    h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 1.5px solid var(--border);
+      padding-bottom: 6px;
+      margin-top: 26px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: #334155;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 12px;
+      color: #334155;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 20px 0;
+      font-size: 11.5px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background-color: var(--light-bg);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    tr:nth-child(even) {
+      background-color: #fbfcfd;
+    }
+
+    /* Preformatted & Code */
+    pre {
+      background-color: #0b1120;
+      color: #f1f5f9;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      line-height: 1.45;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 12px 0 16px 0;
+      border: 1px solid #1e293b;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: #f1f5f9;
+      color: var(--navy);
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* Visual Cards & Callouts */
+    .card {
+      background: var(--light-bg);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin: 12px 0 16px 0;
+    }
+    .card-title {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 12.5px;
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 10.5px;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+    .badge-green { background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary-border); }
+    .badge-amber { background: var(--accent-light); color: var(--accent); border: 1px solid #fde68a; }
+    .badge-red { background: var(--danger-light); color: var(--danger); border: 1px solid #fca5a5; }
+
+    .checklist {
+      list-style: none;
+      margin-left: 0;
+    }
+    .checklist li {
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 6px;
+    }
+    .checklist li::before {
+      content: "✔";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="no-print" onclick="window.print()">🖨️ Save as PDF</button>
+
+  <!-- Header Banner -->
+  <div class="header-banner">
+    <div class="header-title">
+      <h1>JAGRIT: System Architecture & PRD</h1>
+      <p>Department of Higher & Technical Education (DHTE), Government of Jharkhand</p>
+    </div>
+    <div class="header-badge">
+      DOC VERSION: 1.0.0-PROD<br>
+      THEME: Smart Education (NEP 2020)
+    </div>
+  </div>
+
+  <!-- Section 1 -->
+  <h2>1. Document Control & Metadata</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 30%;">Attribute</th>
+        <th>Specification</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Document Owner</strong></td>
+        <td>Lead Systems Architect & Product Engineering Team</td>
+      </tr>
+      <tr>
+        <td><strong>Target Stakeholders</strong></td>
+        <td>DHTE (Govt of Jharkhand), State HEIs, Corporate CSR Cells, Gram Panchayats, Urban Local Bodies</td>
+      </tr>
+      <tr>
+        <td><strong>Document Status</strong></td>
+        <td>Production-Ready Architectural Baseline</td>
+      </tr>
+      <tr>
+        <td><strong>Compliance Mandates</strong></td>
+        <td>NEP 2020 (NCrF Framework), Companies Act 2013 (Section 135 / Schedule VII), PESA Act 1996, DPDP Act 2023</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Section 2 -->
+  <h2>2. Executive Summary & Problem Context</h2>
+  <p>Communities across Jharkhand face chronic, localized challenges spanning drinking water contamination (arsenic, fluoride, iron), agricultural post-harvest decay, artisanal livelihood bottlenecks (lac, tussar silk, minor forest produce), and public sanitation. While citizens are the first to detect these breakdowns, no structured, accessible mechanism exists to capture and channel these challenges for systematic engineering and scientific resolution.</p>
+  <p>Higher Education Institutions (HEIs) possess research laboratories, academic faculty, and a large student population. However, academic research remains largely disconnected from grassroots community needs due to fragmented institutional collaboration.</p>
+  
+  <div class="card">
+    <div class="card-title">JAGRIT System Mission</div>
+    A closed-loop platform that crowdsources societal problems via low-barrier channels (Mobile App, Web, and WhatsApp Voice Bot in Hindi and Santhali), uses AI for deduplication and triage, and routes validated challenges to verified universities. Multi-university acceptance triggers a dynamic 3-stage hackathon backed by tranche-based escrow funding (Government + CSR). Validated solutions award NEP 2020 credits and are verified via a 45-day citizen feedback quorum.
+  </div>
+
+  <pre>
+                             ┌────────────────────────────────────────┐
+                             │       MULTI-CHANNEL INGESTION          │
+                             │ • Citizen App / Web                    │
+                             │ • WhatsApp Voice (Hindi / Santhali)    │
+                             │ • PRI / Govt Institutional Dossier     │
+                             └───────────────────┬────────────────────┘
+                                                 │
+                                                 ▼
+                             ┌────────────────────────────────────────┐
+                             │       AI INGESTION & TRIAGE GATE       │
+                             │ • Multilingual ASR Audio Parsing       │
+                             │ • Vision Transformer (ViT) Scanner     │
+                             │ • PostGIS Spatial Radar (500m Buffer)  │
+                             └───────────────────┬────────────────────┘
+                                                 │
+                                                 ▼
+                             ┌────────────────────────────────────────┐
+                             │        HITL EVALUATOR CONSOLE          │
+                             │ • Civic Routine ➔ Forward to ULB API   │
+                             │ • Applied R&D   ➔ Allocate State + CSR │
+                             │                   Escrow Pool (10 Days)│
+                             └───────────────────┬────────────────────┘
+                                                 │
+                                                 ▼
+                             ┌────────────────────────────────────────┐
+                             │      INSTITUTIONAL MATCHING GATE       │
+                             │ • Explainable AI Compatibility Score   │
+                             │ • Solo Bid, Joint Consortium, or       │
+                             │   Dynamic Hackathon (≥ 2 HEIs)         │
+                             └───────────────────┬────────────────────┘
+                                                 │
+                                                 ▼
+                             ┌────────────────────────────────────────┐
+                             │         EXECUTION & MILESTONES         │
+                             │ • 3-Stage Dynamic Hackathon Arena      │
+                             │ • Escrow Releases: 30% ➔ 40% ➔ 30%     │
+                             │ • Automated SLA Default & Clawback     │
+                             │ • PESA Gram Sabha NOC & O&M Handover   │
+                             └───────────────────┬────────────────────┘
+                                                 │
+                                                 ▼
+                             ┌────────────────────────────────────────┐
+                             │      NEP 2020 ACADEMIC INCENTIVES      │
+                             │ • Workhours logged (30 hrs = 1 Credit) │
+                             │ • 2–4 Credits pushed to APAAR/ABC      │
+                             │ • Faculty UGC-CAS API points awarded   │
+                             └───────────────────┬────────────────────┘
+                                                 │
+                                                 ▼
+                             ┌────────────────────────────────────────┐
+                             │        45-DAY MATURATION BUFFER        │
+                             │ • Unassisted, continuous community use │
+                             └───────────────────┬────────────────────┘
+                                                 │
+                                                 ▼
+                             ┌────────────────────────────────────────┐
+                             │     14-DAY CITIZEN FEEDBACK QUORUM     │
+                             │ • AI Population-Weighted Quorum Met    │
+                             │ • NLP separates Core vs Cosmetic       │
+                             └───────────────────┬────────────────────┘
+                                                 │
+                       ┌─────────────────────────┼─────────────────────────┐
+                       ▼                         ▼                         ▼
+              [ 100% SOLVED ]           [ PARTIALLY SOLVED ]       [ FAILED PROJECT ]
+              • Ticket closed           • 45-day iterative repair  • Root-cause post-mortem
+              • Startup Incubation        sprint for same team     • Minor ➔ R&D Repo
+                & Seed Grants           • Re-tested after sprint   • Major ➔ National
+              • Tripartite IPR Handover                              Pan-India Hackathon
+  </pre>
+
+  <div class="page-break"></div>
+
+  <!-- Section 3 -->
+  <h2>3. Product Objectives & Target Metrics (KPIs)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Core Metric Objective</th>
+        <th>Baseline Target (Year 1)</th>
+        <th>Verification Mechanism</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Problem Ingestion Volume</strong></td>
+        <td>≥ 5,000 Verified Tickets</td>
+        <td>PostGIS Deduplication DB Ledger</td>
+      </tr>
+      <tr>
+        <td><strong>Rural Voice Accessibility</strong></td>
+        <td>≥ 45% Submissions via Hindi/Santhali Voice</td>
+        <td>WhatsApp Cloud API Gateway Logs</td>
+      </tr>
+      <tr>
+        <td><strong>HEI Research Engagement</strong></td>
+        <td>≥ 30 State & Central HEIs Active</td>
+        <td>Institutional SSO Authentication Logs</td>
+      </tr>
+      <tr>
+        <td><strong>Corporate CSR Mobilized</strong></td>
+        <td>≥ ₹5.00 Crore Escrow Pool Committed</td>
+        <td>Form CSR-1 Receipts & PFMS Ledger</td>
+      </tr>
+      <tr>
+        <td><strong>Student NEP Credits Awarded</strong></td>
+        <td>≥ 10,000 Academic Credits Deposited</td>
+        <td>DigiLocker / APAAR / ABC API Webhooks</td>
+      </tr>
+      <tr>
+        <td><strong>Field Resolution Rate</strong></td>
+        <td>≥ 60% Validated "Solved" via Quorum</td>
+        <td>Day 45 AI Population Quorum Engine</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Section 4 -->
+  <h2>4. Stakeholder Personas & Role-Based Access Control (RBAC)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>User Role</th>
+        <th>Authentication</th>
+        <th>Permitted Platform Operations</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Citizen</strong></td>
+        <td>Phone OTP / WhatsApp Auth</td>
+        <td>Submit multimedia issues; upvote nearby problems (&lt;30 km); cast 45-day validation vote.</td>
+      </tr>
+      <tr>
+        <td><strong>PRI / Authority (Mukhiya/BDO)</strong></td>
+        <td>Jan Parichay / Gov Email</td>
+        <td>Submit Institutional Problem Dossiers; upload Gram Sabha PESA NOCs; sign O&M handovers.</td>
+      </tr>
+      <tr>
+        <td><strong>Student Innovator</strong></td>
+        <td>APAAR/ABC ID / Edu-SSO</td>
+        <td>Join project teams; query R&D Copilot; submit hackathon deliverables; claim NEP credits.</td>
+      </tr>
+      <tr>
+        <td><strong>Faculty PI</strong></td>
+        <td>Institutional Email / SSO</td>
+        <td>Form multidisciplinary teams; verify student workhours; approve DPRs; claim UGC-CAS points.</td>
+      </tr>
+      <tr>
+        <td><strong>Industry Mentor / CSR</strong></td>
+        <td>Corporate 2FA / ROC Verify</td>
+        <td>Pledge CSR funds; conduct sprint mentor reviews; claim ROFR commercialization rights.</td>
+      </tr>
+      <tr>
+        <td><strong>State Evaluator (DHTE)</strong></td>
+        <td>Govt SSO / Digital e-Sign</td>
+        <td>Audit AI triage; override classifications; authorize escrow disbursements; score finals.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Section 5 & 6 -->
+  <h2>5. End-to-End User Journeys (Step-by-Step)</h2>
+  
+  <h3>5.1 Citizen Ingestion via WhatsApp (Multilingual Voice)</h3>
+  <ol>
+    <li>Citizen sends a voice note or image to the JAGRIT WhatsApp Cloud API endpoint.</li>
+    <li>Conversational agent auto-detects language preference (Hindi, Santhali, English).</li>
+    <li>Inbound audio binary is forwarded to the fine-tuned Whisper-large-v3 / Bhashini ASR pipeline.</li>
+    <li>Citizen is prompted via WhatsApp message to share their live GPS location pin.</li>
+    <li>System performs a 500m spatial buffer query against existing tickets.</li>
+    <li>If unique: Generates Ticket <code>#JAG-YYYY-DIST-XXXX</code> with an SMS/WhatsApp tracking URL.</li>
+    <li>If duplicate (&ge;85% semantic similarity within 500m): Automatically merges media, increments upvotes by 1, and notifies the citizen.</li>
+  </ol>
+
+  <h3>5.2 Evaluator Audit & University Allocation</h3>
+  <ol>
+    <li>Submission enters the Evaluator Triage Queue with an AI confidence ring.</li>
+    <li>If Civic Routine: Dispatched via webhook to ULB/JharSewa; ticket closed on JAGRIT.</li>
+    <li>If Applied R&D: Evaluator authorizes the state innovation grant ceiling (e.g., ₹3,50,000) and opens corporate CSR co-sponsorship.</li>
+    <li>Matching engine broadcasts the challenge to qualified institutions based on lab facilities, patents, and faculty specializations.</li>
+    <li>A 10-day bidding window countdown begins.</li>
+  </ol>
+
+  <h3>5.3 University Bidding & Dynamic Hackathon Mode</h3>
+  <ol>
+    <li><strong>Solo Acceptance:</strong> Exactly 1 HEI accepts &rarr; Routes to <strong>Direct R&D Track</strong>. Work Breakdown Structure locked; Tranche 1 (30%) disbursed.</li>
+    <li><strong>Multi-HEI Acceptance:</strong> &ge;2 HEIs accept &rarr; Routes to <strong>Dynamic Hackathon Track</strong>:
+      <ul>
+        <li><em>Round 1 (Ideation):</em> 5-slide pitch deck (PDF) and video approach summary within 14 days. Top 3–5 teams shortlisted.</li>
+        <li><em>Round 2 (Mentoring & Prototype):</em> Industry Mentor review sprints and bench-scale test data upload. Top 2 teams advance.</li>
+        <li><em>Round 3 (DPR & Physical Defense):</em> Comprehensive Detailed Project Report (DPR) with Bill of Materials (BOM). Physical presentation at Ranchi DHTE headquarters.</li>
+      </ul>
+    </li>
+    <li>Jury scores submissions: Feasibility (40%), Sustainability (30%), and Cost (30%). Winning team receives deployment rights and unlocks Tranche 1 funding.</li>
+  </ol>
+
+  <div class="page-break"></div>
+
+  <!-- Section 7 -->
+  <h2>6. Comprehensive Functional Requirements</h2>
+  
+  <div class="card">
+    <div class="card-title">Module 1: Ingestion Engine</div>
+    <strong>FR-1.1:</strong> WhatsApp Conversational Webhook (Hindi/Santhali ASR, GPS pin parsing).<br>
+    <strong>FR-1.2:</strong> Web/Mobile Studio with client-side image compression (&le;500 KB) and video uploads (&le;30s).<br>
+    <strong>FR-1.3:</strong> Institutional Problem Dossier mode for BDOs/PRIs to upload historical test logs (CSV/PDF).
+  </div>
+
+  <div class="card">
+    <div class="card-title">Module 2: AI Ingestion & Deduplication</div>
+    <strong>FR-2.1:</strong> Fine-tuned Whisper-large-v3 model with &le;14% Word Error Rate (WER) on Santhali and Hindi.<br>
+    <strong>FR-2.2:</strong> Computer Vision laser sweep displaying bounding boxes over structural and water defects.<br>
+    <strong>FR-2.3:</strong> PostGIS 500m spatial buffer query + <code>text-embedding-3-large</code> cosine similarity (&ge;0.85 threshold).<br>
+    <strong>FR-2.4:</strong> Zero-shot DeBERTa-v3 classifier separating Type A (Routine Civic) from Type B (Applied Innovation R&D).
+  </div>
+
+  <div class="card">
+    <div class="card-title">Module 3: Bidding & Dynamic Hackathon Engine</div>
+    <strong>FR-3.1:</strong> Explainable AI (XAI) compatibility scorecards (5-axis spider chart).<br>
+    <strong>FR-3.2:</strong> 10-day bidding window with dynamic switching: Solo HEI (Direct R&D) vs. &ge;2 HEIs (Dynamic Hackathon).<br>
+    <strong>FR-3.3:</strong> Consortia support enabling inter-university multidisciplinary proposals (e.g., BIT Mesra + BAU).
+  </div>
+
+  <div class="card">
+    <div class="card-title">Module 4: Milestone Escrow & Governance</div>
+    <strong>FR-4.1:</strong> Tranche-based escrow disbursement: Tranche 1 (30% on proposal), Tranche 2 (40% on bench validation + NABL certificate), Tranche 3 (30% on field deployment + PESA Gram Sabha NOC).<br>
+    <strong>FR-4.2:</strong> Automated SLA breach monitors: Warning on Day +7, Dean escalation on Day +14, Default and fund clawback on Day +30.<br>
+    <strong>FR-4.3:</strong> Mandatory O&M Handover: Training of 2 local VLEs/Jal Sahiyas with illustrated vernacular SOP and 12-month spares escrow.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Module 5: NEP 2020 Academic Credits & Feedback Quorum</div>
+    <strong>FR-5.1:</strong> Digital transfer of 2–4 credits to APAAR / Academic Bank of Credits (ABC) based on verified work hours (30 hrs = 1 Credit).<br>
+    <strong>FR-5.2:</strong> 45-day unassisted operational maturation buffer before validation opens.<br>
+    <strong>FR-5.3:</strong> AI Population-Weighted Quorum calculation:
+    <code>Quorum_min = max(15, Ceil(k * sqrt(N)))</code>.<br>
+    <strong>FR-5.4:</strong> NLP classification separating Critical Defects (triggers 45-day repair sprint) from Cosmetic Grievances (ticket marked Solved).
+  </div>
+
+  <!-- Section 8 -->
+  <h2>7. Visible Frontend AI & Interactive UI Specifications</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Component Name</th>
+        <th>UI Wireframe & Interaction Pattern</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Live Multimodal Scanner</strong></td>
+        <td>Client-side animated laser sweep line on image upload (1.5s duration); renders green bounding boxes with confidence scores (e.g., <em>Corrosion: 91%</em>).</td>
+      </tr>
+      <tr>
+        <td><strong>Deduplication Radar</strong></td>
+        <td>Map pulses a 500m radius circle around user pin. Nearby match triggers an animated comparison card with a live semantic similarity percentage bar.</td>
+      </tr>
+      <tr>
+        <td><strong>Explainable AI Matchcard</strong></td>
+        <td>Recharts-powered 5-axis spider/radar chart displaying institutional fit across Labs, Patents, Proximity, and Faculty history.</td>
+      </tr>
+      <tr>
+        <td><strong>Student R&D Copilot</strong></td>
+        <td>Sidebar drawer assisting proposal writing; suggests regional alternative materials and cross-checks the R&D Failure Repository.</td>
+      </tr>
+      <tr>
+        <td><strong>Evaluator Risk Ring</strong></td>
+        <td>Circular SVG gauge displaying AI classification confidence: Red (&lt;60%), Amber (60–85%), Green (&gt;85%).</td>
+      </tr>
+      <tr>
+        <td><strong>Quorum Progress Ring</strong></td>
+        <td>Real-time progress ring displaying verified citizen votes against the calculated minimum quorum threshold.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- Section 9: Wireframes -->
+  <h2>8. UI/UX Wireframe Blueprints</h2>
+
+  <h3>8.1 Citizen Submission Studio & Live AI Scanner</h3>
+  <pre>
+┌────────────────────────────────────────────────────────────────────────┐
+│  JAGRIT: NAGRIK SEVA PORTAL               [ 📍 Kanke, Ranchi ] [ हिन्दी ⛛ ]│
+├────────────────────────────────────────────────────────────────────────┤
+│  📷 UPLOAD PROBLEM EVIDENCE                                            │
+│  ┌─────────────────────────────────┐                                  │
+│  │   [ GEO-TAGGED BOREWELL PHOTO ] │  ◄── CV Laser Sweep Scanning:    │
+│  │   ┌─────────────────────────┐   │      Bounding box drawn around   │
+│  │   │ 🟢 Iron Effluent: 94%   │   │      corroded pump base.         │
+│  │   └─────────────────────────┘   │                                  │
+│  └─────────────────────────────────┘                                  │
+│  🎙️ Transcribed (Santhali): "Chapekal khon laal daah oḍok kan-a..."    │
+│  🏷️ Detected Domain: Groundwater Contamination / Fluorosis Risk       │
+│                                                                        │
+│  📍 GEOSPATIAL DEDUPLICATION RADAR (Scanning 500m radius...)           │
+│  ⚠️ Match Found: Ticket #JAG-4102 (140m away, 18 Citizen Upvotes)      │
+│  Semantic Similarity Score: [██████████████████░░] 89% Match           │
+│                                                                        │
+│  [  Merge & Upvote Master Ticket (+1)  ]     [ Submit as New Ticket ]  │
+└────────────────────────────────────────────────────────────────────────┘
+  </pre>
+
+  <h3>8.2 University Discovery Feed & Explainable AI (XAI) Matrix</h3>
+  <pre>
+┌────────────────────────────────────────────────────────────────────────┐
+│  🏛️ BIT MESRA — INNOVATION WORKSPACE       [ Active Grants: ₹14.5 Lakh ]│
+├────────────────────────────────────────────────────────────────────────┤
+│  OPEN CHALLENGES IN YOUR DOMAIN (AI RECOMMENDED)                       │
+│  ┌────────────────────────────────────────────────────────────────────┐│
+│  │ 🏷️ High Fluoride Contamination in Palamu District | ⏱️ 4 Days Left ││
+│  │ State + CSR Funding Pool: ₹3,50,000 | Match Score: 94%             ││
+│  ├────────────────────────────────────────────────────────────────────┤│
+│  │ 🧠 WHY THE AI MATCHED YOUR CAMPUS:                                 ││
+│  │ • 🔬 NABL Accredited Environmental Chemistry Lab             +35%  ││
+│  │ • 👨‍🏫 Dr. Verma (4 Patents in Fluoride Adsorption Media)      +30%  ││
+│  │ • 📍 Geographic Proximity: Palamu Regional Basin (<120 km)   +15%  ││
+│  │ • 🏆 Track Record: 2 Successfully Deployed Projects          +14%  ││
+│  │                                                                    ││
+│  │ [ Accept Solo & Form Team ]            [ Propose Joint Consortium ]││
+│  └────────────────────────────────────────────────────────────────────┘│
+└────────────────────────────────────────────────────────────────────────┘
+  </pre>
+
+  <h3>8.3 45-Day Feedback Quorum & Time Machine Simulator</h3>
+  <pre>
+┌────────────────────────────────────────────────────────────────────────┐
+│  📍 FIELD VERIFICATION: PALAMU COMMUNITY WATER PROJECT                │
+├────────────────────────────────────────────────────────────────────────┤
+│  [ DEMO TIME MACHINE: Advance Clock to Day 46 (Simulate Post-45 Days) ]│
+│                                                                        │
+│  AI POPULATION-WEIGHTED QUORUM MONITOR                                 │
+│  Settlement Population: ~850 | Target Quorum: 42 Verified Local Votes  │
+│  Current Quorum Status: [████████████████████████] 45/42 Votes (100%)  │
+│                                                                        │
+│  1. CORE OPERATIONAL FUNCTION CHECK                                    │
+│     "Kya chapekal se ab peene yogya saaf paani mil raha hai?"          │
+│     [  ✅ HAAN / YES (88%)  ]             [  ❌ NAHI / NO (12%)  ]     │
+│                                                                        │
+│  2. QUALITATIVE NLP SENTIMENT FILTER                                   │
+│     • Critical System Defects Reported: 2% (Well below 30% threshold) │
+│     • Cosmetic Grievances: 10% ("Nalke ka handle thoda tight hai")     │
+│                                                                        │
+│  STATUS: 100% COMPLETELY SOLVED ➔ PUSH TO INCUBATION PIPELINE          │
+└────────────────────────────────────────────────────────────────────────┘
+  </pre>
+
+  <div class="page-break"></div>
+
+  <!-- Section 10 -->
+  <h2>9. Operational Governance & Legal Frameworks</h2>
+  
+  <h3>9.1 NEP 2020 Academic Credits & APAAR Engine</h3>
+  <p>Standardized at <strong>30 verified student workhours = 1 Academic Credit</strong> under UGC / NCrF norms. Upon project sign-off, encrypted JSON payloads transfer credits directly into students' APAAR / DigiLocker transcripts under <em>Community Engagement (2 Credits)</em> or <em>Major Capstone Project (4 Credits)</em>.</p>
+
+  <h3>9.2 Tripartite IPR Concordat</h3>
+  <ul>
+    <li><strong>Students & Faculty:</strong> Retain exclusive moral rights as Inventors and hold &ge;60% equity in commercial spin-off startups.</li>
+    <li><strong>University:</strong> Holds patent custody and receives a 20–30% royalty share on commercial licensing.</li>
+    <li><strong>Industry CSR Co-Sponsor:</strong> Receives Right of First Refusal (ROFR) for manufacturing rights and a perpetual internal royalty-free license.</li>
+    <li><strong>Government of Jharkhand:</strong> Retains an irrevocable, royalty-free license for public deployments statewide.</li>
+  </ul>
+
+  <h3>9.3 Tribal Governance (PESA Act 1996 Compliance)</h3>
+  <p>Deployments in Fifth Schedule areas require the local Panchayat Secretary (Sachiv) to upload an authenticated <strong>Gram Sabha Resolution / NOC</strong> prior to hardware installation, preventing regulatory or cultural conflict.</p>
+
+  <!-- Section 11 -->
+  <h2>10. Complete Database Schema (PostgreSQL + PostGIS DDL)</h2>
+  <pre><code>CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "postgis";
+CREATE EXTENSION IF NOT EXISTS "vector";
+
+-- 1. Users Master Table
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    phone VARCHAR(15) UNIQUE,
+    email VARCHAR(255) UNIQUE,
+    full_name VARCHAR(150) NOT NULL,
+    role VARCHAR(35) CHECK (role IN ('CITIZEN', 'PRI_OFFICER', 'STUDENT', 'FACULTY_PI', 'INDUSTRY_MENTOR', 'EVALUATOR', 'ADMIN')),
+    apaar_id VARCHAR(20) UNIQUE,
+    institution_id UUID,
+    preferred_language VARCHAR(10) DEFAULT 'hi',
+    is_phone_verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2. Master Challenge Ticket
+CREATE TABLE challenges (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ticket_number VARCHAR(50) UNIQUE NOT NULL,
+    submitted_by UUID REFERENCES users(id),
+    submission_channel VARCHAR(25) CHECK (submission_channel IN ('APP', 'WEB', 'WHATSAPP', 'INSTITUTIONAL_DOSSIER')),
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    description_embedding vector(1536),
+    raw_audio_url TEXT,
+    media_urls TEXT[],
+    location GEOMETRY(Point, 4326) NOT NULL,
+    district VARCHAR(100) NOT NULL,
+    block VARCHAR(100),
+    panchayat VARCHAR(100),
+    upvotes_count INT DEFAULT 1,
+    status VARCHAR(50) DEFAULT 'PENDING_HITL',
+    category_type VARCHAR(30),
+    matched_domains TEXT[],
+    allocated_pool_inr NUMERIC(12, 2) DEFAULT 0.00,
+    bidding_deadline TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX idx_challenges_spatial ON challenges USING GIST(location);
+
+-- 3. Projects Execution & Escrow Ledger
+CREATE TABLE projects (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    challenge_id UUID REFERENCES challenges(id) ON DELETE CASCADE,
+    execution_mode VARCHAR(25) CHECK (execution_mode IN ('DIRECT_RND', 'DYNAMIC_HACKATHON', 'CONSORTIUM')),
+    lead_university_id UUID NOT NULL,
+    partner_university_id UUID,
+    pi_faculty_id UUID REFERENCES users(id),
+    student_team_ids UUID[],
+    industry_mentor_id UUID REFERENCES users(id),
+    current_hackathon_round INT DEFAULT 1,
+    total_budget_inr NUMERIC(12, 2) NOT NULL,
+    tranche_1_disbursed BOOLEAN DEFAULT FALSE,
+    tranche_2_disbursed BOOLEAN DEFAULT FALSE,
+    tranche_3_disbursed BOOLEAN DEFAULT FALSE,
+    pesa_noc_url TEXT,
+    field_deployment_date TIMESTAMP WITH TIME ZONE,
+    maturation_ends_at TIMESTAMP WITH TIME ZONE,
+    resolution_status VARCHAR(35) DEFAULT 'IN_PROGRESS',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 4. 45-Day Feedback & Quorum Log
+CREATE TABLE feedback_ledger (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+    citizen_id UUID REFERENCES users(id),
+    voter_location GEOMETRY(Point, 4326) NOT NULL,
+    is_core_functional_pass BOOLEAN NOT NULL,
+    complaint_type VARCHAR(30) CHECK (complaint_type IN ('NONE', 'COSMETIC_GRIEVANCE', 'CRITICAL_DEFECT')),
+    raw_voice_url TEXT,
+    transcribed_feedback TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX idx_feedback_spatial ON feedback_ledger USING GIST(voter_location);
+
+-- 5. R&D Failure Repository
+CREATE TABLE rnd_failure_repository (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID REFERENCES projects(id),
+    failure_classification VARCHAR(25) CHECK (failure_classification IN ('MINOR_FAILURE', 'MAJOR_FAILURE')),
+    root_cause_analysis TEXT NOT NULL,
+    attempted_solution_summary TEXT NOT NULL,
+    lessons_learned TEXT NOT NULL,
+    escalated_to_national_hackathon BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);</code></pre>
+
+  <div class="page-break"></div>
+
+  <!-- Section 12 & 13 -->
+  <h2>11. Implementation Roadmap: MVP vs. Future Scope</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 50%;">MVP Scope (Build Now for Pilot & Demo)</th>
+        <th style="width: 50%;">Future Scope (Phase 2 & Phase 3 Roadmap)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1. Trilingual Web App (Hindi, Santhali, English).</td>
+        <td>1. Bi-Annual Pan-India National Hackathon Engine.</td>
+      </tr>
+      <tr>
+        <td>2. WhatsApp Ingestion Simulator (Voice ASR & GPS).</td>
+        <td>2. GeM (Govt e-Marketplace) Single-Source Procurement API.</td>
+      </tr>
+      <tr>
+        <td>3. Frontend CV Scanner & 500m Spatial Radar.</td>
+        <td>3. Automated NAAC & NIRF Direct XML Server Sync.</td>
+      </tr>
+      <tr>
+        <td>4. HITL Triage Console (Civic vs. Applied R&D).</td>
+        <td>4. Autonomous IoT Sensor Feeds for Real-Time Water Telemetry.</td>
+      </tr>
+      <tr>
+        <td>5. Explainable AI Matchmaking Spider Chart.</td>
+        <td>5. Smart-Contract Autonomous Escrow Releases.</td>
+      </tr>
+      <tr>
+        <td>6. 3-Stage Dynamic Hackathon Workspace + R&D Copilot.</td>
+        <td>6. In-Browser WebGL CAD Simulation Sandbox.</td>
+      </tr>
+      <tr>
+        <td>7. Tranche Funding Escrow Releases (30% - 40% - 30%).</td>
+        <td>7. Dark-Zone Satellite Mesh Relays for Deep Forests.</td>
+      </tr>
+      <tr>
+        <td>8. Automated NEP Credit Certificate Generator (APAAR).</td>
+        <td>8. Biometric On-Ground PESA Aadhaar E-Voting.</td>
+      </tr>
+      <tr>
+        <td>9. 45-Day Feedback Simulator (Time Machine & Quorum).</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>10. Searchable R&D Failure Repository & Samvaad Feed.</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Section 14 -->
+  <h2>12. Acceptance Criteria & Pre-Flight Launch Checklist</h2>
+  <ul class="checklist">
+    <li><strong>Vernacular Voice Parsing:</strong> Ingests Hindi/Santhali voice notes via WhatsApp and generates tickets with &ge;85% transcription accuracy.</li>
+    <li><strong>Geospatial Deduplication:</strong> Identifies matching tickets within 500m and automatically increments upvotes instead of creating duplicates.</li>
+    <li><strong>HITL Triage Bifurcation:</strong> Successfully separates routine municipal tasks from engineering research problems.</li>
+    <li><strong>Dynamic Hackathon Trigger:</strong> Automatically opens Round 1 ideation workspaces when &ge;2 universities accept the same ticket.</li>
+    <li><strong>Explainable AI Visualization:</strong> Displays a 5-axis spider chart breaking down institutional compatibility scores.</li>
+    <li><strong>Escrow Milestone Gates:</strong> Tranches 1, 2, and 3 disburse sequentially only upon verified milestone documentation uploads.</li>
+    <li><strong>NEP 2020 Credit Deposits:</strong> Successfully produces APAAR/ABC-formatted credit payloads based on verified workhours.</li>
+    <li><strong>AI Quorum & NLP Filtering:</strong> Enforces population-weighted voting quorums and separates critical defects from cosmetic grievances.</li>
+    <li><strong>R&D Failure Indexing:</strong> Successfully generates post-mortem entries in the Failure Repository upon project failure sign-off.</li>
+  </ul>
+
+</body>
+</html>
