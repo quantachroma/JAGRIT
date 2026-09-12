@@ -5,10 +5,10 @@
 ---
 
 ## System Progress Summary
-* **Current Stage:** Stage 4 (End-to-End Integration, Cross-Audit & Visual Polish)
-* **Active Tasks:** Strict Single-Language Isolation & Civic Theme Redesign (Role 1 Completed)
-* **Repository Health:** Clean Build & Lint Passing (0 errors, 0 warnings, 11/11 routes compiled)
-* **Estimated Token Consumption:** ~106,000 / 500,000
+* **Current Stage:** Stage 0 (Baseline Infrastructure) — Role 2 tasks 2.0.1-2.0.3 complete
+* **Active Tasks:** Tasks 1.0.1 – 4.0.3 (Role 2 Stage 0 done, verified with production build)
+* **Repository Health:** Clean Scaffolding
+* **Estimated Token Consumption:** 0 / 500,000
 
 ---
 
@@ -24,111 +24,7 @@
 
 ---
 
-### [LOG-001] Tasks 1.0.1 - 1.0.4: Stage 0 Citizen Baseline, i18n & Context Mocks
-* **Timestamp:** 2026-09-12T16:20:00Z
-* **Role:** Role 1 (Citizen Experience Lead)
-* **Tasks Completed:** Tasks 1.0.1, 1.0.2, 1.0.3, 1.0.4
-* **Modified Directories:** `apps/web-citizen/`, `packages/contracts/`
-* **Files Changed:** `package.json`, `public/locales/{en,hi,sat}.json`, `CitizenContext.tsx`, `route.ts`
-* **Verification Command Run:** `cd apps/web-citizen && pnpm run build`
-* **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero TS errors)`
-* **Estimated Tokens Spent:** ~14,000 tokens
-* **Status:** SUCCESS
-
----
-
-### [LOG-002] Tasks 1.1.1 - 1.1.4: Stage 1 Citizen Experience & Ingestion Studio
-* **Timestamp:** 2026-09-12T16:55:00Z
-* **Role:** Role 1 (Citizen Experience Lead)
-* **Tasks Completed:** Tasks 1.1.1, 1.1.2, 1.1.3, 1.1.4
-* **Modified Directories:** `apps/web-citizen/`
-* **Files Changed:** `src/app/page.tsx`, `src/app/report/page.tsx`, `src/app/whatsapp-simulator/page.tsx`, `src/components/audio-recorder.tsx`, `src/components/cv-laser-scanner.tsx`
-* **Verification Command Run:** `cd apps/web-citizen && pnpm run lint && pnpm run build`
-* **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero ESLint/TS errors)`
-* **Estimated Tokens Spent:** ~18,000 tokens
-* **Status:** SUCCESS
-
----
-
-### [LOG-003] Tasks 1.2.1 - 1.2.3: Stage 2 Citizen Dashboard, Spatial Radar Map & Samvaad Feed
-* **Timestamp:** 2026-09-12T22:38:00Z
-* **Role:** Role 1 (Citizen Experience Lead)
-* **Tasks Completed:** Tasks 1.2.1, 1.2.2, 1.2.3
-* **Modified Directories:** `apps/web-citizen/`
-* **Files Changed:** `src/components/spatial-radar-map.tsx`, `src/app/dashboard/page.tsx`, `src/app/samvaad/page.tsx`, `src/app/report/page.tsx`
-* **Verification Command Run:** `cd apps/web-citizen && pnpm run lint && pnpm run build`
-* **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero ESLint/TS errors)`
-* **Estimated Tokens Spent:** ~14,000 tokens
-* **Status:** SUCCESS
-
----
-
-### [LOG-004] Tasks 1.3.1 - 1.3.3: Stage 3 Citizen Quorum Gauge, Time Machine & Satyapan Voting
-* **Timestamp:** 2026-09-12T22:50:00Z
-* **Role:** Role 1 (Citizen Experience Lead)
-* **Tasks Completed:** Tasks 1.3.1, 1.3.2, 1.3.3
-* **Modified Directories:** `apps/web-citizen/`
-* **Files Changed:** `src/app/time-machine/page.tsx`, `src/components/quorum-gauge.tsx`, `src/components/Navbar.tsx`
-* **Verification Command Run:** `cd apps/web-citizen && pnpm run lint && pnpm run build`
-* **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero ESLint/TS errors)`
-* **Estimated Tokens Spent:** ~16,000 tokens
-* **Status:** SUCCESS
-
----
-
-### [LOG-005] Tasks 4.4.1 & 4.4.3: Stage 4 UI/UX Polish, Mobile Responsiveness & Jharkhand Demo Data
-* **Timestamp:** 2026-09-12T23:23:00Z
-* **Role:** Role 1 (Citizen Experience Lead)
-* **Tasks Completed:** Tasks 4.4.1, 4.4.3
-* **Modified Directories:** `apps/web-citizen/`
-* **Files Changed:** `src/app/dashboard/page.tsx`, `src/app/samvaad/page.tsx`, `src/app/page.tsx`, `src/app/whatsapp-simulator/page.tsx`, `src/components/Navbar.tsx`
-* **Verification Command Run:** `cd apps/web-citizen && pnpm run lint && pnpm run build`
-* **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero ESLint/TS errors)`
-* **Estimated Tokens Spent:** ~16,000 tokens
-* **Status:** SUCCESS
-
----
-
-### [LOG-006] Visual Theme Redesign & Strict Single-Language Isolation
-* **Timestamp:** 2026-09-13T10:15:00Z
-* **Role:** Role 1 (Citizen Experience Lead)
-* **Tasks Completed:** Redesigned visual theme to Civic Blue/White palette and enforced strict single-language isolation (English, Hindi, Santhali)
-* **Modified Directories:** `apps/web-citizen/`
-* **Files Changed:** `public/locales/{en,hi,sat}.json`, `src/app/{layout,page,dashboard,samvaad,report,time-machine,whatsapp-simulator,auth}/page.tsx`, `src/components/{Navbar,Footer,audio-recorder,quorum-gauge,spatial-radar-map}.tsx`
-* **Verification Command Run:** `cd apps/web-citizen && npx pnpm run build`
-* **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero ESLint/TS errors)
-* **Estimated Tokens Spent:** ~28,000 tokens
-* **Status:** SUCCESS
-
----
-
-### [LOG-007] Task 4.0.1-4.0.3: AI Microservice Stage 0 Scaffolding
-* **Timestamp:** 2026-09-12T10:30:00Z
-* **Role:** Role 4
-* **Tasks Completed:** 4.0.1 (venv/deps verified), 4.0.2 (FastAPI + CORS + modular routers), 4.0.3 (`/health` + stubbed ASR/Vision/Triage/Embed endpoints)
-* **Modified Directories:** `apps/ai-service/`
-* **Files Changed:** `core/config.py`, `main.py`, `routers/asr_routes.py`, `routers/vision_routes.py`, `routers/triage_routes.py`, `routers/deduplication_routes.py`, `routers/quorum_nlp_routes.py`
-* **Verification Command Run:** `cd apps/ai-service && uvicorn main:app --port 8000` then `curl http://localhost:8000/health`
-* **Verification Output:** `{"status":"ok","service":"JAGRIT-AI-Core","mock_mode":true}` (HTTP 200); transcribe/defect-scan/triage-classify/embed all returned deterministic mock payloads (embed = 1536 dims)
-* **Estimated Tokens Spent:** ~14,000 tokens
-* **Status:** SUCCESS
-
----
-
-### [LOG-008] Stage 0 Role 2 baseline layout, navigation, and mock data
-* **Timestamp:** 2026-09-12T15:50:00Z
-* **Role:** Role 2
-* **Tasks Completed:** 2.0.1, 2.0.2, 2.0.3
-* **Modified Directories:** `apps/web-institution/`, `packages/contracts/`
-* **Files Changed:** `apps/web-institution/src/app/layout.tsx`, `apps/web-institution/src/components/top-bar.tsx`, `apps/web-institution/src/components/sidebar.tsx`, `apps/web-institution/src/lib/mock-data.ts`, `packages/contracts/package.json`
-* **Verification Command Run:** `cd apps/web-institution && pnpm run build`
-* **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
-* **Estimated Tokens Spent:** ~20,000 tokens
-* **Status:** SUCCESS
-
----
-
-## Log Entry Template (For Cline to Append)
+### Log Entry Template (For Cline to Append)
 
 ```markdown
 ### [LOG-XXX] Task <Task Number>: <Task Title>
@@ -140,5 +36,27 @@
 * **Verification Command Run:** `<Exact terminal command>`
 * **Verification Output:** `<One-line output summary, e.g., HTTP 200 OK / 5 passing tests>`
 * **Estimated Tokens Spent:** <e.g., ~18,000 tokens>
-* **Status:** <SUCCESS | FAILED | REVERTED>
+---
 
+### [LOG-001] Stage 0 Role 2 baseline layout, navigation, and mock data
+* **Timestamp:** 2026-09-12T15:50:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 2.0.1, 2.0.2, 2.0.3
+* **Modified Directories:** apps/web-institution/, packages/contracts/
+* **Files Changed:** apps/web-institution/src/app/layout.tsx, apps/web-institution/src/components/top-bar.tsx, apps/web-institution/src/components/sidebar.tsx, apps/web-institution/src/lib/mock-data.ts, packages/contracts/package.json
+* **Verification Command Run:** `cd apps/web-institution && pnpm run build`
+* **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
+* **Estimated Tokens Spent:** ~20,000 tokens
+* **Status:** SUCCESS
+---
+
+### [LOG-002] Stage 1 Role 2 discovery feed, XAI chart, team nomination
+* **Timestamp:** 2026-09-12T16:40:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 2.1.1, 2.1.2, 2.1.3, 2.1.4
+* **Modified Directories:** apps/web-institution/
+* **Files Changed:** apps/web-institution/src/app/login/page.tsx, apps/web-institution/src/app/dashboard/dashboard-client.tsx, apps/web-institution/src/components/xai-spider-chart.tsx, apps/web-institution/src/components/challenge-accept-modal.tsx
+* **Verification Command Run:** `cd apps/web-institution && pnpm run build`
+* **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
+* **Estimated Tokens Spent:** ~28,000 tokens
+* **Status:** SUCCESS
