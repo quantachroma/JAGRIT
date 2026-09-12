@@ -1,0 +1,46 @@
+# ==========================================
+# JAGRIT AI Microservice — Core Web Engine
+# ==========================================
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.8.0
+pydantic-settings>=2.4.0
+python-multipart>=0.0.9
+python-dotenv>=1.0.1
+httpx>=0.27.0
+requests>=2.32.0
+
+# ==========================================
+# AI / ML Inference Core
+# ==========================================
+torch>=2.2.0
+torchvision>=0.17.0
+torchaudio>=2.2.0
+transformers>=4.44.0
+sentence-transformers>=3.0.0
+accelerate>=0.33.0
+numpy>=1.26.0,<2.0.0
+scipy>=1.13.0
+
+# ==========================================
+# Audio & Speech-to-Text (Whisper / Santhali & Hindi ASR)
+# ==========================================
+faster-whisper>=1.0.3
+librosa>=0.10.2
+soundfile>=0.12.1
+
+# ==========================================
+# Vision Transformer (ViT) & Image Processing
+# ==========================================
+Pillow>=10.4.0
+
+# ==========================================
+# Embeddings & External LLM Orchestration
+# ==========================================
+openai>=1.40.0
+
+# ==========================================
+# Database & Vector Operations
+# ==========================================
+psycopg2-binary>=2.9.9
+pgvector>=0.3.2
