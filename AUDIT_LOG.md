@@ -5,10 +5,10 @@
 ---
 
 ## System Progress Summary
-* **Current Stage:** Stage 0 (Baseline Infrastructure)
-* **Active Tasks:** Tasks 1.0.1 – 4.0.3
-* **Repository Health:** Clean Scaffolding
-* **Estimated Token Consumption:** 0 / 500,000
+* **Current Stage:** Stage 1 (Ingestion, AI Triage & Geospatial Deduplication)
+* **Active Tasks:** Tasks 1.1.1 – 1.1.4 (Role 1 Completed)
+* **Repository Health:** Clean Build & Lint Passing
+* **Estimated Token Consumption:** ~32,000 / 500,000
 
 ---
 
@@ -33,6 +33,19 @@
 * **Verification Command Run:** `cd apps/web-citizen && pnpm run build`
 * **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero TS errors)`
 * **Estimated Tokens Spent:** ~14,000 tokens
+* **Status:** SUCCESS
+
+---
+
+### [LOG-002] Tasks 1.1.1 - 1.1.4: Stage 1 Citizen Experience & Ingestion Studio
+* **Timestamp:** 2026-09-12T16:55:00Z
+* **Role:** Role 1 (Citizen Experience Lead)
+* **Tasks Completed:** Tasks 1.1.1, 1.1.2, 1.1.3, 1.1.4
+* **Modified Directories:** `apps/web-citizen/`
+* **Files Changed:** `src/app/page.tsx`, `src/app/report/page.tsx`, `src/app/whatsapp-simulator/page.tsx`, `src/components/audio-recorder.tsx`, `src/components/cv-laser-scanner.tsx`
+* **Verification Command Run:** `cd apps/web-citizen && pnpm run lint && pnpm run build`
+* **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero ESLint/TS errors)`
+* **Estimated Tokens Spent:** ~18,000 tokens
 * **Status:** SUCCESS
 
 ---

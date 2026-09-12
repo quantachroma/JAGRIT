@@ -71,14 +71,14 @@
 *Goal: Working multimodal intake via App and WhatsApp, auto-deduplication, and HITL verification.*
 
 ### Role 1 (Citizen Experience Lead)
-- [ ] **Task 1.1.1:** Build Screen 1 (Splash Screen) with Namaste animation and language selector pills.
-- [ ] **Task 1.1.2:** Build Screen 4 (Problem Submission Studio):
+- [x] **Task 1.1.1:** Build Screen 1 (Splash Screen) with Namaste animation and language selector pills.
+- [x] **Task 1.1.2:** Build Screen 4 (Problem Submission Studio):
   - Client-side image compression ($\le 500\text{ KB}$).
   - Audio recording hook with live microphone visualization.
   - Interactive Leaflet/MapmyIndia GPS picker.
-- [ ] **Task 1.1.3:** Build the WhatsApp Ingestion Simulator (`/whatsapp-simulator`):
+- [x] **Task 1.1.3:** Build the WhatsApp Ingestion Simulator (`/whatsapp-simulator`):
   - Simulated chat interface (audio upload, image upload, live location sharing).
-- [ ] **Task 1.1.4:** Build `cv-laser-scanner.tsx`: Animated canvas drawing bounding boxes with confidence labels.
+- [x] **Task 1.1.4:** Build `cv-laser-scanner.tsx`: Animated canvas drawing bounding boxes with confidence labels.
 - *Cline Verification:* Run `web-citizen` and perform a dummy submission with a recorded voice note and image.
 
 ### Role 2 (University & Hackathon Lead)
