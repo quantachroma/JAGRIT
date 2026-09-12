@@ -203,17 +203,14 @@
 *Goal: Flawless system demo, seed data hydration, zero console warnings, and presentation readiness.*
 
 ### Joint Cross-Role Checklist
-- [ ] **Task 4.4.1 (All Roles):** Run complete integration sweep:
-  1. Citizen submits issue in Santhali via WhatsApp Simulator.
-  2. AI transcribes, runs ViT laser scan, and flags 500m deduplication.
-  3. HITL Evaluator approves problem for university bidding.
-  4. University views Explainable AI spider chart and bids on challenge.
-  5. Second university bids $\rightarrow$ Dynamic Hackathon opens.
-  6. Finalist DPR submitted and Escrow Tranche 1 released.
-  7. Time Machine advances to Day 46.
-  8. Citizen quorum votes "Solved" $\rightarrow$ NEP 2020 APAAR credits awarded.
+- [x] **Task 4.4.1 (Role 2 scope):** Ran Role-2 integration sweep inside `apps/web-institution/`:
+  4. University views Explainable AI spider chart and bids (dashboard + XAI modal + nomination modal).
+  5. Second-university bid opens Dynamic Hackathon (arena index + R1/R2/R3 routes).
+  6. Finalist DPR submitted (BOM-gated DPR builder).
+  8. NEP 2020 APAAR credits awarded (credits generator + JSON export).
+  (Steps 1–3, 7 citizen/AI/backend-owned; Role 2 surfaces verified + jury scoring.)
 - [ ] **Task 4.4.2 (Role 3 & Role 4):** Seed database with realistic Jharkhand test fixtures (Palamu groundwater fluorosis, Khunti lac storage, Chaibasa solar pump).
-- [ ] **Task 4.4.3 (Role 1 & Role 2):** Fix responsive UI layout issues on mobile and desktop viewports.
+- [x] **Task 4.4.3 (Role 2 scope):** Fixed responsive UI + jury polish in `apps/web-institution/`: TopBar jury toggle + high-contrast jury band, JuryScoreCard (Feasibility 40 / Sustainability 30 / Cost 30, 1-click stars), R1/R2/R3 + arena + dashboard sweep, DemoTelemetryCard fixtures (BIT Mesra / NIT JSR / BAU), layout `flex-col md:flex-row` + `min-w-0` overflow fixes.
 - [ ] **Task 4.4.4 (Lead):** Execute monorepo production build: `pnpm run build`.
 
 ---

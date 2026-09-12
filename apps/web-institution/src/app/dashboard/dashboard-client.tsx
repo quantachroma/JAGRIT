@@ -71,10 +71,13 @@ export default function DashboardClient({ challenges, summary }: Props) {
           <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-slate-50 p-5">
             <div className="flex items-start justify-between gap-3">
               <div><p className="text-xs font-semibold uppercase tracking-wide text-[#4F46E5]">{selected.ticketId} · Match Analysis</p>
-              <h2 className="text-lg font-bold">{selected.title}</h2></div>
+              <h2 className="text-lg font-bold leading-snug">{selected.title}</h2></div>
               <button onClick={() => setSelected(null)} aria-label="Close detail" className="rounded-full bg-white p-1.5 hover:bg-slate-100"><X className="h-5 w-5" /></button>
             </div>
             <div className="mt-4"><XaiSpiderChart data={selected.xai} ticketId={selected.ticketId} /></div>
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+              <p className="font-bold">Evaluator tip — enable Jury Presentation Mode in the top bar to score this team live (Feasibility 40 / Sustainability 30 / Cost 30).</p>
+            </div>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <button onClick={() => { setAcceptFor(selected); setSelected(null); }} className="flex-1 rounded-lg bg-[#044728] px-4 py-2.5 text-sm font-semibold text-white">Accept & Nominate Team</button>
               <button onClick={() => setSelected(null)} className="rounded-lg border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-semibold">Close</button>

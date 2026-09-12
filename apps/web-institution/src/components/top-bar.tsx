@@ -1,22 +1,24 @@
 "use client";
 import { useState } from "react";
-import { Building2, ChevronDown, Wallet } from "lucide-react";
+import { Building2, ChevronDown, Trophy, Wallet } from "lucide-react";
 import { campuses, grantSummary, personas, type CampusId, type PersonaId } from "@/lib/mock-data";
+import { useJury } from "@/components/jury-provider";
 
 export default function TopBar() {
   const [campus, setCampus] = useState<CampusId>("bit-mesra");
   const [campusOpen, setCampusOpen] = useState(false);
   const [persona, setPersona] = useState<PersonaId>("faculty-pi");
+  const { juryMode, toggleJury } = useJury();
   const active = campuses.find((c) => c.id === campus) ?? campuses[0];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#E2E8F0] bg-[#0F172A] text-white">
+    <header className={`sticky top-0 z-40 border-b text-white ${juryMode ? "border-amber-300 bg-black" : "border-[#E2E8F0] bg-[#0F172A]"}`}>
       <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
         <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[#044728] text-sm font-bold">J</span>
+          <span className={`flex h-8 w-8 items-center justify-center rounded-md text-sm font-bold ${juryMode ? "bg-amber-400 text-black" : "bg-[#044728] text-white"}`}>J</span>
           <div className="leading-tight">
             <p className="text-sm font-semibold">JAGRIT Institution Portal</p>
-            <p className="text-xs text-slate-300">Jharkhand R&amp;D Collaboration</p>
+            <p className={`text-xs ${juryMode ? "text-amber-200" : "text-slate-300"}`}>Jharkhand R&amp;D Collaboration{juryMode ? " · Jury View" : ""}</p>
           </div>
         </div>
         <div className="relative">
@@ -51,8 +53,23 @@ export default function TopBar() {
         <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-[#044728]">
           <Wallet className="h-3.5 w-3.5" />{grantSummary.activeGrantsLabel}
         </span>
+        <button
+          onClick={toggleJury}
+          aria-pressed={juryMode}
+          title="High-contrast jury presentation view (Feasibility 40 / Sustainability 30 / Cost 30)"
+          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition ${juryMode ? "bg-amber-400 text-black hover:bg-amber-300" : "border border-amber-300/60 bg-transparent text-amber-200 hover:bg-amber-400/10"}`}
+        >
+          <Trophy className="h-3.5 w-3.5" />{juryMode ? "Exit Jury Mode" : "Jury Presentation Mode"}
+        </button>
         <PersonaSwitcher persona={persona} onChange={setPersona} />
       </div>
+      {juryMode && (
+        <div className="border-t border-amber-300/40 bg-black px-4 py-1.5 sm:px-6" role="note" aria-label="Jury scoring criteria">
+          <p className="mx-auto max-w-[1400px] text-[11px] font-bold uppercase tracking-widest text-amber-300">
+            Jury criteria — Feasibility (40%) · Sustainability (30%) · Cost Effectiveness (30%)
+          </p>
+        </div>
+      )}
     </header>
   );
 }
@@ -75,3 +92,4 @@ function PersonaSwitcher({ persona, onChange }: { persona: PersonaId; onChange: 
     </div>
   );
 }
+
