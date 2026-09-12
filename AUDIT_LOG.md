@@ -72,3 +72,16 @@
 * **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
 * **Estimated Tokens Spent:** ~30,000 tokens
 * **Status:** SUCCESS
+---
+
+### [LOG-004] Stage 3 Role 2 NEP credits, failure repo, IPR concordat
+* **Timestamp:** 2026-09-12T18:30:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 2.3.1, 2.3.2, 2.3.3
+* **Modified Directories:** apps/web-institution/src/app/credits/, apps/web-institution/src/app/repository/, apps/web-institution/src/components/, apps/web-institution/src/lib/
+* **Files Changed:** apps/web-institution/src/app/credits/credits-client.tsx, apps/web-institution/src/app/repository/repository-client.tsx, apps/web-institution/src/components/ipr-modal.tsx, apps/web-institution/src/lib/credits.ts, apps/web-institution/src/lib/failure-cases.ts
+* **Verification Command Run:** `cd apps/web-institution && pnpm run build`
+* **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
+* **Estimated Tokens Spent:** ~28,000 tokens
+* **Status:** SUCCESS
+---

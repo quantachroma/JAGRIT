@@ -171,13 +171,13 @@
 - *Cline Verification:* Toggle the Time Machine to Day 46 and verify the verification voting card activates.
 
 ### Role 2 (University & Hackathon Lead)
-- [ ] **Task 2.3.1:** Build NEP 2020 Academic Credit Generator (`/credits`):
+- [x] **Task 2.3.1:** Build NEP 2020 Academic Credit Generator (`/credits`):
   - Convert verified project workhours (30 hrs = 1 Credit).
   - Display exportable APAAR / Academic Bank of Credits (ABC) compliant JSON payload.
-- [ ] **Task 2.3.2:** Build Screen 10 (R&D Failure Knowledge Base UI):
+- [x] **Task 2.3.2:** Build Screen 10 (R&D Failure Knowledge Base UI):
   - Categorized directory: Minor Failures vs Major Pan-India Challenges.
   - Failure root cause card with "What Was Attempted" and "Why It Failed" callouts.
-- [ ] **Task 2.3.3:** Implement Tripartite IPR Agreement acceptance modal (Student 60%, HEI 20%, CSR ROFR).
+- [x] **Task 2.3.3:** Implement Tripartite IPR Agreement acceptance modal (Student 60%, HEI 20%, CSR ROFR).
 - *Cline Verification:* Generate an APAAR credit record and verify workhours divide into exact whole credits.
 
 ### Role 3 (Core Backend & Escrow Lead)
