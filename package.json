@@ -1,0 +1,11 @@
+
+{
+  "name": "jagrit-core",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r run build",
+    "dev:citizen": "pnpm --filter web-citizen run dev",
+    "dev:institution": "pnpm --filter web-institution run dev",
+    "dev:backend": "pnpm --filter core-backend run dev"
+  }
+}

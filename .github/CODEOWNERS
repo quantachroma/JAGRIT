@@ -1,0 +1,9 @@
+# Core Configuration & Types
+/packages/contracts/        @your-github-username
+/packages/db-schema/        @role3-backend-lead
+
+# Role Specific Folders
+/apps/web-citizen/          @role1-citizen-lead
+/apps/web-institution/      @role2-university-lead
+/apps/core-backend/         @role3-backend-lead
+/apps/ai-service/           @role4-ai-lead
