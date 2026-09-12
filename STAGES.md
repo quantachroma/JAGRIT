@@ -40,10 +40,10 @@
 *Goal: Ensure the database, contracts, and development servers are running before writing business logic.*
 
 ### Role 1 (Citizen Experience Lead)
-- [ ] **Task 1.0.1:** Initialize Next.js PWA app inside `apps/web-citizen/` with Tailwind CSS and Lucide React.
-- [ ] **Task 1.0.2:** Configure `next-intl` localization dictionaries in `public/locales/` (`hi.json`, `sat.json`, `en.json`).
-- [ ] **Task 1.0.3:** Scaffold global state wrapper for user authentication and location context.
-- [ ] **Task 1.0.4:** Set up mock API handlers for submission endpoints (`/api/mock/submit`).
+- [x] **Task 1.0.1:** Initialize Next.js PWA app inside `apps/web-citizen/` with Tailwind CSS and Lucide React.
+- [x] **Task 1.0.2:** Configure `next-intl` localization dictionaries in `public/locales/` (`hi.json`, `sat.json`, `en.json`).
+- [x] **Task 1.0.3:** Scaffold global state wrapper for user authentication and location context.
+- [x] **Task 1.0.4:** Set up mock API handlers for submission endpoints (`/api/mock/submit`).
 - *Cline Verification:* `cd apps/web-citizen && pnpm run dev` (Ensure HTTP 200 at `http://localhost:3000`).
 
 ### Role 2 (University & Hackathon Lead)

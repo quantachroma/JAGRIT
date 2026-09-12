@@ -1,0 +1,113 @@
+{
+  "common": {
+    "appName": "ᱡᱟᱜᱽᱨᱤᱛ (JAGRIT)",
+    "portalTitle": "ᱡᱷᱟᱨᱠᱷᱚᱸᱰ ᱟᱹᱛᱩ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱥᱚᱞᱦᱮ ᱯᱳᱨᱴᱟᱞ (Jharkhand Aatu Etketone Solhe Portal)",
+    "department": "ᱪᱮᱛᱟᱱ ᱟᱨ ᱴᱮᱠᱱᱤᱠᱟᱞ ᱥᱮᱪᱮᱫ ᱵᱤᱵᱷᱟᱜᱽ (DHTE Jharkhand)",
+    "johar": "ᱡᱚᱦᱟᱨ ᱡᱷᱟᱨᱠᱷᱚᱸᱰ (Johar Jharkhand)",
+    "home": "ᱢᱩᱬᱩᱛ (Home)",
+    "report": "ᱟᱹᱛᱩ ᱥᱚᱢᱚᱥᱭᱟ (Aatu samasya)",
+    "dashboard": "ᱤᱧᱟᱜ ᱥᱚᱢᱚᱥᱭᱟ (Inyag samasya)",
+    "samvaad": "ᱵᱤᱪᱟᱹᱨ (Bichar)",
+    "language": "ᱯᱟᱹᱨᱥᱤ ᱵᱟᱪᱷᱟᱣ (Parsi)",
+    "location": "ᱴᱷᱟᱶ (Location)",
+    "district": "ᱡᱤᱞᱟᱹ (District)",
+    "block": "ᱯᱨᱚᱠᱷᱚᱸᱰ (Block)",
+    "panchayat": "ᱯᱟᱸᱪᱟᱭᱚᱛ (Panchayat)",
+    "submit": "ᱫᱟᱨᱡᱽ ᱢᱮ (Submit)",
+    "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ (Cancel)",
+    "loading": "ᱞᱳᱰᱚᱜ ᱠᱟᱱᱟ... (Loading...)",
+    "offlineNotice": "ᱤᱱᱴᱚᱨᱱᱮᱴ ᱵᱟᱹᱱᱩᱜ-ᱟ (Offline). ᱱᱮᱴᱣᱟᱨᱠ ᱦᱮᱡ ᱞᱮᱱᱠᱷᱟᱱ ᱥᱤᱝᱠ ᱦᱩᱭᱩᱜ-ᱟ᱾",
+    "phone": "ᱯᱷᱳᱱ ᱮᱞ (Phone)",
+    "name": "ᱧᱩᱛᱩᱢ (Name)",
+    "login": "ᱵᱚᱞᱚᱱ ᱢᱮ (Login)",
+    "logout": "ᱚᱰᱚᱠᱚᱜ ᱢᱮ (Logout)"
+  },
+  "splash": {
+    "badge": "ᱡᱷᱟᱨᱠᱷᱚᱸᱰ ᱥᱚᱨᱠᱟᱨᱟᱜ ᱠᱟᱹᱢᱤᱦᱚᱨᱟ (Govt. of Jharkhand)",
+    "heroTitle": "ᱡᱮᱜᱮᱛ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱨᱮᱱᱟᱜ ᱠᱷᱚᱸᱫᱽᱨᱚᱸᱫᱽ ᱛᱮ ᱟᱹᱛᱩ ᱨᱮᱱᱟᱜ ᱞᱟᱦᱟᱱᱛᱤ",
+    "heroSubtitle": "ᱟᱹᱛᱩ ᱨᱮᱱᱟᱜ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱠᱚ ᱠᱚᱞᱮᱡᱽ ᱯᱟᱹᱴᱷᱩᱣᱟᱹ ᱠᱚᱣᱟᱜ ᱤᱧᱡᱤᱱᱤᱭᱟᱹᱨᱤᱝ ᱦᱮᱯᱨᱟᱣ ᱛᱮ ᱥᱚᱞᱦᱮ᱾",
+    "actionReport": "ᱟᱹᱛᱩ ᱥᱚᱢᱚᱥᱭᱟ ᱚᱞ ᱢᱮ (Report Aatu Samasya)",
+    "actionSamvaad": "ᱵᱤᱪᱟᱹᱨ ᱨᱮ ᱥᱮᱞᱮᱫᱚᱜ ᱢᱮ (Join Bichar)",
+    "actionDashboard": "ᱦᱟᱞᱚᱛ ᱧᱮᱞ ᱢᱮ (Check Status)",
+    "statIssuesResolved": "ᱥᱚᱞᱦᱮ ᱟᱠᱟᱱ ᱮᱴᱠᱮᱴᱚᱬᱮ",
+    "statCollegesEngaged": "ᱥᱮᱞᱮᱫ ᱟᱠᱟᱱ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ",
+    "statPanchayatsCovered": "ᱥᱮᱞᱮᱫ ᱯᱟᱸᱪᱟᱭᱚᱛ ᱠᱚ",
+    "statFundsDisbursed": "ᱮᱥᱠᱨᱳ ᱴᱟᱠᱟ ᱮᱢ ᱟᱠᱟᱱ"
+  },
+  "submission": {
+    "title": "ᱟᱹᱛᱩ ᱥᱚᱢᱚᱥᱭᱟ ᱚᱞ ᱢᱮ (Aatu samasya)",
+    "subtitle": "ᱪᱟᱯᱟᱠᱚᱞ ᱫᱟᱜ (Chapekal daah), ᱦᱚᱨ-ᱰᱟᱦᱟᱨ, ᱵᱤᱡᱞᱤ ᱥᱮ ᱦᱚᱲᱢᱚ ᱥᱟᱶᱟᱨ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱞᱟᱹᱭ ᱥᱚᱫᱚᱨ ᱢᱮ᱾",
+    "categoryLabel": "ᱮᱴᱠᱮᱴᱚᱬᱮ ᱦᱟᱹᱴᱤᱧ (Category)",
+    "categories": {
+      "drinking_water": "ᱪᱟᱯᱟᱠᱚᱞ ᱫᱟᱜ (Chapekal daah)",
+      "road_drainage": "ᱟᱹᱛᱩ ᱦᱚᱨ ᱟᱨ ᱱᱟᱞᱤ (Hor ar nali)",
+      "electricity": "ᱟᱹᱛᱩ ᱵᱤᱡᱞᱤ ᱟᱨ ᱥᱮᱸᱜᱮᱞ (Bijli ar sengel)",
+      "health": "ᱦᱚᱲᱢᱚ ᱥᱟᱶᱟᱨ ᱛᱟᱞᱢᱟ (Hormo sanwar)",
+      "education": "ᱤᱥᱠᱩᱞ ᱚᱲᱟᱜ ᱟᱨ ᱵᱮᱵᱚᱥᱛᱟ (Iskul orag)",
+      "agriculture": "ᱪᱟᱥ-ᱵᱟᱥ ᱟᱨ ᱫᱟᱜ ᱯᱟᱴᱟᱣ (Chas-bas daah)"
+    },
+    "problemTitle": "ᱮᱴᱠᱮᱴᱚᱬᱮ ᱧᱩᱛᱩᱢ (Title)",
+    "problemTitlePlaceholder": "ᱡᱮᱞᱮᱠᱟ: ᱠᱟᱸᱠᱮ ᱟᱹᱛᱩ ᱨᱮ ᱪᱟᱯᱟᱠᱚᱞ ᱫᱟᱜ ᱵᱟᱹᱱᱩᱜ-ᱟ",
+    "problemDescription": "ᱵᱤᱥᱛᱟᱹᱨ ᱛᱮ ᱚᱞ ᱢᱮ (Description)",
+    "problemDescriptionPlaceholder": "ᱞᱟᱹᱭ ᱢᱮ: ᱛᱤᱥ ᱠᱷᱚᱱ ᱵᱟᱹᱲᱤᱡ ᱟᱠᱟᱱᱟ, ᱛᱤᱱᱟᱹᱜ ᱜᱷᱟᱨᱚᱸᱡᱽ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱨᱮ ᱢᱮᱱᱟᱜ ᱠᱚᱣᱟ...",
+    "voiceNote": "ᱨᱚᱲ ᱠᱟᱛᱮ ᱞᱟᱹᱭ ᱢᱮ (Record Voice)",
+    "voiceNoteHelp": "ᱥᱟᱱᱛᱟᱲᱤ ᱥᱮ ᱦᱤᱱᱫᱤ ᱛᱮ ᱨᱚᱲ ᱢᱮ᱾ ᱠᱚᱢᱯᱤᱭᱩᱴᱟᱨ ᱟᱡ ᱛᱮᱜᱮ ᱚᱞ ᱠᱟᱛᱮ ᱫᱚᱦᱚᱭᱟᱭ᱾",
+    "startRecording": "ᱨᱚᱲ ᱮᱦᱚᱵᱽ ᱢᱮ",
+    "stopRecording": "ᱨᱚᱲ ᱢᱩᱪᱟᱹᱫ ᱢᱮ",
+    "mediaUpload": "ᱪᱤᱛᱟᱹᱨ ᱟᱯᱞᱳᱰ ᱢᱮ (Photos)",
+    "uploadHint": "ᱵᱟᱹᱲᱤᱡ ᱪᱟᱯᱟᱠᱚᱞ ᱥᱮ ᱦᱚᱨ ᱨᱮᱱᱟᱜ ᱪᱤᱛᱟᱹᱨ ᱥᱮᱞᱮᱫ ᱢᱮ",
+    "locationLabel": "ᱡᱤᱯᱤᱮᱥ ᱴᱷᱟᱶ (GPS Location)",
+    "detectLocation": "ᱤᱧᱟᱜ ᱴᱷᱟᱶ ᱯᱟᱱᱛᱷᱮ ᱢᱮ",
+    "locationDetected": "ᱴᱷᱟᱶ ᱧᱟᱢ ᱮᱱᱟ",
+    "submitBtn": "ᱥᱚᱢᱚᱥᱭᱟ ᱫᱟᱨᱡᱽ ᱢᱮ (Submit Problem)",
+    "submitting": "ᱫᱟᱨᱡᱚᱜ ᱠᱟᱱᱟ...",
+    "successMessage": "ᱥᱚᱢᱚᱥᱭᱟ ᱥᱟᱹᱛ ᱛᱮ ᱫᱟᱨᱡᱽ ᱮᱱᱟ (Ticket generated)."
+  },
+  "dashboard": {
+    "title": "ᱤᱧᱟᱜ ᱥᱚᱢᱚᱥᱭᱟ ᱟᱨ ᱞᱟᱦᱟᱱᱛᱤ (Dashboard)",
+    "subtitle": "ᱮᱟᱭᱤ ᱯᱟᱹᱨᱠᱷᱟᱹᱣ, ᱡᱮᱜᱮᱛ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱦᱮᱯᱨᱟᱣ ᱟᱨ ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱥᱟᱹᱨᱤᱭᱟᱹᱛ ᱧᱮᱞ ᱢᱮ᱾",
+    "searchPlaceholder": "ᱴᱤᱠᱮᱴ ᱮᱞ ᱥᱮ ᱧᱩᱛᱩᱢ ᱛᱮ ᱯᱟᱱᱛᱷᱮ ᱢᱮ...",
+    "emptyState": "ᱪᱮᱫ ᱦᱚᱸ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱚᱣᱨᱤᱢ ᱚᱞᱟ᱾ ᱱᱟᱣᱟ ᱥᱚᱢᱚᱥᱭᱟ ᱚᱞ ᱞᱟᱹᱜᱤᱫ ᱪᱮᱛᱟᱱ ᱨᱮ ᱚᱛᱟᱭ ᱢᱮ᱾",
+    "ticketNumber": "ᱴᱤᱠᱮᱴ ᱮᱞ (Ticket ID)",
+    "reportedOn": "ᱫᱟᱨᱡᱽ ᱢᱟᱹᱦᱤᱛ",
+    "category": "ᱦᱟᱹᱴᱤᱧ (Category)",
+    "status": "ᱱᱤᱛᱚᱜᱟᱜ ᱦᱟᱞᱚᱛ (Status)",
+    "upvotes": "ᱦᱚᱲ ᱠᱚᱣᱟᱜ ᱜᱚᱲᱚ (Upvotes)",
+    "statuses": {
+      "PENDING_HITL": "ᱯᱟᱹᱨᱠᱷᱟᱹᱣ ᱛᱟᱺᱜᱤ ᱨᱮ (Pending HITL)",
+      "ROUTED_CIVIC": "ᱯᱟᱸᱪᱟᱭᱚᱛ ᱥᱮᱫ ᱵᱷᱮᱡᱟ (Routed Civic)",
+      "OPEN_FOR_BIDS": "ᱠᱚᱞᱮᱡᱽ ᱵᱤᱰ ᱞᱟᱹᱜᱤᱫ ᱡᱷᱤᱡ (Open for Bids)",
+      "DYNAMIC_HACKATHON": "ᱦᱮᱯᱨᱟᱣ ᱪᱟᱞᱟᱜ ᱠᱟᱱᱟ (Hackathon)",
+      "DIRECT_RND": "ᱠᱷᱚᱸᱫᱽᱨᱚᱸᱫᱽ ᱠᱟᱹᱢᱤ (Direct R&D)",
+      "IN_PILOT": "ᱴᱚᱴᱷᱟᱨᱤ ᱵᱤᱰᱟᱹᱣ (Field Pilot)",
+      "RESOLVED": "ᱥᱚᱞᱦᱮ ᱮᱱᱟ (Resolved)",
+      "FAILED": "ᱵᱟᱝ ᱜᱟᱱ ᱞᱮᱱᱟ (Failed R&D)"
+    }
+  },
+  "feedback": {
+    "title": "ᱦᱚᱲ ᱠᱚᱣᱟᱜ ᱵᱤᱪᱟᱹᱨ ᱟᱨ ᱥᱟᱹᱨᱤᱭᱟᱹᱛ (Bichar / Verification)",
+    "subtitle": "᱔᱕ ᱢᱟᱦᱟᱸ ᱵᱤᱰᱟᱹᱣ ᱚᱠᱛᱚ ᱨᱮ ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱥᱟᱹᱨᱤᱭᱟᱹᱛ (Gram Sabha Satyapan)᱾",
+    "satyapan": "ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱥᱟᱹᱨᱤᱭᱟᱹᱛ (Field Verification)",
+    "functionalPassQuestion": "ᱱᱚᱶᱟ ᱥᱚᱞᱦᱮ ᱪᱮᱫ ᱟᱯᱮᱭᱟᱜ ᱟᱹᱛᱩ ᱨᱮ ᱴᱷᱤᱠ ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟ? (Does it work?)",
+    "passOption": "ᱦᱮᱸ, ᱟᱹᱰᱤ ᱱᱟᱯᱟᱭ ᱠᱟᱹᱢᱤ ᱠᱟᱱᱟ (Yes, working)",
+    "failOption": "ᱵᱟᱝ, ᱵᱟᱹᱲᱤᱡ ᱜᱮᱭᱟ ᱥᱮ ᱚᱫᱷᱩᱨᱟ ᱜᱮᱭᱟ (No, broken)",
+    "defectType": "ᱠᱷᱟᱹᱢᱤ ᱞᱟᱹᱭ ᱥᱚᱫᱚᱨ ᱢᱮ (Report Defect)",
+    "defectTypes": {
+      "NONE": "ᱪᱮᱫ ᱠᱷᱟᱹᱢᱤ ᱦᱚᱸ ᱵᱟᱹᱱᱩᱜ-ᱟ (No Defect)",
+      "COSMETIC_GRIEVANCE": "ᱠᱟᱹᱴᱤᱡ ᱠᱷᱟᱹᱢᱤ (Water leak, loose nut)",
+      "CRITICAL_DEFECT": "ᱢᱟᱨᱟᱝ ᱠᱷᱟᱹᱢᱤ (Motor burnt, no water)"
+    },
+    "voiceAudit": "ᱟᱲᱟᱝ ᱛᱮ ᱵᱤᱪᱟᱹᱨ ᱨᱮᱠᱳᱨᱰ ᱢᱮ (Voice Feedback)",
+    "submitFeedback": "ᱥᱟᱹᱨᱤᱭᱟᱹᱛ ᱵᱷᱳᱴ ᱮᱢ ᱢᱮ (Submit Vote)"
+  },
+  "samvaad": {
+    "title": "ᱵᱤᱪᱟᱹᱨ — ᱟᱹᱛᱩ ᱦᱚᱲ ᱠᱚᱣᱟᱜ ᱨᱚᱯᱚᱲ (Jan Samvaad - Bichar)",
+    "subtitle": "ᱟᱹᱛᱩ ᱦᱚᱲ, ᱯᱟᱸᱪᱟᱭᱚᱛ ᱟᱹᱢᱟᱹᱞᱤᱭᱟᱹ ᱟᱨ ᱯᱟᱹᱴᱷᱩᱣᱟᱹ ᱠᱚ ᱥᱟᱶ ᱨᱚᱯᱚᱲ ᱢᱮ᱾",
+    "newDiscussion": "ᱱᱟᱣᱟ ᱨᱚᱯᱚᱲ ᱮᱦᱚᱵᱽ ᱢᱮ",
+    "activeThreads": "ᱪᱟᱞᱟᱜ ᱠᱟᱱ ᱵᱤᱪᱟᱹᱨ ᱠᱚ",
+    "upvoteDiscussion": "ᱜᱚᱲᱚ (Support)",
+    "replies": "ᱛᱮᱞᱟ ᱠᱚ (Replies)",
+    "voiceThread": "ᱟᱲᱟᱝ ᱨᱚᱯᱚᱲ (Voice Thread)"
+  }
+}
+

@@ -1,0 +1,113 @@
+{
+  "common": {
+    "appName": "JAGRIT",
+    "portalTitle": "Jharkhand Societal Innovation Collaboration Portal",
+    "department": "Department of Higher & Technical Education, Govt. of Jharkhand",
+    "johar": "Johar Jharkhand",
+    "home": "Home",
+    "report": "Report Problem",
+    "dashboard": "My Grievances",
+    "samvaad": "Jan Samvaad",
+    "language": "Language",
+    "location": "Location",
+    "district": "District",
+    "block": "Block",
+    "panchayat": "Panchayat",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "offlineNotice": "Working in Offline Mode. Submissions will sync when reconnected.",
+    "phone": "Phone Number",
+    "name": "Full Name",
+    "login": "Login / Register",
+    "logout": "Logout"
+  },
+  "splash": {
+    "badge": "Government of Jharkhand Initiative",
+    "heroTitle": "Empowering Rural Communities Through Higher Education Innovation",
+    "heroSubtitle": "Transforming civic grievances into applied engineering challenges for universities across Jharkhand.",
+    "actionReport": "Report a Rural Problem",
+    "actionSamvaad": "Join Jan Samvaad",
+    "actionDashboard": "Track Problem Status",
+    "statIssuesResolved": "Issues Resolved",
+    "statCollegesEngaged": "HEIs Connected",
+    "statPanchayatsCovered": "Panchayats Covered",
+    "statFundsDisbursed": "Escrow Funds Disbursed"
+  },
+  "submission": {
+    "title": "Report a Problem",
+    "subtitle": "Submit civil, infrastructure, or environmental issues directly to our research and local administration network.",
+    "categoryLabel": "Problem Domain",
+    "categories": {
+      "drinking_water": "Drinking Water & Handpump (चापाकल / Chapekal)",
+      "road_drainage": "Rural Roads & Drainage",
+      "electricity": "Rural Electrification & Solar Microgrids",
+      "health": "Health Sub-Centre Equipment & Facilities",
+      "education": "School & Anganwadi Infrastructure",
+      "agriculture": "Irrigation, Water Harvesting & Soil"
+    },
+    "problemTitle": "Problem Title / Summary",
+    "problemTitlePlaceholder": "e.g., Broken Handpump in Kanke Village",
+    "problemDescription": "Detailed Description",
+    "problemDescriptionPlaceholder": "Describe the issue in detail, when it began, and how many households are affected...",
+    "voiceNote": "Record Voice Note",
+    "voiceNoteHelp": "Speak in Hindi, Santhali, or English. AI will transcribe and extract location details.",
+    "startRecording": "Press to Record Voice",
+    "stopRecording": "Stop Recording",
+    "mediaUpload": "Attach Photos / Evidence",
+    "uploadHint": "Upload photos of damaged infrastructure or site",
+    "locationLabel": "GPS Tagged Location",
+    "detectLocation": "Detect My Location",
+    "locationDetected": "Location Locked",
+    "submitBtn": "Submit Grievance",
+    "submitting": "Submitting Problem...",
+    "successMessage": "Problem successfully registered with ticket ID."
+  },
+  "dashboard": {
+    "title": "My Grievances & Civic Progress",
+    "subtitle": "Track your registered issues through AI triage, University Hackathons, and Gram Sabha verification.",
+    "searchPlaceholder": "Search by ticket number or keyword...",
+    "emptyState": "No grievances reported yet. Report your first issue to make an impact.",
+    "ticketNumber": "Ticket ID",
+    "reportedOn": "Reported On",
+    "category": "Category",
+    "status": "Current Status",
+    "upvotes": "Citizen Support (Upvotes)",
+    "statuses": {
+      "PENDING_HITL": "Pending Expert Evaluation",
+      "ROUTED_CIVIC": "Dispatched to ULB / Panchayat",
+      "OPEN_FOR_BIDS": "Open for University R&D Bids",
+      "DYNAMIC_HACKATHON": "Active Hackathon Solution",
+      "DIRECT_RND": "Direct HEI Lab R&D",
+      "IN_PILOT": "Field Pilot & Durability Testing",
+      "RESOLVED": "Resolved & Gram Sabha Approved",
+      "FAILED": "R&D Escalated to Failure Repository"
+    }
+  },
+  "feedback": {
+    "title": "Citizen Quorum & Satyapan (Verification)",
+    "subtitle": "Gram Sabha & Citizen-driven validation under the 45-day maturation buffer.",
+    "satyapan": "Field Verification & Functional Audit",
+    "functionalPassQuestion": "Is the installed solution functioning properly in your locality?",
+    "passOption": "Yes, Working Satisfactorily",
+    "failOption": "No, Malfunctioning or Incomplete",
+    "defectType": "Report Defect / Cosmetic Grievance",
+    "defectTypes": {
+      "NONE": "No Defects - Optimal Operation",
+      "COSMETIC_GRIEVANCE": "Minor Issue (Water leakage, paint, loose bolt)",
+      "CRITICAL_DEFECT": "Critical Breakdown (No water output, inverter blown)"
+    },
+    "voiceAudit": "Record Oral Testimony / Audit Feedback",
+    "submitFeedback": "Submit Verification Vote"
+  },
+  "samvaad": {
+    "title": "Jan Samvaad — Citizen Community Forum",
+    "subtitle": "Collaborate with fellow residents, PRI officers, and university students.",
+    "newDiscussion": "Start New Discussion",
+    "activeThreads": "Active Civic Deliberations",
+    "upvoteDiscussion": "Support",
+    "replies": "Responses",
+    "voiceThread": "Voice Discussion"
+  }
+}
+
