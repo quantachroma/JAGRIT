@@ -127,12 +127,12 @@
 - *Cline Verification:* Navigate to `/samvaad`, create a test thread, and verify optimistic UI update.
 
 ### Role 2 (University & Hackathon Lead)
-- [ ] **Task 2.2.1:** Implement the 10-Day Bidding Countdown Timer (`countdown-timer.tsx`).
-- [ ] **Task 2.2.2:** Build Dynamic Hackathon Workspace (`apps/web-institution/src/app/hackathon/[id]/`):
+- [x] **Task 2.2.1:** Implement the 10-Day Bidding Countdown Timer (`countdown-timer.tsx`).
+- [x] **Task 2.2.2:** Build Dynamic Hackathon Workspace (`apps/web-institution/src/app/hackathon/[id]/`):
   - **Round 1:** Pitch deck (PDF) upload and approach narrative form.
   - **Round 2:** Mentor booking calendar, sprint action items, and prototype telemetry log.
   - **Round 3:** Structured DPR Builder with interactive Bill of Materials (BOM) table (`dpr-table.tsx`).
-- [ ] **Task 2.2.3:** Build `student-rd-copilot.tsx`:
+- [x] **Task 2.2.3:** Build `student-rd-copilot.tsx`:
   - Slide-out drawer querying the R&D Failure Repository for historical pitfalls.
 - *Cline Verification:* Fill out the Round 3 DPR form and verify the BOM calculations sum correctly.
 
