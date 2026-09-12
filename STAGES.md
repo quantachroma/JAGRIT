@@ -59,7 +59,7 @@
 - [ ] **Task 3.0.4:** Paste and execute `packages/db-schema/seed.sql` in the Supabase SQL Editor to hydrate test fixtures.
 - *Cline Verification:* `cd apps/core-backend && pnpm run start:dev` (Verifies successful database connection log).
 
-### Role 4 (AI/ML & Microservices Lead)
+### Role 3 (AI/ML & Microservices Lead)
 - [x] **Task 4.0.1:** Set up Python virtual environment in `apps/ai-service/` and install `requirements.txt`.
 - [x] **Task 4.0.2:** Initialize FastAPI instance in `main.py` with CORS headers allowing localhost ports 3000, 3001, and 5000.
 - [x] **Task 4.0.3:** Implement `/health` and mock endpoints returning stubbed responses for ASR, Vision, and Triage.

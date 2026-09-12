@@ -85,3 +85,15 @@
 * **Estimated Tokens Spent:** ~28,000 tokens
 * **Status:** SUCCESS
 ---
+
+### [LOG-005] Stage 4 Role 2 academic portal polish, jury presentation mode, demo fixtures
+* **Timestamp:** 2026-09-12T22:00:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 4.4.1 (Role 2 sweep), 4.4.3
+* **Modified Directories:** apps/web-institution/src/components/, apps/web-institution/src/app/, apps/web-institution/src/lib/
+* **Files Changed:** apps/web-institution/src/components/jury-score-card.tsx, apps/web-institution/src/components/jury-provider.tsx, apps/web-institution/src/components/top-bar.tsx, apps/web-institution/src/lib/demo-fixtures.ts, apps/web-institution/package.json
+* **Verification Command Run:** `cd apps/web-institution && ./node_modules/.bin/next build && ./node_modules/.bin/tsc --noEmit`
+* **Verification Output:** Next.js 14.2.35 production build passed 9/9 routes; tsc --noEmit exit 0 (lint mapped to typecheck; next lint unavailable — see note)
+* **Status:** SUCCESS
+---
+

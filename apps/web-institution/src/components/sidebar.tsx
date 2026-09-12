@@ -32,8 +32,8 @@ export default function Sidebar() {
         ))}
       </nav>
       <div className="mx-4 mb-4 rounded-lg border border-[#E2E8F0] bg-slate-50 p-3 text-xs text-slate-600">
-        <p className="font-semibold text-slate-800">Stage 0 baseline</p>
-        <p>Mock discovery data only. Backend integration lands in Stage 1.</p>
+        <p className="font-semibold text-slate-800">Stage 4 · Demo-ready</p>
+        <p>Discovery → Hackathon → Credits → Failure Repo wired. Jury Mode in top bar.</p>
       </div>
       <nav className="space-y-1 p-4 pt-0 md:hidden" aria-label="Institution navigation mobile" />
     </aside>

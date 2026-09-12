@@ -4,3 +4,22 @@
 
 :root { color-scheme: light; }
 body { background: #F8FAFC; color: #0F172A; }
+
+/* Stage 4 polish: consistent focus visibility + table/large-monitor rhythm */
+:focus-visible { outline: 2px solid #4F46E5; outline-offset: 2px; }
+
+/* Jury presentation mode: high-contrast academic projection theme */
+html.jury-mode body, body.jury-mode {
+  background: #000000;
+  color: #FEFCE8;
+}
+body.jury-mode main > div > div:first-child,
+body.jury-mode main article,
+body.jury-mode main section {
+  border-color: #FACC15;
+}
+body.jury-mode h1, body.jury-mode h2 { letter-spacing: -0.01em; }
+@media (min-width: 1280px) {
+  body.jury-mode main { font-size: 1.02rem; }
+}
+
