@@ -162,12 +162,12 @@
 *Goal: Closed-loop resolution via 45-day maturation buffer, citizen quorum, APAAR credits, and failure indexing.*
 
 ### Role 1 (Citizen Experience Lead)
-- [ ] **Task 1.3.1:** Build Screen 8.3 (45-Day Feedback Quorum & Time Machine Simulator):
+- [x] **Task 1.3.1:** Build Screen 8.3 (45-Day Feedback Quorum & Time Machine Simulator):
   - Clock advance toggle (`Advance Clock to Day 46`).
   - Core Operational Check buttons: `✅ HAAN / YES` vs `❌ NAHI / NO`.
-- [ ] **Task 1.3.2:** Build `quorum-gauge.tsx`:
+- [x] **Task 1.3.2:** Build `quorum-gauge.tsx`:
   - Circular progress ring showing verified votes against calculated minimum quorum threshold.
-- [ ] **Task 1.3.3:** Add feedback audio recording prompt for partially solved or failed issues.
+- [x] **Task 1.3.3:** Add feedback audio recording prompt for partially solved or failed issues.
 - *Cline Verification:* Toggle the Time Machine to Day 46 and verify the verification voting card activates.
 
 ### Role 2 (University & Hackathon Lead)

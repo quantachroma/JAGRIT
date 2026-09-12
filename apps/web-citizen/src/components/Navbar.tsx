@@ -14,6 +14,7 @@ import {
   X,
   ShieldCheck,
   Send,
+  Clock,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -26,6 +27,7 @@ export default function Navbar() {
     { href: '/report', label: t('common', 'report', 'Report Problem'), icon: AlertCircle },
     { href: '/dashboard', label: t('common', 'dashboard', 'Dashboard'), icon: LayoutDashboard },
     { href: '/samvaad', label: t('common', 'samvaad', 'Jan Samvaad'), icon: MessageSquare },
+    { href: '/time-machine', label: 'Time Machine ⚡', icon: Clock },
     { href: '/whatsapp-simulator', label: 'WhatsApp Sim', icon: Send },
   ];
 
