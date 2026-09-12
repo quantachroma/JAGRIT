@@ -82,12 +82,12 @@
 - *Cline Verification:* Run `web-citizen` and perform a dummy submission with a recorded voice note and image.
 
 ### Role 2 (University & Hackathon Lead)
-- [ ] **Task 2.1.1:** Build Screen 2 (Academic Auth) with institutional SSO / Edu-ID login interface.
-- [ ] **Task 2.1.2:** Build University Discovery Feed (`apps/web-institution/src/app/dashboard/`):
+- [x] **Task 2.1.1:** Build Screen 2 (Academic Auth) with institutional SSO / Edu-ID login interface.
+- [x] **Task 2.1.2:** Build University Discovery Feed (`apps/web-institution/src/app/dashboard/`):
   - List challenges with urgency badges (`⏱️ Days Left`) and domain tags.
-- [ ] **Task 2.1.3:** Build `xai-spider-chart.tsx` using Recharts:
+- [x] **Task 2.1.3:** Build `xai-spider-chart.tsx` using Recharts:
   - 5 axes: Labs, Patents, Proximity, Track Record, Faculty.
-- [ ] **Task 2.1.4:** Build Challenge Acceptance Modal (Single Bid vs Joint Consortium selection).
+- [x] **Task 2.1.4:** Build Challenge Acceptance Modal (Single Bid vs Joint Consortium selection).
 - *Cline Verification:* Open `http://localhost:3001/dashboard` and verify the radar chart renders for Ticket #JAG-4102.
 
 ### Role 3 (Core Backend & Escrow Lead)

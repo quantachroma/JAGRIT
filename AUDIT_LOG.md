@@ -48,3 +48,15 @@
 * **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
 * **Estimated Tokens Spent:** ~20,000 tokens
 * **Status:** SUCCESS
+---
+
+### [LOG-002] Stage 1 Role 2 discovery feed, XAI chart, team nomination
+* **Timestamp:** 2026-09-12T16:40:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 2.1.1, 2.1.2, 2.1.3, 2.1.4
+* **Modified Directories:** apps/web-institution/
+* **Files Changed:** apps/web-institution/src/app/login/page.tsx, apps/web-institution/src/app/dashboard/dashboard-client.tsx, apps/web-institution/src/components/xai-spider-chart.tsx, apps/web-institution/src/components/challenge-accept-modal.tsx
+* **Verification Command Run:** `cd apps/web-institution && pnpm run build`
+* **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
+* **Estimated Tokens Spent:** ~28,000 tokens
+* **Status:** SUCCESS
