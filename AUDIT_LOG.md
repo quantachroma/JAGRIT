@@ -96,13 +96,39 @@
 * **Modified Directories:** `apps/web-citizen/`
 * **Files Changed:** `public/locales/{en,hi,sat}.json`, `src/app/{layout,page,dashboard,samvaad,report,time-machine,whatsapp-simulator,auth}/page.tsx`, `src/components/{Navbar,Footer,audio-recorder,quorum-gauge,spatial-radar-map}.tsx`
 * **Verification Command Run:** `cd apps/web-citizen && npx pnpm run build`
-* **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero ESLint/TS errors)`
+* **Verification Output:** `Next.js 14.2.24 build passed (11/11 pages compiled successfully with zero ESLint/TS errors)
 * **Estimated Tokens Spent:** ~28,000 tokens
 * **Status:** SUCCESS
 
 ---
 
-### Log Entry Template (For Cline to Append)
+### [LOG-007] Task 4.0.1-4.0.3: AI Microservice Stage 0 Scaffolding
+* **Timestamp:** 2026-09-12T10:30:00Z
+* **Role:** Role 4
+* **Tasks Completed:** 4.0.1 (venv/deps verified), 4.0.2 (FastAPI + CORS + modular routers), 4.0.3 (`/health` + stubbed ASR/Vision/Triage/Embed endpoints)
+* **Modified Directories:** `apps/ai-service/`
+* **Files Changed:** `core/config.py`, `main.py`, `routers/asr_routes.py`, `routers/vision_routes.py`, `routers/triage_routes.py`, `routers/deduplication_routes.py`, `routers/quorum_nlp_routes.py`
+* **Verification Command Run:** `cd apps/ai-service && uvicorn main:app --port 8000` then `curl http://localhost:8000/health`
+* **Verification Output:** `{"status":"ok","service":"JAGRIT-AI-Core","mock_mode":true}` (HTTP 200); transcribe/defect-scan/triage-classify/embed all returned deterministic mock payloads (embed = 1536 dims)
+* **Estimated Tokens Spent:** ~14,000 tokens
+* **Status:** SUCCESS
+
+---
+
+### [LOG-008] Stage 0 Role 2 baseline layout, navigation, and mock data
+* **Timestamp:** 2026-09-12T15:50:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 2.0.1, 2.0.2, 2.0.3
+* **Modified Directories:** `apps/web-institution/`, `packages/contracts/`
+* **Files Changed:** `apps/web-institution/src/app/layout.tsx`, `apps/web-institution/src/components/top-bar.tsx`, `apps/web-institution/src/components/sidebar.tsx`, `apps/web-institution/src/lib/mock-data.ts`, `packages/contracts/package.json`
+* **Verification Command Run:** `cd apps/web-institution && pnpm run build`
+* **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
+* **Estimated Tokens Spent:** ~20,000 tokens
+* **Status:** SUCCESS
+
+---
+
+## Log Entry Template (For Cline to Append)
 
 ```markdown
 ### [LOG-XXX] Task <Task Number>: <Task Title>
@@ -115,18 +141,4 @@
 * **Verification Output:** `<One-line output summary, e.g., HTTP 200 OK / 5 passing tests>`
 * **Estimated Tokens Spent:** <e.g., ~18,000 tokens>
 * **Status:** <SUCCESS | FAILED | REVERTED>
-```
 
----
-
-### [LOG-001] Task 4.0.1-4.0.3: AI Microservice Stage 0 Scaffolding
-* **Timestamp:** 2026-09-12T10:30:00Z
-* **Role:** Role 4
-* **Tasks Completed:** 4.0.1 (venv/deps verified), 4.0.2 (FastAPI + CORS + modular routers), 4.0.3 (`/health` + stubbed ASR/Vision/Triage/Embed endpoints)
-* **Modified Directories:** `apps/ai-service/`
-* **Files Changed:** `core/config.py`, `main.py`, `routers/asr_routes.py`, `routers/vision_routes.py`, `routers/triage_routes.py`, `routers/deduplication_routes.py`, `routers/quorum_nlp_routes.py`
-* **Verification Command Run:** `cd apps/ai-service && uvicorn main:app --port 8000` then `curl http://localhost:8000/health`
-* **Verification Output:** `{"status":"ok","service":"JAGRIT-AI-Core","mock_mode":true}` (HTTP 200); transcribe/defect-scan/triage-classify/embed all returned deterministic mock payloads (embed = 1536 dims)
-* **Estimated Tokens Spent:** ~14,000 tokens
-* **Status:** SUCCESS
-```

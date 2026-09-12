@@ -47,9 +47,9 @@
 - *Cline Verification:* `cd apps/web-citizen && pnpm run dev` (Ensure HTTP 200 at `http://localhost:3000`).
 
 ### Role 2 (University & Hackathon Lead)
-- [ ] **Task 2.0.1:** Initialize Next.js app inside `apps/web-institution/` with Tailwind CSS and Recharts.
-- [ ] **Task 2.0.2:** Scaffold persistent Layout with role switcher (`Faculty PI`, `Student Lead`, `Industry Mentor`).
-- [ ] **Task 2.0.3:** Set up mock JSON payloads for university capability match and challenge discovery feed.
+- [x] **Task 2.0.1:** Initialize Next.js app inside `apps/web-institution/` with Tailwind CSS and Recharts.
+- [x] **Task 2.0.2:** Scaffold persistent Layout with role switcher (`Faculty PI`, `Student Lead`, `Industry Mentor`).
+- [x] **Task 2.0.3:** Set up mock JSON payloads for university capability match and challenge discovery feed.
 - *Cline Verification:* `cd apps/web-institution && pnpm run dev` (Ensure HTTP 200 at `http://localhost:3001`).
 
 ### Role 3 (Core Backend & Escrow Lead)
