@@ -1,8 +1,6 @@
-export default function RoundPage({ params }: { params: { id: string } }) {
-  return (
-    <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-      <h1 className="text-xl font-bold">Round 3 · Pilot · {params.id}</h1>
-      <p className="mt-1 text-sm text-slate-600">Stage 0 placeholder. Pilot deployment and evaluation workspace lands in Stage 2.</p>
-    </div>
-  );
+import Round3Client from "./round-3-client";
+
+export default function Round3Page({ params }: { params: { id: string } }) {
+  return <Round3Client ticketId={params.id} />;
 }
+
