@@ -3,7 +3,8 @@ INSERT INTO public.users (id, phone, email, full_name, role, institution_name, p
 ('a0000000-0000-0000-0000-000000000002', '+919876543211', 'dr.verma@bitmesra.ac.in', 'Dr. Alok Verma', 'FACULTY_PI', 'Birla Institute of Technology, Mesra', 'hi'),
 ('a0000000-0000-0000-0000-000000000003', '+919876543212', 'ananya.ug22@nitjsr.ac.in', 'Ananya Sharma', 'STUDENT', 'NIT Jamshedpur', 'en'),
 ('a0000000-0000-0000-0000-000000000004', '+919876543213', 'csr.lead@tatasteel.com', 'Dr. S. Roy', 'INDUSTRY_MENTOR', 'Tata Steel CSR & Sustainability Cell', 'en'),
-('a0000000-0000-0000-0000-000000000005', '+919876543214', 'evaluator.dhte@jharkhand.gov.in', 'Director Technical Education', 'EVALUATOR', 'DHTE Government of Jharkhand', 'hi')
+('a0000000-0000-0000-0000-000000000005', '+919876543214', 'evaluator.dhte@jharkhand.gov.in', 'Director Technical Education', 'EVALUATOR', 'DHTE Government of Jharkhand', 'hi'),
+('a0000000-0000-0000-0000-000000000006', '+919876543215', 'dr.k.singh@bau.ac.in', 'Dr. K. Singh', 'FACULTY_PI', 'Birsa Agricultural University', 'hi')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.challenges (
