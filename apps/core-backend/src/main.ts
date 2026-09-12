@@ -1,7 +1,9 @@
 import cors from 'cors';
 import express from 'express';
 import 'dotenv/config';
+import { challengesRouter } from './challenges/challenges.controller';
 import { query } from './db/client';
+import { evaluatorRouter } from './evaluator/evaluator.controller';
 
 const app = express();
 const port = Number(process.env.PORT || 5000);
@@ -12,6 +14,8 @@ app.use(
 		origin: ['http://localhost:3000', 'http://localhost:3001'],
 	}),
 );
+app.use('/api/v1/challenges', challengesRouter);
+app.use('/api/v1/evaluator', evaluatorRouter);
 
 app.get('/health', async (_request, response) => {
 	try {
