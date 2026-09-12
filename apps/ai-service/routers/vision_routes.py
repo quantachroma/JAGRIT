@@ -27,6 +27,11 @@ async def defect_scan(image: UploadFile = File(None)):
             "image_height": 768,
             "detections": [
                 {
+                    "label": "Iron Effluent",
+                    "confidence": 0.94,
+                    "bounding_box": {"x_min": 280, "y_min": 180, "x_max": 620, "y_max": 540},
+                },
+                {
                     "label": "structural_crack",
                     "confidence": 0.91,
                     "bounding_box": {"x_min": 120, "y_min": 340, "x_max": 410, "y_max": 520},

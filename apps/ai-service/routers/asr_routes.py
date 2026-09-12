@@ -4,6 +4,7 @@ import os
 router = APIRouter(tags=["Audio & Speech-to-Text"])
 
 @router.post("/transcribe")
+@router.post("/api/v1/ai/transcribe")
 async def transcribe_audio(file: UploadFile = File(...)):
     """
     Ingests Hindi / Santhali voice notes (WAV/MP3/M4A/OGG).

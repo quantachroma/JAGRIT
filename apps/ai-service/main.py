@@ -40,6 +40,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.on_event("startup")
+async def warm_up_engine():
+    print("JAGRIT AI Engine warmed up and demo-ready on Port 8000")
+
 # --- Modular Routing ---
 app.include_router(asr_routes.router)
 app.include_router(vision_routes.router)

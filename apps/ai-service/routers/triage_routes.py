@@ -67,6 +67,7 @@ class TriageRequest(BaseModel):
     district: Optional[str] = "Ranchi"
 
 @router.post("/triage-classify")
+@router.post("/api/v1/ai/triage-classify")
 async def classify_problem(payload: TriageRequest):
     """
     Zero-shot classifier separating Type A (Routine Civic) from Type B (Applied Innovation R&D).
@@ -109,6 +110,7 @@ class MatchRequest(BaseModel):
     lon: Optional[float] = 84.2
 
 @router.post("/match-universities")
+@router.post("/api/v1/ai/match-universities")
 async def match_universities(payload: MatchRequest):
     """
     Task 4.2.1: Computes institutional capability match scores (5-axis spider chart data)
