@@ -37,3 +37,17 @@
 * **Verification Output:** `<One-line output summary, e.g., HTTP 200 OK / 5 passing tests>`
 * **Estimated Tokens Spent:** <e.g., ~18,000 tokens>
 * **Status:** <SUCCESS | FAILED | REVERTED>
+```
+
+---
+
+### [LOG-001] Task 4.0.1-4.0.3: AI Microservice Stage 0 Scaffolding
+* **Timestamp:** 2026-09-12T10:30:00Z
+* **Role:** Role 4
+* **Tasks Completed:** 4.0.1 (venv/deps verified), 4.0.2 (FastAPI + CORS + modular routers), 4.0.3 (`/health` + stubbed ASR/Vision/Triage/Embed endpoints)
+* **Modified Directories:** `apps/ai-service/`
+* **Files Changed:** `core/config.py`, `main.py`, `routers/asr_routes.py`, `routers/vision_routes.py`, `routers/triage_routes.py`, `routers/deduplication_routes.py`, `routers/quorum_nlp_routes.py`
+* **Verification Command Run:** `cd apps/ai-service && uvicorn main:app --port 8000` then `curl http://localhost:8000/health`
+* **Verification Output:** `{"status":"ok","service":"JAGRIT-AI-Core","mock_mode":true}` (HTTP 200); transcribe/defect-scan/triage-classify/embed all returned deterministic mock payloads (embed = 1536 dims)
+* **Estimated Tokens Spent:** ~14,000 tokens
+* **Status:** SUCCESS
