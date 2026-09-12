@@ -1,36 +1,16 @@
-"""
-JAGRIT AI Microservice — Application Configuration
+import os
+from typing import List
 
-Uses Pydantic BaseSettings to load environment variables with sane
-hackathon-friendly defaults. The critical resilience flag is
-`MOCK_INFERENCE`: when true (default), all AI endpoints must return
-deterministic, realistic Jharkhand mock payloads instead of invoking
-heavy PyTorch/transformers model downloads that may fail or be slow
-on unreliable hackathon Wi-Fi.
-"""
+class Settings:
+    PROJECT_NAME: str = "JAGRIT AI Microservice"
+    VERSION: str = "1.0.0"
+    PORT: int = int(os.getenv("PORT", 8000))
+    MOCK_INFERENCE: bool = os.getenv("MOCK_INFERENCE", "true").lower() == "true"
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:5000",
+    ]
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
-
-class Settings(BaseSettings):
-    # --- Server ---
-    PORT: int = 8000
-
-    # --- Resilience Switch ---
-    # When True, endpoints must short-circuit to deterministic mock
-    # payloads instead of loading/running real ML models.
-    MOCK_INFERENCE: bool = True
-
-    # --- External Services ---
-    OPENAI_API_KEY: str = ""
-
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=True,
-        extra="ignore",
-    )
-
-
-# Singleton settings instance shared across the app
 settings = Settings()
