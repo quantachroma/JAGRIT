@@ -414,7 +414,7 @@ export default function ProblemSubmissionStudio() {
                   key={c.id}
                   type="button"
                   onClick={() => setCategory(c.id)}
-                  className={`p-3.5 rounded-2xl border text-left text-xs font-semibold transition-all ${
+                  className={`p-3.5 min-h-[44px] rounded-2xl border text-left text-xs font-semibold transition-all active:scale-95 ${
                     category === c.id
                       ? 'bg-emerald-50 text-[#044728] border-[#044728] ring-2 ring-emerald-600/20 shadow-sm'
                       : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
@@ -776,7 +776,7 @@ export default function ProblemSubmissionStudio() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-[#044728] hover:bg-[#03361e] text-white font-bold py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center justify-center space-x-2.5 text-base disabled:opacity-75 group"
+              className="w-full bg-[#044728] hover:bg-[#03361e] text-white font-bold py-4 min-h-[52px] rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center justify-center space-x-2.5 text-base disabled:opacity-75 group active:scale-95"
             >
               {submitting ? (
                 <>

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { CitizenProvider } from '@/context/CitizenContext';
 import Navbar from '@/components/Navbar';
@@ -8,17 +8,24 @@ export const metadata: Metadata = {
   description: 'Empowering rural Jharkhand communities through Higher Education R&D and Civic Collaboration.',
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#044728',
+};
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="hi">
-      <body className="bg-white text-slate-900 min-h-screen flex flex-col font-sans antialiased selection:bg-emerald-100 selection:text-emerald-900">
+    <html lang="hi" className="overflow-x-hidden">
+      <body className="bg-white text-slate-900 min-h-screen flex flex-col font-sans antialiased selection:bg-emerald-100 selection:text-emerald-900 overflow-x-hidden w-full max-w-full">
         <CitizenProvider>
           <Navbar />
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-6 overflow-x-hidden">
             {children}
           </main>
           <footer className="border-t border-slate-200 bg-slate-50 py-8 text-center text-sm text-slate-600 mt-auto">
@@ -30,7 +37,7 @@ export default function RootLayout({
                 Department of Higher & Technical Education, Government of Jharkhand | NEP 2020 & PESA 1996 Aligned
               </p>
               <div className="flex items-center justify-center space-x-4 text-xs text-slate-400 pt-2">
-                <span>Ranchi • Dhanbad • Jamshedpur • Dumka • Hazaribagh</span>
+                <span>Ranchi • Dhanbad • Jamshedpur • Dumka • Hazaribagh • Palamu • Khunti • Chaibasa</span>
               </div>
             </div>
           </footer>
@@ -39,4 +46,3 @@ export default function RootLayout({
     </html>
   );
 }
-

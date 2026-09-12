@@ -66,24 +66,24 @@ const INITIAL_THREADS: SamvaadThread[] = [
     role: 'RESEARCHER',
     roleLabel: 'Researcher - BIT Mesra',
     institution: 'Department of Chemical & Environmental Engineering',
-    location: 'Ranchi, Mesra',
+    location: 'Palamu, Satbarwa Block',
     timeAgo: '2 hours ago',
     category: 'WATER',
-    title: 'कांके ब्लॉक हेतु कम लागत वाली मिट्टी आधारित फ्लोराइड फिल्टर झिल्ली का फील्ड परीक्षण',
+    title: 'Palamu District: High Fluoride in Borewell Water — BIT Mesra सौर डी-फ्लोराइडेशन फील्ड परीक्षण',
     content:
-      'हमारी टीम ने स्थानीय झारखण्ड की लाल मिट्टी एवं चावल की भूसी के नैनो-मिश्रण से एक कम लागत वाली सोखता झिल्ली (Porous Clay Membrane) तैयार की है। यह भूजल में 85% तक फ्लोराइड और गाद को फिल्टर करती है। क्या कांके पंचायत के वार्ड 4 के निवासी 5 परिवारों के लिए पायलट टेस्टिंग में सहयोग कर सकते हैं?',
-    tags: ['WaterSanitation', 'FluorideRemoval', 'BITMesra', 'KankePanchayat'],
-    likesCount: 38,
+      'पलामू ज़िला सतबरवा प्रखंड में भूजल में 4.5 mg/L फ्लोराइड की गंभीर समस्या को दूर करने हेतु बीआईटी मेसरा ने सौर-ऊर्जा चालित सोखता झिल्ली (Solar Defluoridation Unit) स्थापित की है। 45-दिवसीय परिपक्वता बफ़र में 88% परिचालन दक्षता दर्ज की गई है। क्या स्थानीय ग्राम सभा 14-दिवसीय सत्यापन वोटिंग में भाग ले रही है?',
+    tags: ['PalamuWater', 'FluorideRemoval', 'BITMesra', 'GramSabhaQuorum'],
+    likesCount: 68,
     isLiked: false,
-    attachmentCaption: '🔬 Prototype Testing: Low-Cost Clay Fluoride Membrane in Lab',
+    attachmentCaption: '🔬 Palamu Solar Defluoridation Unit: 45-Day Durability Audit',
     replies: [
       {
         id: 'c-1-1',
         author: 'सोमरा उरांव (Somra Oraon)',
         role: 'CITIZEN',
-        roleLabel: 'Nagrik / Ward Member',
+        roleLabel: 'Nagrik / Ward Member, Palamu',
         timeAgo: '1 hour ago',
-        content: 'जोहार अमित जी। वार्ड 4 के चापाकल नंबर 3 पर फ्लोराइड की भारी समस्या है। हम ग्राम सभा की ओर से टेस्टिंग के लिए पूर्ण सहयोग देने को तैयार हैं।',
+        content: 'जोहार अमित जी। सतबरवा में पानी की गुणवत्ता में भारी सुधार हुआ है। हमने टाइम मशीन सत्यापन में हाँ (YES) वोट दिया है।',
       },
       {
         id: 'c-1-2',
@@ -91,80 +91,80 @@ const INITIAL_THREADS: SamvaadThread[] = [
         role: 'GOVT_OFFICER',
         roleLabel: 'Govt Officer (DW&S Dept)',
         timeAgo: '30 mins ago',
-        content: 'विभाग की तरफ से लैब वाटर टेस्टिंग किट उपलब्ध कराई जा सकती है। कृपया अपनी रिपोर्ट JAGRIT पोर्टल पर अपलोड करें।',
+        content: 'पेसा ग्राम सभा की एनओसी मिलते ही Tranche 3 का 30% एस्क्रो अनुदान बीआईटी मेसरा को जारी कर दिया जाएगा।',
       },
     ],
   },
   {
     id: 'th-2',
-    author: 'सोमरा उरांव (Somra Oraon)',
+    author: 'बिरसा मुंडा महिला स्वयं सहायता समूह',
     role: 'CITIZEN',
-    roleLabel: 'Nagrik / Citizen',
-    location: 'Ranchi, Kanke Panchayat',
-    timeAgo: '4 hours ago',
-    category: 'WATER',
-    title: 'कांके पंचायत के वार्ड 4 में नया सोलर चापाकल पायलट: ग्राम सभा की प्रतिक्रिया',
+    roleLabel: 'SHG Lead / Citizen',
+    location: 'Khunti, Murhu Block',
+    timeAgo: '3 hours ago',
+    category: 'TRIBAL_LIVELIHOODS',
+    title: 'Khunti District: Post-harvest decay in Lac produce — लाह सुखाने हेतु सोलर ड्रायर की आवश्यकता',
     content:
-      'वार्ड 4 में लगाया गया सोलर चापाकल दिन में 1500 लीटर पानी दे रहा है। ग्रामीणों को 1 किमी दूर नहीं जाना पड़ रहा। क्या अन्य वार्डों में भी इसे बढ़ाया जा सकता है? हम सोलर पैनल की सुरक्षा हेतु सामुदायिक निगरानी समिति बना रहे हैं।',
-    tags: ['DrinkingWater', 'SolarPump', 'GramSabha', 'PESA'],
-    likesCount: 52,
+      'खूंटी ज़िला मुरहू में बारिश और अत्यधिक नमी के कारण कुसमी व रंगीनी लाह में 35% से अधिक फफूंद सड़न हो रही है। क्या बीएयू (BAU) या आईसीएआर द्वारा विकसित पोर्टेबल सोलर टनल ड्रायर को हमारे स्वयं सहायता समूह के लिए पायलट किया जा सकता है?',
+    tags: ['KhuntiLac', 'TribalLivelihoods', 'PostHarvestDecay', 'BAURanchi'],
+    likesCount: 54,
     isLiked: true,
     hasAudio: true,
-    attachmentCaption: '🚰 Operational solar pump providing clean water to 40 households',
+    attachmentCaption: '🌾 Raw Lac Spoilage Assessment & Storage Issues in Murhu',
     replies: [
       {
         id: 'c-2-1',
-        author: 'डॉ. पी. के. मुर्मू (Dr. P.K. Murmu)',
+        author: 'डॉ. विकास कुमार (Dr. Vikas Kumar)',
         role: 'RESEARCHER',
-        roleLabel: 'Researcher - BIT Mesra',
+        roleLabel: 'Scientist - ICAR IINRG / BAU Ranchi',
         timeAgo: '2 hours ago',
-        content: 'सराहनीय पहल! स्टेज 2 हैकथॉन के अंतर्गत 12 अतिरिक्त पंचायतों में इसे विस्तारित करने का प्रस्ताव तैयार है।',
+        content: 'बिरसा कृषि विश्वविद्यालय की टीम ने ₹3,200 लागत का फोल्डेबल सोलर डिह्यूमिडिफायर ड्रायर तैयार किया है। अगले सप्ताह मुरहू में 20 महिला एसएचजी को प्रशिक्षण दिया जाएगा।',
       },
     ],
   },
   {
     id: 'th-3',
-    author: 'रोहित मुर्मू (Rohit Murmu)',
+    author: 'सुनील हेंब्रम (Sunil Hembrom)',
     role: 'STUDENT',
-    roleLabel: 'Student Lead - IIT ISM Dhanbad',
-    institution: 'Mining & Rural Energy Innovation Cell',
-    location: 'Dhanbad, Topchanchi',
-    timeAgo: '7 hours ago',
+    roleLabel: 'Student Lead - NIT Jamshedpur',
+    institution: 'Department of Electrical & Renewable Energy Engineering',
+    location: 'West Singhbhum, Chaibasa',
+    timeAgo: '5 hours ago',
     category: 'RURAL_ENERGY',
-    title: 'सोलर माइक्रोग्रिड बैटरी जीवन वृद्धि हेतु आईओटी आधारित लोड शेडिंग कंट्रोलर',
+    title: 'Chaibasa: Solar micro-grid voltage drop in rural health center — बीएमएस टेलीमेट्री समाधान',
     content:
-      'तोपचांची के सोलर ग्रिड में बार-बार बैटरी खराब होने की समस्या को हल करने हेतु हमने ₹450 की लागत वाला एक स्मार्ट रिले सर्किट बनाया है। यह शाम 8 बजे के बाद केवल प्राथमिक एलईडी बल्बों को पावर देता है और हैवी लोड स्वतः डिस्कनेक्ट करता है।',
-    tags: ['RuralEnergy', 'Microgrid', 'StudentHackathon', 'IIT_ISM'],
-    likesCount: 64,
+      'चाईबासा टोंटो प्राथमिक स्वास्थ्य केंद्र में शाम 6 बजे सोलर बैटरी वोल्टेज 140V तक गिर जाता था, जिससे वैक्सीन कोल्ड-चेन रेफ्रिजरेटर बंद हो रहे थे। एनआईटी जमशेदपुर छात्र टीम ने स्मार्ट आईओटी रिले व एक्टिव बीएमएस लगाया है जिससे वोल्टेज 220V स्थिर रहता है।',
+    tags: ['ChaibasaEnergy', 'HealthCenterSolar', 'NITJamshedpur', 'StudentHackathon'],
+    likesCount: 82,
     isLiked: false,
-    attachmentCaption: '⚡ Bench-Scale Telemetry Controller Circuit Board',
-    replies: [],
+    attachmentCaption: '⚡ Active Telemetry Controller Board installed at Chaibasa PHC',
+    replies: [
+      {
+        id: 'c-3-1',
+        author: 'डॉ. सुधीर कुजूर (MOIC, Tonto PHC)',
+        role: 'GOVT_OFFICER',
+        roleLabel: 'Medical Officer, Chaibasa',
+        timeAgo: '3 hours ago',
+        content: 'एनआईटी जमशेदपुर के छात्रों द्वारा विकसित प्रणाली से अब रात में भी वैक्सीन सुरक्षित हैं। बेहतरीन नवाचार!',
+      },
+    ],
   },
   {
     id: 'th-4',
-    author: 'बिरसा मुंडा महिला स्वयं सहायता समूह',
+    author: 'सोमरा उरांव (Somra Oraon)',
     role: 'CITIZEN',
     roleLabel: 'Nagrik / Citizen',
-    location: 'Khunti, Murhu',
+    location: 'Ranchi, Kanke Panchayat',
     timeAgo: '1 day ago',
-    category: 'TRIBAL_LIVELIHOODS',
-    title: 'लाह (Lac) एवं महुआ प्रसंस्करण हेतु सौर ऊर्जा चालित डिसेंट्रलाइज्ड ड्रायर की आवश्यकता',
+    category: 'WATER',
+    title: 'कांके पंचायत के वार्ड 4 में नया सोलर चापाकल पायलट: ग्राम सभा की प्रतिक्रिया',
     content:
-      'हमारे गांव में लाह और महुआ सुखाने में बारिश के कारण भारी नुकसान होता है। क्या किसी विश्वविद्यालय के पास ऐसा पोर्टेबल सोलर ड्रायर है जिसे स्वयं सहायता समूह आसानी से संचालित कर सके?',
-    tags: ['TribalLivelihoods', 'LacCultivation', 'SolarDryer', 'SHG'],
-    likesCount: 41,
+      'वार्ड 4 में लगाया गया सोलर चापाकल दिन में 1500 लीटर पानी दे रहा है। ग्रामीणों को 1 किमी दूर नहीं जाना पड़ रहा। क्या अन्य वार्डों में भी इसे बढ़ाया जा सकता है? हम सोलर पैनल की सुरक्षा हेतु सामुदायिक निगरानी समिति बना रहे हैं।',
+    tags: ['DrinkingWater', 'SolarPump', 'GramSabha', 'PESA'],
+    likesCount: 46,
     isLiked: false,
-    attachmentCaption: '🌾 Forest Produce Storage & Weather Exposure in Murhu',
-    replies: [
-      {
-        id: 'c-4-1',
-        author: 'विकास कुमार (Vikas Kumar)',
-        role: 'RESEARCHER',
-        roleLabel: 'Researcher - BAU Ranchi',
-        timeAgo: '18 hours ago',
-        content: 'बिरसा कृषि विश्वविद्यालय (BAU) ने ₹3,200 लागत का फोल्डेबल सोलर टनल ड्रायर डिजाइन किया है। हम अगले सप्ताह प्रशिक्षण शिविर आयोजित कर रहे हैं।',
-      },
-    ],
+    attachmentCaption: '🚰 Operational solar pump providing clean water to 40 households',
+    replies: [],
   },
 ];
 
@@ -425,7 +425,7 @@ export default function SamvaadPage() {
           <button
             type="button"
             onClick={() => setActiveCategory('ALL')}
-            className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
+            className={`px-4 py-2 min-h-[44px] rounded-xl whitespace-nowrap transition-all active:scale-95 ${
               activeCategory === 'ALL'
                 ? 'bg-[#044728] text-white shadow-sm'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
@@ -436,7 +436,7 @@ export default function SamvaadPage() {
           <button
             type="button"
             onClick={() => setActiveCategory('WATER')}
-            className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
+            className={`px-4 py-2 min-h-[44px] rounded-xl whitespace-nowrap transition-all active:scale-95 ${
               activeCategory === 'WATER'
                 ? 'bg-[#044728] text-white shadow-sm'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
@@ -447,7 +447,7 @@ export default function SamvaadPage() {
           <button
             type="button"
             onClick={() => setActiveCategory('AGRITECH')}
-            className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
+            className={`px-4 py-2 min-h-[44px] rounded-xl whitespace-nowrap transition-all active:scale-95 ${
               activeCategory === 'AGRITECH'
                 ? 'bg-[#044728] text-white shadow-sm'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
@@ -458,7 +458,7 @@ export default function SamvaadPage() {
           <button
             type="button"
             onClick={() => setActiveCategory('TRIBAL_LIVELIHOODS')}
-            className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
+            className={`px-4 py-2 min-h-[44px] rounded-xl whitespace-nowrap transition-all active:scale-95 ${
               activeCategory === 'TRIBAL_LIVELIHOODS'
                 ? 'bg-[#044728] text-white shadow-sm'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
@@ -469,7 +469,7 @@ export default function SamvaadPage() {
           <button
             type="button"
             onClick={() => setActiveCategory('RURAL_ENERGY')}
-            className={`px-4 py-2 rounded-xl whitespace-nowrap transition-all ${
+            className={`px-4 py-2 min-h-[44px] rounded-xl whitespace-nowrap transition-all active:scale-95 ${
               activeCategory === 'RURAL_ENERGY'
                 ? 'bg-[#044728] text-white shadow-sm'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
@@ -610,7 +610,7 @@ export default function SamvaadPage() {
                     <button
                       type="button"
                       onClick={() => handleToggleLike(thread.id)}
-                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl transition-all active:scale-90 ${
+                      className={`flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-xl transition-all active:scale-95 ${
                         thread.isLiked
                           ? 'bg-rose-50 text-rose-600'
                           : 'hover:bg-slate-100 text-slate-600'
@@ -636,7 +636,7 @@ export default function SamvaadPage() {
                           [thread.id]: !prev[thread.id],
                         }))
                       }
-                      className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl transition-all ${
+                      className={`flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-xl transition-all active:scale-95 ${
                         isCommentsOpen
                           ? 'bg-emerald-50 text-[#044728]'
                           : 'hover:bg-slate-100 text-slate-600'
@@ -654,7 +654,7 @@ export default function SamvaadPage() {
                   <button
                     type="button"
                     onClick={() => handleShareThread(thread.id as any)}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+                    className="flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-xl hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors active:scale-95"
                   >
                     <Share2 className="w-4 h-4" />
                     <span className="hidden sm:inline">{language === 'hi' ? 'साझा करें' : 'Share'}</span>

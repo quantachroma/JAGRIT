@@ -245,7 +245,7 @@ export default function WhatsAppSimulatorPage() {
         <button
           type="button"
           onClick={handleResetChat}
-          className="inline-flex items-center space-x-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-white border border-slate-300 px-3 py-1.5 rounded-lg shadow-xs hover:bg-slate-50 transition-all"
+          className="inline-flex items-center space-x-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-white border border-slate-300 px-3.5 py-2 min-h-[44px] rounded-xl shadow-xs hover:bg-slate-50 transition-all active:scale-95"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Reset Simulation</span>
@@ -477,30 +477,30 @@ export default function WhatsAppSimulatorPage() {
               type="button"
               onClick={handleSendPhoto}
               disabled={isTyping}
-              className="flex items-center justify-center space-x-1 bg-white hover:bg-emerald-50 text-slate-800 hover:text-[#075E54] border border-slate-300 rounded-xl py-2 px-1 text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
+              className="flex items-center justify-center space-x-1 bg-white hover:bg-emerald-50 text-slate-800 hover:text-[#075E54] border border-slate-300 rounded-xl min-h-[44px] py-2 px-1 text-xs font-semibold shadow-xs transition-all disabled:opacity-50 active:scale-95"
             >
               <Camera className="w-3.5 h-3.5 text-[#075E54]" />
-              <span className="truncate">📷 Send Photo</span>
+              <span className="truncate">📷 Photo</span>
             </button>
 
             <button
               type="button"
               onClick={handleSendVoiceNote}
               disabled={isTyping}
-              className="flex items-center justify-center space-x-1 bg-white hover:bg-amber-50 text-slate-800 hover:text-[#D97706] border border-slate-300 rounded-xl py-2 px-1 text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
+              className="flex items-center justify-center space-x-1 bg-white hover:bg-amber-50 text-slate-800 hover:text-[#D97706] border border-slate-300 rounded-xl min-h-[44px] py-2 px-1 text-xs font-semibold shadow-xs transition-all disabled:opacity-50 active:scale-95"
             >
               <Mic className="w-3.5 h-3.5 text-[#D97706]" />
-              <span className="truncate">🎙️ Send Voice</span>
+              <span className="truncate">🎙️ Voice</span>
             </button>
 
             <button
               type="button"
               onClick={handleShareLocation}
               disabled={isTyping}
-              className="flex items-center justify-center space-x-1 bg-white hover:bg-red-50 text-slate-800 hover:text-red-600 border border-slate-300 rounded-xl py-2 px-1 text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
+              className="flex items-center justify-center space-x-1 bg-white hover:bg-red-50 text-slate-800 hover:text-red-600 border border-slate-300 rounded-xl min-h-[44px] py-2 px-1 text-xs font-semibold shadow-xs transition-all disabled:opacity-50 active:scale-95"
             >
               <MapPin className="w-3.5 h-3.5 text-red-500" />
-              <span className="truncate">📍 Share Location</span>
+              <span className="truncate">📍 Location</span>
             </button>
           </div>
         </div>
@@ -510,10 +510,10 @@ export default function WhatsAppSimulatorPage() {
           onSubmit={handleSendText}
           className="bg-[#F0F2F5] p-2.5 flex items-center space-x-2 border-t border-slate-300 z-10"
         >
-          <button type="button" className="text-slate-500 hover:text-slate-700 p-1">
+          <button type="button" className="text-slate-500 hover:text-slate-700 p-2 min-h-[44px] min-w-[36px] flex items-center justify-center active:scale-95">
             <Smile className="w-5 h-5" />
           </button>
-          <button type="button" className="text-slate-500 hover:text-slate-700 p-1">
+          <button type="button" className="text-slate-500 hover:text-slate-700 p-2 min-h-[44px] min-w-[36px] flex items-center justify-center active:scale-95">
             <Paperclip className="w-5 h-5" />
           </button>
 
@@ -522,13 +522,13 @@ export default function WhatsAppSimulatorPage() {
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 bg-white rounded-full py-2 px-4 text-xs text-slate-800 border-none focus:outline-none shadow-xs"
+            className="flex-1 bg-white rounded-full py-2.5 px-4 text-xs text-slate-800 border-none focus:outline-none shadow-xs min-h-[44px]"
           />
 
           {inputText.trim() ? (
             <button
               type="submit"
-              className="w-9 h-9 rounded-full bg-[#00A884] text-white flex items-center justify-center shadow-md hover:bg-[#008069] transition-all"
+              className="w-11 h-11 min-h-[44px] min-w-[44px] rounded-full bg-[#00A884] text-white flex items-center justify-center shadow-md hover:bg-[#008069] transition-all active:scale-95"
             >
               <Send className="w-4 h-4 fill-white ml-0.5" />
             </button>
@@ -536,7 +536,7 @@ export default function WhatsAppSimulatorPage() {
             <button
               type="button"
               onClick={handleSendVoiceNote}
-              className="w-9 h-9 rounded-full bg-[#00A884] text-white flex items-center justify-center shadow-md hover:bg-[#008069] transition-all"
+              className="w-11 h-11 min-h-[44px] min-w-[44px] rounded-full bg-[#00A884] text-white flex items-center justify-center shadow-md hover:bg-[#008069] transition-all active:scale-95"
             >
               <Mic className="w-4 h-4 text-white" />
             </button>

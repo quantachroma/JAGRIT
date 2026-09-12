@@ -203,7 +203,7 @@
 *Goal: Flawless system demo, seed data hydration, zero console warnings, and presentation readiness.*
 
 ### Joint Cross-Role Checklist
-- [ ] **Task 4.4.1 (All Roles):** Run complete integration sweep:
+- [x] **Task 4.4.1 (All Roles):** Run complete integration sweep:
   1. Citizen submits issue in Santhali via WhatsApp Simulator.
   2. AI transcribes, runs ViT laser scan, and flags 500m deduplication.
   3. HITL Evaluator approves problem for university bidding.
@@ -213,7 +213,7 @@
   7. Time Machine advances to Day 46.
   8. Citizen quorum votes "Solved" $\rightarrow$ NEP 2020 APAAR credits awarded.
 - [ ] **Task 4.4.2 (Role 3 & Role 4):** Seed database with realistic Jharkhand test fixtures (Palamu groundwater fluorosis, Khunti lac storage, Chaibasa solar pump).
-- [ ] **Task 4.4.3 (Role 1 & Role 2):** Fix responsive UI layout issues on mobile and desktop viewports.
+- [x] **Task 4.4.3 (Role 1 & Role 2):** Fix responsive UI layout issues on mobile and desktop viewports.
 - [ ] **Task 4.4.4 (Lead):** Execute monorepo production build: `pnpm run build`.
 
 ---

@@ -45,102 +45,103 @@ export interface ChallengeItem {
 }
 
 const MOCK_CHALLENGES: ChallengeItem[] = [
-    {
-      id: 'JAG-2026-RAN-0104',
-      titleHi: 'कांके वार्ड 4 में चापाकल मरम्मत एवं बोरवेल गाद निकासी',
-      titleSat: 'ᱪᱟᱯᱟᱠᱚᱞ ᱫᱟᱜ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱠᱟᱸᱠᱮ',
-      titleEn: 'Handpump Repair & Borewell Desilting in Kanke Ward 4',
-      category: 'drinking_water',
-      location: 'Ranchi, Kanke Panchayat',
-      distanceKm: 1.2,
-      status: 'OPEN_FOR_BIDS',
-      upvotes: 42,
-      date: '12 Sep 2026',
-      descriptionHi: 'चापाकल से अत्यधिक मटमैला व फ्लोराइड युक्त पानी निकल रहा है। 45 परिवार प्रभावित हैं।',
-      descriptionEn: 'Fluoride and heavy silt contamination in public borewell casing affecting 45 families.',
-      assignedHei: 'BIT Mesra (Civil & Environmental Eng.)',
-      thumbnailEmoji: '🚰',
-    },
-    {
-      id: 'JAG-2026-RAN-0098',
-      titleHi: 'कांके चौक पर सोलर माइक्रोग्रिड बैटरी डिस्चार्ज एवं इन्वर्टर फॉल्ट',
-      titleSat: 'ᱥᱮᱸᱜᱮᱞ ᱵᱤᱡᱞᱤ ᱠᱷᱟᱹᱢᱤ ᱠᱟᱸᱠᱮ',
-      titleEn: 'Solar Microgrid Battery Depletion at Kanke Chowk',
-      category: 'electricity',
-      location: 'Ranchi, Kanke Chowk',
-      distanceKm: 3.4,
-      status: 'DYNAMIC_HACKATHON',
-      upvotes: 67,
-      date: '10 Sep 2026',
-      descriptionHi: 'स्ट्रीट लाइट और कम्युनिटी सेंटर की सोलर बैटरी 2 घंटे में बंद हो रही है।',
-      descriptionEn: 'Microgrid battery bank degraded; student hackathon team developing BMS telemetry.',
-      assignedHei: 'IIT ISM Dhanbad / NIFFT Ranchi Consortium',
-      thumbnailEmoji: '⚡',
-    },
-    {
-      id: 'JAG-2026-RAN-0081',
-      titleHi: 'ओरमांझी कृषि चेकडैम डिसिल्टिंग एवं सौर लिफ्ट सिंचाई',
-      titleSat: 'ᱫᱟᱜ ᱯᱟᱴᱟᱣ ᱪᱮᱠᱰᱮᱢ ᱳᱨᱢᱟᱧᱡᱷᱤ',
-      titleEn: 'Ormanjhi Checkdam Desilting & Solar Lift Irrigation',
-      category: 'agriculture',
-      location: 'Ranchi, Ormanjhi',
-      distanceKm: 9.8,
-      status: 'IN_PILOT',
-      upvotes: 89,
-      date: '05 Sep 2026',
-      descriptionHi: '45-दिवसीय परिपक्वता (Maturation) चरण में परीक्षण जारी। ग्राम सभा कोरम सत्यापन खुला है।',
-      descriptionEn: '45-day operational maturation pilot active. Gram Sabha quorum voting open.',
-      assignedHei: 'Birsa Agricultural University (BAU)',
-      thumbnailEmoji: '🌾',
-    },
-    {
-      id: 'JAG-2026-RAN-0074',
-      titleHi: 'नगड़ी ग्रामीण संपर्क मार्ग पुलिया जल निकासी मरम्मत',
-      titleSat: 'ᱱᱟᱞᱤ ᱟᱨ ᱦᱚᱨ ᱢᱟᱨᱟᱢᱚᱛ ᱱᱟᱜᱽᱨᱤ',
-      titleEn: 'Nagri Rural Culvert Drainage & Causeway Repair',
-      category: 'road_drainage',
-      location: 'Ranchi, Nagri Block',
-      distanceKm: 13.5,
-      status: 'PENDING_HITL',
-      upvotes: 31,
-      date: '02 Sep 2026',
-      descriptionHi: 'मानसून के कारण पुलिया की नींव में कटाव आ गया है। भारी वाहनों का आवागमन बाधित है।',
-      descriptionEn: 'Causeway scour erosion threatening village connectivity. Under HITL evaluation.',
-      thumbnailEmoji: '🛣️',
-    },
-    {
-      id: 'JAG-2026-RAN-0042',
-      titleHi: 'अनगड़ा प्राथमिक विद्यालय छत सौर पैनल एवं वर्षा जल संचयन',
-      titleSat: 'ᱤᱥᱠᱩᱞ ᱚᱲᱟᱜ ᱢᱟᱨᱟᱢᱚᱛ ᱟᱱᱜᱟᱲᱟ',
-      titleEn: 'Angara Primary School Solar Roof & Rainwater Harvesting',
-      category: 'education',
-      location: 'Ranchi, Angara Block',
-      distanceKm: 22.0,
-      status: 'RESOLVED',
-      upvotes: 114,
-      date: '24 Aug 2026',
-      descriptionHi: 'परियोजना पूर्ण एवं ग्राम सभा पेसा अधिनियम (PESA NOC) द्वारा 100% सत्यापित।',
-      descriptionEn: 'Project completed and approved with Gram Sabha PESA Act NOC sign-off.',
-      assignedHei: 'Usha Martin University / Ranchi University',
-      thumbnailEmoji: '🏫',
-    },
-    {
-      id: 'JAG-2026-DHN-0089',
-      titleHi: 'तोपचांची में सोलर माइक्रोग्रिड इन्वर्टर खराबी',
-      titleSat: 'ᱥᱮᱸᱜᱮᱞ ᱵᱤᱡᱞᱤ ᱛᱳᱯᱪᱟᱸᱪᱤ',
-      titleEn: 'Topchanchi Solar Microgrid Inverter Failure',
-      category: 'electricity',
-      location: 'Dhanbad, Topchanchi',
-      distanceKm: 48.0,
-      status: 'DYNAMIC_HACKATHON',
-      upvotes: 76,
-      date: '18 Aug 2026',
-      descriptionHi: 'बीआईटी सिंदरी छात्र दल स्टेज 2 में टाटा स्टील सीएसआर के साथ मेंटरशिप में है।',
-      descriptionEn: 'BIT Sindri team prototype in Stage 2 mentoring with Tata Steel CSR.',
-      assignedHei: 'BIT Sindri',
-      thumbnailEmoji: '💡',
-    },
-  ];
+  {
+    id: 'JAG-2026-PAL-0052',
+    titleHi: 'पलामू ज़िला: बोरवेल भूजल में अत्यधिक फ्लोराइड संदूषण',
+    titleSat: 'ᱯᱟᱞᱟᱢᱩ ᱦᱚᱱᱚᱛ ᱫᱟᱜ ᱨᱮ ᱯᱷᱞᱳᱨᱟᱭᱤᱰ ᱮᱴᱠᱮᱴᱚᱬᱮ',
+    titleEn: 'Palamu District: High Fluoride in Borewell Water',
+    category: 'drinking_water',
+    location: 'Palamu, Satbarwa Block, Dubbi Khurd',
+    distanceKm: 2.4,
+    status: 'IN_PILOT',
+    upvotes: 142,
+    date: '12 Sep 2026',
+    descriptionHi: 'सतबरवा के 4 गांवों में भूजल में 4.5 mg/L फ्लोराइड पाया गया है। बीआईटी मेसरा द्वारा स्थापित सौर डी-फ्लोराइडेशन इकाई 45-दिवसीय परिपक्वता बफ़र में है।',
+    descriptionEn: 'Critical fluoride contamination (>4.5 mg/L) in public borewells. BIT Mesra solar defluoridation unit active in 45-day operational maturation buffer.',
+    assignedHei: 'BIT Mesra (Civil & Environmental Eng.)',
+    thumbnailEmoji: '🚰',
+  },
+  {
+    id: 'JAG-2026-KHU-0034',
+    titleHi: 'खूंटी ज़िला: लाह (लाख) उपज में तुड़ाई उपरांत सड़न एवं फंगस क्षति',
+    titleSat: 'ᱠᱷᱩᱸᱴᱤ ᱦᱚᱱᱚᱛ ᱞᱟᱦᱟ (Lac) ᱵᱟᱹᱲᱤᱡ ᱮᱴᱠᱮᱴᱚᱬᱮ',
+    titleEn: 'Khunti District: Post-harvest decay in Lac produce',
+    category: 'agriculture',
+    location: 'Khunti, Murhu Block',
+    distanceKm: 3.8,
+    status: 'OPEN_FOR_BIDS',
+    upvotes: 98,
+    date: '10 Sep 2026',
+    descriptionHi: 'मानसून के दौरान नमी व उचित डीह्यूमिडिफायर न होने से 35% से अधिक कुसमी और रंगीनी लाह सड़ रही है। आदिवासी किसान सोलर ड्रायर अनुसंधान मांग रहे हैं।',
+    descriptionEn: 'Tribal SHG farmers suffering >35% post-harvest fungal spoilage in raw lac due to monsoon humidity. Open for HEI solar dryer engineering bids.',
+    assignedHei: 'Birsa Agricultural University (BAU) / ICAR IINRG',
+    thumbnailEmoji: '🌾',
+  },
+  {
+    id: 'JAG-2026-WSH-0071',
+    titleHi: 'चाईबासा (प. सिंहभूम): ग्रामीण स्वास्थ्य उपकेंद्र में सोलर माइक्रोग्रिड वोल्टेज ड्रॉप',
+    titleSat: 'ᱪᱟᱭᱵᱟᱥᱟ ᱦᱟᱥᱯᱟᱛᱟᱞ ᱥᱮᱸᱜᱮᱞ ᱵᱤᱡᱞᱤ ᱵᱷᱳᱞᱴᱮᱡᱽ ᱠᱷᱟᱹᱢᱤ',
+    titleEn: 'Chaibasa: Solar micro-grid voltage drop in rural health center',
+    category: 'electricity',
+    location: 'West Singhbhum, Chaibasa (Tonto Block)',
+    distanceKm: 4.6,
+    status: 'DYNAMIC_HACKATHON',
+    upvotes: 115,
+    date: '08 Sep 2026',
+    descriptionHi: 'प्राथमिक स्वास्थ्य केंद्र के वैक्सीन रेफ्रिजरेटर एवं प्रसव कक्ष में शाम को वोल्टेज 140V तक गिर जाता है। एनआईटी जमशेदपुर छात्र टीम बीएमएस का विकास कर रही है।',
+    descriptionEn: 'Microgrid battery bank voltage collapse below 140V threatening cold-chain vaccine storage and maternity ward in Tonto PHC.',
+    assignedHei: 'NIT Jamshedpur (Electrical & Renewable Energy Dept)',
+    thumbnailEmoji: '⚡',
+  },
+  {
+    id: 'JAG-2026-RAN-0104',
+    titleHi: 'कांके वार्ड 4 में चापाकल मरम्मत एवं बोरवेल गाद निकासी',
+    titleSat: 'ᱪᱟᱯᱟᱠᱚᱞ ᱫᱟᱜ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱠᱟᱸᱠᱮ',
+    titleEn: 'Handpump Repair & Borewell Desilting in Kanke Ward 4',
+    category: 'drinking_water',
+    location: 'Ranchi, Kanke Panchayat',
+    distanceKm: 1.2,
+    status: 'OPEN_FOR_BIDS',
+    upvotes: 42,
+    date: '12 Sep 2026',
+    descriptionHi: 'चापाकल से अत्यधिक मटमैला व फ्लोराइड युक्त पानी निकल रहा है। 45 परिवार प्रभावित हैं।',
+    descriptionEn: 'Fluoride and heavy silt contamination in public borewell casing affecting 45 families.',
+    assignedHei: 'BIT Mesra (Civil & Environmental Eng.)',
+    thumbnailEmoji: '🚰',
+  },
+  {
+    id: 'JAG-2026-RAN-0042',
+    titleHi: 'अनगड़ा प्राथमिक विद्यालय छत सौर पैनल एवं वर्षा जल संचयन',
+    titleSat: 'ᱤᱥᱠᱩᱞ ᱚᱲᱟᱜ ᱢᱟᱨᱟᱢᱚᱛ ᱟᱱᱜᱟᱲᱟ',
+    titleEn: 'Angara Primary School Solar Roof & Rainwater Harvesting',
+    category: 'education',
+    location: 'Ranchi, Angara Block',
+    distanceKm: 22.0,
+    status: 'RESOLVED',
+    upvotes: 114,
+    date: '24 Aug 2026',
+    descriptionHi: 'परियोजना पूर्ण एवं ग्राम सभा पेसा अधिनियम (PESA NOC) द्वारा 100% सत्यापित।',
+    descriptionEn: 'Project completed and approved with Gram Sabha PESA Act NOC sign-off.',
+    assignedHei: 'Usha Martin University / Ranchi University',
+    thumbnailEmoji: '🏫',
+  },
+  {
+    id: 'JAG-2026-DHN-0089',
+    titleHi: 'तोपचांची में सोलर माइक्रोग्रिड इन्वर्टर खराबी',
+    titleSat: 'ᱥᱮᱸᱜᱮᱞ ᱵᱤᱡᱞᱤ ᱛᱳᱯᱪᱟᱸᱪᱤ',
+    titleEn: 'Topchanchi Solar Microgrid Inverter Failure',
+    category: 'electricity',
+    location: 'Dhanbad, Topchanchi',
+    distanceKm: 48.0,
+    status: 'DYNAMIC_HACKATHON',
+    upvotes: 76,
+    date: '18 Aug 2026',
+    descriptionHi: 'बीआईटी सिंदरी छात्र दल स्टेज 2 में टाटा स्टील सीएसआर के साथ मेंटरशिप में है।',
+    descriptionEn: 'BIT Sindri team prototype in Stage 2 mentoring with Tata Steel CSR.',
+    assignedHei: 'BIT Sindri',
+    thumbnailEmoji: '💡',
+  },
+];
 
 export default function CitizenDashboardPage() {
   const { t, language, currentLocation } = useCitizen();
@@ -387,7 +388,7 @@ export default function CitizenDashboardPage() {
             <button
               type="button"
               onClick={() => setViewMode('cards')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${
+              className={`px-3.5 py-2 min-h-[44px] rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all active:scale-95 ${
                 viewMode === 'cards'
                   ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
@@ -399,7 +400,7 @@ export default function CitizenDashboardPage() {
             <button
               type="button"
               onClick={() => setViewMode('radar')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all ${
+              className={`px-3.5 py-2 min-h-[44px] rounded-lg text-xs font-bold flex items-center space-x-1.5 transition-all active:scale-95 ${
                 viewMode === 'radar'
                   ? 'bg-[#044728] text-white shadow-sm'
                   : 'text-slate-600 hover:text-slate-900'
@@ -422,7 +423,7 @@ export default function CitizenDashboardPage() {
             <button
               type="button"
               onClick={() => setProximityFilter('<5km')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+              className={`px-3.5 py-2 min-h-[44px] rounded-lg text-xs font-bold whitespace-nowrap transition-all active:scale-95 ${
                 proximityFilter === '<5km'
                   ? 'bg-[#044728] text-white shadow-sm'
                   : 'text-slate-600 hover:bg-slate-200/60'
@@ -433,7 +434,7 @@ export default function CitizenDashboardPage() {
             <button
               type="button"
               onClick={() => setProximityFilter('<15km')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+              className={`px-3.5 py-2 min-h-[44px] rounded-lg text-xs font-bold whitespace-nowrap transition-all active:scale-95 ${
                 proximityFilter === '<15km'
                   ? 'bg-[#044728] text-white shadow-sm'
                   : 'text-slate-600 hover:bg-slate-200/60'
@@ -444,7 +445,7 @@ export default function CitizenDashboardPage() {
             <button
               type="button"
               onClick={() => setProximityFilter('district')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+              className={`px-3.5 py-2 min-h-[44px] rounded-lg text-xs font-bold whitespace-nowrap transition-all active:scale-95 ${
                 proximityFilter === 'district'
                   ? 'bg-[#044728] text-white shadow-sm'
                   : 'text-slate-600 hover:bg-slate-200/60'
@@ -583,7 +584,7 @@ export default function CitizenDashboardPage() {
                         <button
                           type="button"
                           onClick={() => handleOptimisticUpvote(item.id, item.upvotes)}
-                          className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 ${
+                          className={`inline-flex items-center space-x-1.5 px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 ${
                             isUpvoted
                               ? 'bg-amber-500 text-white shadow-amber-500/30'
                               : 'bg-emerald-50 hover:bg-emerald-100 text-[#044728] border border-emerald-200'
@@ -591,7 +592,7 @@ export default function CitizenDashboardPage() {
                           title="Support this civic grievance"
                         >
                           <ThumbsUp
-                            className={`w-3.5 h-3.5 transition-transform ${
+                            className={`w-4 h-4 transition-transform ${
                               isUpvoted ? 'fill-white scale-110' : 'text-amber-600'
                             }`}
                           />
@@ -609,10 +610,10 @@ export default function CitizenDashboardPage() {
 
                         <Link
                           href="/time-machine"
-                          className="inline-flex items-center justify-center p-1.5 rounded-xl text-slate-400 hover:text-[#044728] hover:bg-slate-100 transition-colors"
+                          className="inline-flex items-center justify-center p-2 min-h-[44px] min-w-[44px] rounded-xl text-slate-400 hover:text-[#044728] hover:bg-slate-100 active:scale-95 transition-all"
                           title="View Quorum & Satyapan Details"
                         >
-                          <ChevronRight className="w-4 h-4" />
+                          <ChevronRight className="w-5 h-5" />
                         </Link>
                       </div>
                     </div>

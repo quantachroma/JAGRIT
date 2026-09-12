@@ -160,7 +160,7 @@ export default function HomePage() {
                     <button
                       key={pill.code}
                       onClick={() => setLanguage(pill.code)}
-                      className={`group relative flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 border ${
+                      className={`group relative flex items-center space-x-2 px-4 py-2.5 min-h-[44px] rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 border active:scale-95 ${
                         isSelected
                           ? 'bg-[#D97706] text-slate-950 border-amber-300 shadow-lg shadow-amber-900/40 scale-105 ring-2 ring-amber-400/50'
                           : 'bg-white/10 hover:bg-white/20 text-emerald-100 border-white/20 hover:border-white/40 backdrop-blur'
@@ -188,7 +188,7 @@ export default function HomePage() {
               {/* Primary CTA: Aage Badhein / Get Started -> /report */}
               <Link
                 href="/report"
-                className="inline-flex items-center space-x-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold px-6 py-3.5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 text-sm sm:text-base group border border-amber-300"
+                className="inline-flex items-center space-x-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold px-6 py-3.5 min-h-[48px] rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 text-sm sm:text-base group border border-amber-300 active:scale-95"
               >
                 <AlertCircle className="w-5 h-5 text-slate-950" />
                 <span>
@@ -204,7 +204,7 @@ export default function HomePage() {
               {/* Secondary CTA: Track Status -> /dashboard */}
               <Link
                 href="/dashboard"
-                className="inline-flex items-center space-x-2 bg-emerald-950/70 hover:bg-emerald-900/90 text-white font-semibold px-5 py-3.5 rounded-xl backdrop-blur border border-emerald-600/60 hover:border-emerald-400 transition-all text-sm"
+                className="inline-flex items-center space-x-2 bg-emerald-950/70 hover:bg-emerald-900/90 text-white font-semibold px-5 py-3.5 min-h-[48px] rounded-xl backdrop-blur border border-emerald-600/60 hover:border-emerald-400 transition-all text-sm active:scale-95"
               >
                 <LayoutDashboard className="w-4 h-4 text-amber-400" />
                 <span>
@@ -219,7 +219,7 @@ export default function HomePage() {
               {/* WhatsApp Simulator Shortcut */}
               <Link
                 href="/whatsapp-simulator"
-                className="inline-flex items-center space-x-1.5 bg-[#25D366]/20 hover:bg-[#25D366]/30 text-emerald-200 hover:text-white px-3.5 py-3 rounded-xl border border-[#25D366]/40 transition-all text-xs font-semibold"
+                className="inline-flex items-center space-x-1.5 bg-[#25D366]/20 hover:bg-[#25D366]/30 text-emerald-200 hover:text-white px-3.5 py-3 min-h-[44px] rounded-xl border border-[#25D366]/40 transition-all text-xs font-semibold active:scale-95"
               >
                 <Send className="w-3.5 h-3.5 text-[#25D366]" />
                 <span>WhatsApp Seva Bot</span>
@@ -230,7 +230,7 @@ export default function HomePage() {
           {/* Right Column: Smooth CSS Namaste Greeting Animation */}
           <div className="lg:col-span-5 flex flex-col items-center justify-center relative">
             {/* Animated Radiant Mandala & Namaste Hands */}
-            <div className="relative w-64 h-64 sm:w-72 sm:h-72 flex items-center justify-center">
+            <div className="relative w-56 h-56 sm:w-72 sm:h-72 flex items-center justify-center">
               {/* Outer Pulsing Aura */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-amber-500/20 via-emerald-400/20 to-amber-300/10 animate-ping opacity-30 pointer-events-none" />
               <div className="absolute inset-2 rounded-full border-2 border-dashed border-amber-400/30 animate-[spin_20s_linear_infinite] pointer-events-none" />
