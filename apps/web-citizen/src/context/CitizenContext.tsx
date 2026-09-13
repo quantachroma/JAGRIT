@@ -39,7 +39,7 @@ export interface CitizenContextType {
   setCurrentLocation: (loc: GeoLocation) => void;
   detectLocation: () => Promise<void>;
   isDetectingLocation: boolean;
-  t: (section: string, key: string, fallback?: string) => string;
+  t: (section: string, key?: string, fallback?: string) => string;
   dict: any;
 }
 
@@ -130,18 +130,69 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const t = (section: string, key: string, fallback?: string): string => {
+  const t = (section: string, key?: string, fallback?: string): string => {
     try {
       const activeDict = dictionaries[language] || dictionaries.hi;
+      
+      // If called with a dotted path like t('home.heroTitle', 'fallback')
+      if (key === undefined || (typeof key === 'string' && fallback === undefined && section.includes('.'))) {
+        const path = section;
+        const fb = key;
+        const parts = path.split('.');
+        let val: any = activeDict;
+        for (const p of parts) {
+          val = val?.[p];
+          if (val === undefined) break;
+        }
+        if (val !== undefined && typeof val === 'string') return val;
+
+        // Try English fallback
+        let engVal: any = dictionaries.en;
+        for (const p of parts) {
+          engVal = engVal?.[p];
+          if (engVal === undefined) break;
+        }
+        if (engVal !== undefined && typeof engVal === 'string') return engVal;
+
+        // Try Hindi fallback
+        let hiVal: any = dictionaries.hi;
+        for (const p of parts) {
+          hiVal = hiVal?.[p];
+          if (hiVal === undefined) break;
+        }
+        if (hiVal !== undefined && typeof hiVal === 'string') return hiVal;
+
+        return fb || path;
+      }
+
+      // If called with (section, key, fallback)
+      if (section.includes('.')) {
+        const parts = [...section.split('.'), key];
+        let val: any = activeDict;
+        for (const p of parts) {
+          val = val?.[p];
+          if (val === undefined) break;
+        }
+        if (val !== undefined && typeof val === 'string') return val;
+
+        let engVal: any = dictionaries.en;
+        for (const p of parts) {
+          engVal = engVal?.[p];
+          if (engVal === undefined) break;
+        }
+        if (engVal !== undefined && typeof engVal === 'string') return engVal;
+
+        return fallback || `${section}.${key}`;
+      }
+
       const sectionObj = activeDict?.[section];
       if (sectionObj && sectionObj[key] !== undefined) {
         return sectionObj[key];
       }
-      // fallback to English then Hindi
       const fallbackValue = dictionaries.en?.[section]?.[key] || dictionaries.hi?.[section]?.[key];
       return fallbackValue !== undefined ? fallbackValue : (fallback || `${section}.${key}`);
     } catch {
-      return fallback || `${section}.${key}`;
+      return fallback || `${section}.${key || ''}`;
     }
   };
 

@@ -3,10 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --primary: #044728;
-  --accent: #D97706;
+  --primary: #1D4ED8;
+  --accent-green: #16A34A;
+  --accent-saffron: #D97706;
   --border: #E2E8F0;
-  --background: #FFFFFF;
+  --background: #F8FAFC;
   --foreground: #0F172A;
 }
 
@@ -16,7 +17,7 @@ html, body {
   max-width: 100vw;
   -webkit-tap-highlight-color: transparent;
   color: var(--foreground);
-  background: var(--background);
+  background-color: var(--background);
   min-height: 100vh;
 }
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import type { ChallengeSubmissionPayload, GeoLocation } from '@jagrit/contracts';
-import { useCitizen, Language } from '@/context/CitizenContext';
+import { useCitizen } from '@/context/CitizenContext';
 import AudioRecorder from '@/components/audio-recorder';
 import CVLaserScanner, { DetectedDefect } from '@/components/cv-laser-scanner';
 import SpatialRadarMap from '@/components/spatial-radar-map';
@@ -13,14 +13,8 @@ import {
   CheckCircle2,
   Send,
   Loader2,
-  UploadCloud,
-  FileCheck,
   Sparkles,
-  Maximize2,
   Navigation,
-  RefreshCw,
-  Layers,
-  Info,
 } from 'lucide-react';
 
 const JHARKHAND_DISTRICTS = [
@@ -76,12 +70,66 @@ export default function ProblemSubmissionStudio() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const categories = [
-    { id: 'drinking_water', label: t('submission.categories', 'drinking_water', 'Drinking Water & Handpump (चापाकल)') },
-    { id: 'road_drainage', label: t('submission.categories', 'road_drainage', 'Rural Roads & Drainage') },
-    { id: 'electricity', label: t('submission.categories', 'electricity', 'Rural Electricity & Solar Microgrids') },
-    { id: 'health', label: t('submission.categories', 'health', 'Health Sub-Centre Equipment') },
-    { id: 'education', label: t('submission.categories', 'education', 'School Infrastructure') },
-    { id: 'agriculture', label: t('submission.categories', 'agriculture', 'Irrigation & Soil') },
+    {
+      id: 'drinking_water',
+      label:
+        t('submission.categories.drinking_water') ||
+        (language === 'hi'
+          ? 'पेयजल एवं चापाकल'
+          : language === 'sat'
+          ? 'ᱧᱩ ᱫᱟᱜ ᱟᱨ ᱪᱟᱯᱟᱠᱚᱞ'
+          : 'Drinking Water and Handpumps'),
+    },
+    {
+      id: 'road_drainage',
+      label:
+        t('submission.categories.road_drainage') ||
+        (language === 'hi'
+          ? 'ग्रामीण सड़क एवं जल निकासी'
+          : language === 'sat'
+          ? 'ᱟᱹᱛᱩ ᱦᱚᱨ ᱟᱨ ᱱᱟᱞᱟ'
+          : 'Rural Roads and Drainage'),
+    },
+    {
+      id: 'electricity',
+      label:
+        t('submission.categories.electricity') ||
+        (language === 'hi'
+          ? 'ग्रामीण विद्युतीकरण एवं सौर ग्रिड'
+          : language === 'sat'
+          ? 'ᱟᱹᱛᱩ ᱵᱤᱡᱽᱞᱤ ᱟᱨ ᱵᱮᱨ ᱵᱤᱡᱽᱞᱤ'
+          : 'Rural Electrification and Solar Microgrids'),
+    },
+    {
+      id: 'health',
+      label:
+        t('submission.categories.health') ||
+        (language === 'hi'
+          ? 'स्वास्थ्य उप-केंद्र उपकरण'
+          : language === 'sat'
+          ? 'ᱦᱚᱲᱢᱚ ᱥᱟᱶᱟᱨ ᱩᱯ-ᱠᱮᱱᱫᱽᱨᱚ ᱥᱟᱯᱟᱵ'
+          : 'Health Sub-Centre Equipment'),
+    },
+    {
+      id: 'education',
+      label:
+        t('submission.categories.education') ||
+        (language === 'hi'
+          ? 'विद्यालय एवं आंगनबाड़ी ढांचा'
+          : language === 'sat'
+          ? 'ᱟᱥᱲᱟ ᱟᱨ ᱟᱝᱜᱚᱱᱣᱟᱰᱤ ᱜᱟᱲ'
+          : 'School and Anganwadi Infrastructure'),
+    },
+    {
+      id: 'agriculture',
+      label:
+        t('submission.categories.agriculture') ||
+        (language === 'hi'
+          ? 'सिंचाई एवं कृषि प्रौद्योगिकी'
+          : language === 'sat'
+          ? 'ᱪᱟᱥ ᱫᱟᱜ ᱟᱨ ᱪᱟᱥ ᱦᱩᱱᱟᱹᱨ'
+          : 'Irrigation and Agricultural Technology'),
+    },
   ];
 
   // Update map coordinates when currentLocation changes
@@ -117,7 +165,6 @@ export default function ProblemSubmissionStudio() {
       });
     } catch (err) {
       console.error('Canvas compression error:', err);
-      // Fallback to original if canvas fails
       setCompressedFile(file);
       setCompressedPreviewUrl(URL.createObjectURL(file));
       setCompressionStats({
@@ -203,18 +250,14 @@ export default function ProblemSubmissionStudio() {
     const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
     const y = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
 
-    // Map bounds for Jharkhand:
-    // Lat: 22.0 to 25.3 N
-    // Lon: 83.3 to 87.9 E
     const lonNorm = x / rect.width;
-    const latNorm = 1 - y / rect.height; // inverted Y
+    const latNorm = 1 - y / rect.height;
 
     const newLon = Number((83.3 + lonNorm * (87.9 - 83.3)).toFixed(4));
     const newLat = Number((22.0 + latNorm * (25.3 - 22.0)).toFixed(4));
 
     setMapCoords({ lat: newLat, lon: newLon });
 
-    // Sync to CitizenContext
     const updatedLocation: GeoLocation = {
       lat: newLat,
       lon: newLon,
@@ -253,7 +296,6 @@ export default function ProblemSubmissionStudio() {
         panchayat: currentLocation.panchayat || `${activeBlock} Ward`,
       };
 
-      // Strict payload schema from @jagrit/contracts
       const challengePayload: ChallengeSubmissionPayload = {
         title: title.trim() || 'Rural Infrastructure Problem',
         description: description.trim(),
@@ -263,7 +305,6 @@ export default function ProblemSubmissionStudio() {
         rawAudioUrl: recordedAudioUrl || undefined,
       };
 
-      // Multipart form submission for attachments
       const formData = new FormData();
       formData.append('title', challengePayload.title);
       formData.append('description', challengePayload.description);
@@ -307,28 +348,35 @@ export default function ProblemSubmissionStudio() {
     <div className="max-w-4xl mx-auto space-y-8 pb-16">
       {/* Studio Header */}
       <div className="space-y-2">
-        <div className="inline-flex items-center space-x-1.5 text-xs font-semibold text-[#044728] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-          <AlertCircle className="w-3.5 h-3.5 text-[#D97706]" />
-          <span>Screen 4: Problem Submission Studio</span>
-          <span className="text-[10px] text-slate-400">• Stage 1 Ingestion</span>
+        <div className="inline-flex items-center space-x-1.5 text-xs font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+          <AlertCircle className="w-3.5 h-3.5 text-blue-600" />
+          <span>
+            {language === 'hi'
+              ? 'नागरिक समस्या पंजीकरण पोर्टल'
+              : language === 'sat'
+              ? 'ᱟᱹᱛᱩ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱚᱞ ᱥᱚᱫᱚᱨ'
+              : 'Problem Submission Studio'}
+          </span>
         </div>
         <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-          {t('submission', 'title', 'Report a Rural Problem')}
+          {t('submission.title') || (language === 'hi' ? 'ग्रामीण समस्या दर्ज करें' : language === 'sat' ? 'ᱟᱹᱛᱩ ᱨᱮᱱᱟᱜ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱚᱞ ᱥᱚᱫᱚᱨ ᱢᱮ' : 'Report a Rural Problem')}
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
-          {t(
-            'submission',
-            'subtitle',
-            'Submit civil, infrastructure, or environmental issues directly to our research and local administration network.'
+          {t('submission.subtitle') || (
+            language === 'hi'
+              ? 'पेयजल, सड़क, बिजली एवं नागरिक समस्याओं को सीधे विश्वविद्यालय अनुसंधान और स्थानीय प्रशासन से जोड़ें।'
+              : language === 'sat'
+              ? 'ᱫᱟᱜ, ᱦᱚᱨ, ᱵᱤᱡᱽᱞᱤ ᱟᱨ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱠᱚ ᱥᱚᱡᱷᱮ ᱡᱮᱜᱮᱛ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱟᱨ ᱥᱚᱨᱠᱟᱨ ᱥᱟᱶ ᱡᱚᱲᱟᱣ ᱢᱮ᱾'
+              : 'Submit civil, infrastructure, or environmental issues directly to our research and local administration network.'
           )}
         </p>
       </div>
 
       {submitResult ? (
         /* Submission Success Ticket View */
-        <div className="bg-white border-2 border-[#044728] rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 animate-in fade-in duration-300">
-          <div className="flex items-center space-x-3.5 text-[#044728]">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-[#044728] shadow-inner">
+        <div className="bg-white border-2 border-emerald-600 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 animate-in fade-in duration-300">
+          <div className="flex items-center space-x-3.5 text-emerald-700">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-700 shadow-inner">
               <CheckCircle2 className="w-7 h-7" />
             </div>
             <div>
@@ -339,30 +387,51 @@ export default function ProblemSubmissionStudio() {
                   ? 'ᱥᱚᱢᱚᱥᱭᱟ ᱥᱟᱹᱛ ᱛᱮ ᱫᱟᱨᱡᱽ ᱮᱱᱟ!'
                   : 'Grievance Submitted Successfully!'}
               </h2>
-              <p className="text-xs text-slate-600">{submitResult.message}</p>
+              <p className="text-xs text-slate-600">
+                {language === 'hi'
+                  ? 'आपकी समस्या को समीक्षा और विश्वविद्यालय अनुसंधान हेतु पंजीकृत किया गया है।'
+                  : language === 'sat'
+                  ? 'ᱟᱢᱟᱜ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱵᱤᱰᱟᱹᱣ ᱞᱟᱹᱜᱤᱫ ᱥᱟᱹᱛ ᱮᱱᱟ᱾'
+                  : 'Your grievance has been routed to engineering triage and local administration.'}
+              </p>
             </div>
           </div>
 
           <div className="bg-emerald-50/70 rounded-2xl p-5 border border-emerald-200 space-y-3 text-sm">
             <div className="flex justify-between items-center py-1.5 border-b border-emerald-100">
-              <span className="text-slate-600">{t('dashboard', 'ticketNumber', 'Ticket ID')}:</span>
-              <span className="font-mono font-black text-[#044728] text-lg">{submitResult.ticketNumber}</span>
+              <span className="text-slate-600">
+                {language === 'hi' ? 'टिकट संख्या' : language === 'sat' ? 'ᱴᱤᱠᱮᱴ ᱮᱞ' : 'Ticket ID'}:
+              </span>
+              <span className="font-mono font-black text-blue-700 text-lg">{submitResult.ticketNumber}</span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-emerald-100">
-              <span className="text-slate-600">{t('dashboard', 'status', 'Lifecycle Status')}:</span>
-              <span className="bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full text-xs font-bold border border-amber-300">
-                {submitResult.status} (Human-in-the-Loop Triage)
+              <span className="text-slate-600">
+                {language === 'hi' ? 'वर्तमान स्थिति' : language === 'sat' ? 'ᱱᱤᱛᱚᱜᱟᱜ ᱦᱟᱞᱚᱛ' : 'Lifecycle Status'}:
+              </span>
+              <span className="bg-blue-100 text-blue-900 px-2.5 py-0.5 rounded-full text-xs font-bold border border-blue-200">
+                {language === 'hi'
+                  ? 'विशेषज्ञ मूल्यांकन प्रक्रियाधीन'
+                  : language === 'sat'
+                  ? 'ᱯᱟᱨᱠᱷᱟᱣ ᱪᱟᱞᱟᱜ ᱠᱟᱱᱟ'
+                  : 'Pending Expert Evaluation'}
               </span>
             </div>
             <div className="flex justify-between items-center py-1.5 border-b border-emerald-100">
-              <span className="text-slate-600">GeoLocation Verified:</span>
+              <span className="text-slate-600">
+                {language === 'hi' ? 'सत्यापित स्थान' : language === 'sat' ? 'ᱪᱤᱱᱦᱟᱹᱣ ᱟᱠᱟᱱ ᱴᱷᱟᱶ' : 'GeoLocation Verified'}:
+              </span>
               <span className="font-semibold text-slate-800 text-xs">
                 {activeDistrict}, {activeBlock} ({mapCoords.lat.toFixed(4)}, {mapCoords.lon.toFixed(4)})
               </span>
             </div>
             <div className="flex justify-between items-center py-1">
-              <span className="text-slate-600">{t('dashboard', 'upvotes', 'Community Upvotes')}:</span>
-              <span className="font-bold text-slate-900">{submitResult.upvotes} (Initial Citizen Sign-off)</span>
+              <span className="text-slate-600">
+                {language === 'hi' ? 'नागरिक समर्थन' : language === 'sat' ? 'ᱦᱚᱲ ᱠᱚᱣᱟᱜ ᱥᱚᱦᱚᱫ' : 'Community Upvotes'}:
+              </span>
+              <span className="font-bold text-slate-900">
+                {submitResult.upvotes || 1}{' '}
+                {language === 'hi' ? '(प्रारंभिक नागरिक सत्यापन)' : language === 'sat' ? '(ᱯᱩᱭᱞᱩ ᱥᱟᱹᱵᱤᱛ)' : '(Initial Citizen Sign-off)'}
+              </span>
             </div>
           </div>
 
@@ -379,15 +448,15 @@ export default function ProblemSubmissionStudio() {
                 setDetectedDefects([]);
                 setCompressionStats(null);
               }}
-              className="bg-[#044728] hover:bg-[#03361e] text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 min-h-[44px] rounded-xl text-xs font-bold transition-all shadow-md"
             >
-              {language === 'hi' ? 'एक और समस्या दर्ज करें' : 'Submit Another Grievance'}
+              {language === 'hi' ? 'एक और समस्या दर्ज करें' : language === 'sat' ? 'ᱟᱨ ᱢᱤᱫᱴᱟᱝ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱚᱞ ᱢᱮ' : 'Submit Another Grievance'}
             </button>
             <a
               href="/dashboard"
-              className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-5 py-2.5 rounded-xl text-xs font-semibold transition-all border border-slate-300"
+              className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-5 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-all border border-slate-300 flex items-center"
             >
-              Go to Grievance Dashboard
+              {language === 'hi' ? 'डैशबोर्ड पर जाएं' : language === 'sat' ? 'ᱰᱮᱥᱵᱳᱨᱰ ᱨᱮ ᱥᱮᱱᱚᱜ ᱢᱮ' : 'Go to Grievance Dashboard'}
             </a>
           </div>
         </div>
@@ -403,10 +472,10 @@ export default function ProblemSubmissionStudio() {
           {/* Section 1: Problem Domain */}
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-4">
             <div className="flex items-center space-x-2 text-slate-900 font-bold text-base">
-              <span className="w-6 h-6 rounded-full bg-emerald-100 text-[#044728] text-xs flex items-center justify-center">
+              <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs flex items-center justify-center font-bold">
                 1
               </span>
-              <span>{t('submission', 'categoryLabel', 'Select Problem Domain')} *</span>
+              <span>{t('submission.categoryLabel') || (language === 'hi' ? 'समस्या का क्षेत्र चुनें' : language === 'sat' ? 'ᱮᱴᱠᱮᱴᱚᱬᱮ ᱦᱟᱹᱴᱤᱧ ᱵᱟᱪᱷᱟᱣ ᱢᱮ' : 'Select Problem Domain')} *</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {categories.map((c) => (
@@ -414,9 +483,9 @@ export default function ProblemSubmissionStudio() {
                   key={c.id}
                   type="button"
                   onClick={() => setCategory(c.id)}
-                  className={`p-3.5 min-h-[44px] rounded-2xl border text-left text-xs font-semibold transition-all active:scale-95 ${
+                  className={`p-3.5 min-h-[48px] rounded-2xl border text-left text-xs font-semibold transition-all active:scale-95 ${
                     category === c.id
-                      ? 'bg-emerald-50 text-[#044728] border-[#044728] ring-2 ring-emerald-600/20 shadow-sm'
+                      ? 'bg-blue-50 text-blue-800 border-blue-600 ring-2 ring-blue-600/20 shadow-sm font-bold'
                       : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                   }`}
                 >
@@ -426,13 +495,13 @@ export default function ProblemSubmissionStudio() {
             </div>
           </div>
 
-          {/* Section 2: Component B: Audio Recording Studio with live waveform */}
+          {/* Section 2: Audio Recording Studio */}
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-4">
             <div className="flex items-center space-x-2 text-slate-900 font-bold text-base">
-              <span className="w-6 h-6 rounded-full bg-amber-100 text-[#D97706] text-xs flex items-center justify-center">
+              <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs flex items-center justify-center font-bold">
                 2
               </span>
-              <span>Component B: Voice Note Ingestion (Bhashini / ASR)</span>
+              <span>{language === 'hi' ? 'आवाज़ में विवरण रिकॉर्ड करें' : language === 'sat' ? 'ᱟᱲᱟᱝ ᱨᱮᱠᱚᱨᱰᱤᱝ' : 'Voice Note Ingestion'}</span>
             </div>
             <AudioRecorder
               lang={language}
@@ -442,77 +511,72 @@ export default function ProblemSubmissionStudio() {
                 setAudioDuration(duration);
               }}
               onTranscriptionGenerated={(transcription) => {
-                // Auto-populate Title & Description fields
                 setTitle(transcription.title);
                 setDescription(transcription.description);
               }}
             />
           </div>
 
-          {/* Section 3: Title and Description fields (Auto-populated from Voice) */}
+          {/* Section 3: Title and Problem Description */}
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-slate-900 font-bold text-base">
-                <span className="w-6 h-6 rounded-full bg-emerald-100 text-[#044728] text-xs flex items-center justify-center">
+                <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs flex items-center justify-center font-bold">
                   3
                 </span>
-                <span>Title & Problem Description</span>
+                <span>{language === 'hi' ? 'शीर्षक एवं विस्तृत विवरण' : language === 'sat' ? 'ᱧᱩᱛᱩᱢ ᱟᱨ ᱵᱤᱵᱚᱨᱚᱬ' : 'Title & Problem Description'}</span>
               </div>
               <span className="text-[11px] text-slate-500 flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                Auto-populated by Voice
+                {language === 'hi' ? 'आवाज़ से स्वतः भरा गया' : language === 'sat' ? 'ᱟᱲᱟᱝ ᱛᱮ ᱯᱮᱨᱮᱡ ᱮᱱᱟ' : 'Auto-filled from Voice'}
               </span>
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-700">
-                {t('submission', 'problemTitle', 'Problem Summary / Title')} *
+                {t('submission.problemTitle') || (language === 'hi' ? 'समस्या का शीर्षक' : language === 'sat' ? 'ᱮᱴᱠᱮᱴᱚᱬᱮ ᱧᱩᱛᱩᱢ' : 'Problem Title')} *
               </label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder={t('submission', 'problemTitlePlaceholder', 'e.g., Broken Handpump in Kanke Village')}
-                className="w-full text-sm border border-slate-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#044728] transition-all"
+                placeholder={t('submission.problemTitlePlaceholder') || (language === 'hi' ? 'उदा. कांके टोले में खराब चापाकल' : language === 'sat' ? 'ᱫᱟᱹᱭᱠᱟᱹ: ᱠᱟᱸᱠᱮ ᱟᱹᱛᱩ ᱨᱮ ᱵᱟᱹᱲᱤᱡ ᱪᱟᱯᱟᱠᱚᱞ' : 'e.g., Broken Handpump in Kanke Village')}
+                className="w-full text-sm border border-slate-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-slate-700">
-                {t('submission', 'problemDescription', 'Detailed Description')} *
+                {t('submission.problemDescription') || (language === 'hi' ? 'विस्तृत विवरण' : language === 'sat' ? 'ᱵᱤᱵᱚᱨᱚᱬ' : 'Detailed Description')} *
               </label>
               <textarea
                 rows={4}
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder={t(
-                  'submission',
-                  'problemDescriptionPlaceholder',
-                  'Describe the issue in detail: duration, affected households, prior attempts...'
-                )}
-                className="w-full text-sm border border-slate-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#044728] transition-all"
+                placeholder={t('submission.problemDescriptionPlaceholder') || (language === 'hi' ? 'समस्या का विस्तृत विवरण दें: कब से शुरू हुई, कितने परिवार प्रभावित हैं...' : language === 'sat' ? 'ᱮᱴᱠᱮᱴᱚᱬᱮ ᱵᱤᱵᱚᱨᱚᱬ ᱚᱞ ᱢᱮ: ᱛᱤᱥ ᱠᱷᱚᱱ ᱦᱩᱭ ᱟᱠᱟᱱᱟ, ᱛᱤᱱᱟᱹᱜ ᱜᱷᱟᱨᱚᱸᱡᱽ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱨᱮ ᱢᱮᱱᱟᱜ ᱠᱚᱣᱟ...' : 'Describe the issue in detail: duration, affected households, prior attempts...')}
+                className="w-full text-sm border border-slate-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
               />
             </div>
           </div>
 
-          {/* Section 4: Component A: Image Upload with Client-Side Canvas Compression (<= 500 KB) */}
+          {/* Section 4: Image Upload with Client-Side Canvas Compression */}
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center space-x-2 text-slate-900 font-bold text-base">
-                <span className="w-6 h-6 rounded-full bg-amber-100 text-[#D97706] text-xs flex items-center justify-center">
+                <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs flex items-center justify-center font-bold">
                   4
                 </span>
-                <span>Component A: Image Upload & Canvas Compression (≤ 500 KB)</span>
+                <span>{language === 'hi' ? 'स्थल फ़ोटो एवं प्रमाण' : language === 'sat' ? 'ᱪᱤᱛᱟᱹᱨ ᱟᱨ ᱥᱟᱹᱵᱤᱛ' : 'Photo Evidence & Compression'}</span>
               </div>
-              <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-bold border border-emerald-300">
-                Client-Side Canvas Enforced
+              <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 font-bold border border-blue-200">
+                {language === 'hi' ? 'अधिकतम ५०० केबी' : language === 'sat' ? '᱕᱐᱐ KB ᱵᱷᱤᱛᱨᱤ' : 'Max 500 KB'}
               </span>
             </div>
 
             {/* Drag & Drop or File Upload Box */}
-            <div className="border-2 border-dashed border-slate-300 hover:border-emerald-600 rounded-2xl p-6 text-center transition-colors bg-slate-50/50">
+            <div className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl p-6 text-center transition-colors bg-slate-50/50">
               <input
                 type="file"
                 accept="image/*"
@@ -525,25 +589,41 @@ export default function ProblemSubmissionStudio() {
                 id="image-file-input"
               />
               <label htmlFor="image-file-input" className="cursor-pointer flex flex-col items-center space-y-2">
-                <div className="w-12 h-12 rounded-full bg-emerald-100 text-[#044728] flex items-center justify-center shadow-xs">
+                <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shadow-xs">
                   <Camera className="w-6 h-6" />
                 </div>
                 <div>
                   <span className="text-xs font-bold text-slate-800">
-                    {originalFile ? originalFile.name : 'Click to take a site photo or upload evidence'}
+                    {originalFile
+                      ? originalFile.name
+                      : language === 'hi'
+                      ? 'स्थल का फ़ोटो खींचें या प्रमाण अपलोड करें'
+                      : language === 'sat'
+                      ? 'ᱴᱷᱟᱶ ᱨᱮᱱᱟᱜ ᱪᱤᱛᱟᱹᱨ ᱟᱹᱜᱩᱭ ᱢᱮ'
+                      : 'Click to take a site photo or upload evidence'}
                   </span>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    High-res mobile camera photos are automatically resized and compressed to ≤ 500 KB on your device
+                    {language === 'hi'
+                      ? 'मोबाइल फ़ोटो स्वतः सुरक्षित आकार में संकुचित हो जाती है'
+                      : language === 'sat'
+                      ? 'ᱪᱤᱛᱟᱹᱨ ᱟᱡ ᱛᱮᱜᱮ ᱠᱟᱹᱴᱤᱡᱚᱜᱼᱟ'
+                      : 'High-res mobile camera photos are automatically resized and compressed on your device'}
                   </p>
                 </div>
               </label>
             </div>
 
-            {/* Compression Feedback Badge */}
+            {/* Compression Feedback */}
             {isCompressing && (
               <div className="flex items-center space-x-2 text-xs text-amber-700 bg-amber-50 p-3 rounded-xl border border-amber-200">
                 <Loader2 className="w-4 h-4 animate-spin text-amber-600" />
-                <span>Resizing image on HTML5 canvas and compressing to ≤ 500 KB...</span>
+                <span>
+                  {language === 'hi'
+                    ? 'फ़ोटो का आकार अनुकूलित किया जा रहा है...'
+                    : language === 'sat'
+                    ? 'ᱪᱤᱛᱟᱹᱨ ᱥᱟᱭᱤᱡᱽ ᱴᱷᱤᱠᱚᱜ ᱠᱟᱱᱟ...'
+                    : 'Resizing and compressing image...'}
+                </span>
               </div>
             )}
 
@@ -552,28 +632,42 @@ export default function ProblemSubmissionStudio() {
                 <div className="flex items-center space-x-2.5">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
                   <div>
-                    <span className="font-bold">Canvas Compression Succeeded!</span>
+                    <span className="font-bold">
+                      {language === 'hi'
+                        ? 'फ़ोटो संपीड़न पूर्ण!'
+                        : language === 'sat'
+                        ? 'ᱪᱤᱛᱟᱹᱨ ᱥᱟᱭᱤᱡᱽ ᱥᱟᱹᱛ ᱮᱱᱟ!'
+                        : 'Image Compression Complete!'}
+                    </span>
                     <p className="text-[11px] text-emerald-800">
-                      Original: <span className="font-mono">{compressionStats.originalSizeKb} KB</span> ➔ Compressed:{' '}
-                      <span className="font-mono font-bold text-[#044728]">
+                      {language === 'hi' ? 'मूल आकार:' : language === 'sat' ? 'ᱢᱩᱲ ᱥᱟᱭᱤᱡᱽ:' : 'Original:'}{' '}
+                      <span className="font-mono">{compressionStats.originalSizeKb} KB</span> &rarr;{' '}
+                      {language === 'hi' ? 'संकुचित:' : language === 'sat' ? 'ᱠᱟᱹᱴᱤᱡ ᱥᱟᱭᱤᱡᱽ:' : 'Compressed:'}{' '}
+                      <span className="font-mono font-bold text-emerald-900">
                         {compressionStats.compressedSizeKb} KB
                       </span>{' '}
-                      ({compressionStats.ratio}% size reduction)
+                      ({compressionStats.ratio}% {language === 'hi' ? 'बचत' : language === 'sat' ? 'ᱠᱟᱹᱴᱤᱡ' : 'reduced'})
                     </p>
                   </div>
                 </div>
                 <span className="text-[10px] font-mono font-black bg-emerald-200 text-emerald-900 px-2.5 py-1 rounded-md">
-                  ✓ ≤ 500 KB VERIFIED
+                  &le; 500 KB OK
                 </span>
               </div>
             )}
 
-            {/* Section 4B: Embedded CV Laser Scanner for Defect Inference (Task 1.1.4) */}
+            {/* Embedded CV Laser Scanner */}
             {compressedPreviewUrl && (
               <div className="pt-2 space-y-2">
                 <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Integrated CV Laser Scanner Verification:</span>
+                  <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                  <span>
+                    {language === 'hi'
+                      ? 'स्वचालित दृश्य दोष पहचान:'
+                      : language === 'sat'
+                      ? 'ᱪᱤᱛᱟᱹᱨ ᱠᱷᱟᱹᱢᱤ ᱯᱟᱱᱛᱷᱟ:'
+                      : 'Integrated CV Laser Scanner Verification:'}
+                  </span>
                 </div>
                 <CVLaserScanner
                   imageUrl={compressedPreviewUrl}
@@ -586,48 +680,66 @@ export default function ProblemSubmissionStudio() {
             )}
           </div>
 
-          {/* Section 5: Component C: Interactive Map Picker with GPS and District Pills */}
+          {/* Section 5: Interactive Map Picker */}
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center space-x-2 text-slate-900 font-bold text-base">
-                <span className="w-6 h-6 rounded-full bg-emerald-100 text-[#044728] text-xs flex items-center justify-center">
+                <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs flex items-center justify-center font-bold">
                   5
                 </span>
-                <span>Component C: Interactive Map Picker & GPS Geolocation</span>
+                <span>
+                  {language === 'hi'
+                    ? 'मानचित्र स्थान एवं जीपीएस सत्यापन'
+                    : language === 'sat'
+                    ? 'ᱢᱮᱯ ᱴᱷᱟᱶ ᱟᱨ ᱡᱤᱯᱤᱮᱥ ᱥᱟᱹᱵᱤᱛ'
+                    : 'Map Location & GPS Geolocation'}
+                </span>
               </div>
               <button
                 type="button"
                 onClick={() => detectLocation()}
                 disabled={isDetectingLocation}
-                className="inline-flex items-center space-x-1.5 text-xs font-bold px-3.5 py-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-[#044728] transition-all disabled:opacity-50 border border-emerald-300"
+                className="inline-flex items-center space-x-1.5 text-xs font-bold px-3.5 py-2 min-h-[44px] rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 transition-all disabled:opacity-50 border border-blue-200"
               >
                 {isDetectingLocation ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
                   <Navigation className="w-3.5 h-3.5" />
                 )}
-                <span>Auto-Detect GPS</span>
+                <span>
+                  {language === 'hi'
+                    ? 'स्थान पहचानें'
+                    : language === 'sat'
+                    ? 'ᱴᱷᱟᱶ ᱯᱟᱱᱛᱷᱟᱭ ᱢᱮ'
+                    : 'Auto-Detect GPS'}
+                </span>
               </button>
             </div>
 
-            {/* Current Geolocation Status Pill Banner */}
+            {/* Geolocation Status Pill Banner */}
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between flex-wrap gap-2 text-xs">
               <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4 text-[#D97706]" />
+                <MapPin className="w-4 h-4 text-blue-600" />
                 <span className="font-bold text-slate-800">
-                  District: <span className="text-[#044728]">{activeDistrict}</span> | Block:{' '}
-                  <span className="text-[#044728]">{activeBlock}</span>
+                  {language === 'hi' ? 'ज़िला:' : language === 'sat' ? 'ᱡᱤᱞᱟᱹ:' : 'District:'}{' '}
+                  <span className="text-blue-700">{activeDistrict}</span> |{' '}
+                  {language === 'hi' ? 'प्रखंड:' : language === 'sat' ? 'ᱵᱞᱚᱠ:' : 'Block:'}{' '}
+                  <span className="text-blue-700">{activeBlock}</span>
                 </span>
               </div>
               <div className="font-mono text-[11px] text-slate-500 bg-white px-2.5 py-1 rounded-md border border-slate-200">
-                Lat: {mapCoords.lat.toFixed(4)}° N, Lon: {mapCoords.lon.toFixed(4)}° E
+                {mapCoords.lat.toFixed(4)}° N, {mapCoords.lon.toFixed(4)}° E
               </div>
             </div>
 
-            {/* Quick District Selector Pills for Jharkhand */}
+            {/* District Selector Pills */}
             <div className="space-y-1.5">
               <span className="text-[11px] font-semibold text-slate-600 block">
-                Quick District Selection (झारखण्ड ज़िले):
+                {language === 'hi'
+                  ? 'त्वरित ज़िला चयन:'
+                  : language === 'sat'
+                  ? 'ᱡᱤᱞᱟᱹ ᱵᱟᱪᱷᱟᱣ:'
+                  : 'Quick District Selection:'}
               </span>
               <div className="flex flex-wrap gap-2">
                 {JHARKHAND_DISTRICTS.map((dist) => (
@@ -635,9 +747,9 @@ export default function ProblemSubmissionStudio() {
                     key={dist.name}
                     type="button"
                     onClick={() => handleSelectDistrictPill(dist)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 min-h-[38px] rounded-xl text-xs font-medium transition-all ${
                       activeDistrict === dist.name
-                        ? 'bg-[#044728] text-white shadow-sm font-bold'
+                        ? 'bg-blue-600 text-white shadow-sm font-bold'
                         : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                     }`}
                   >
@@ -647,29 +759,29 @@ export default function ProblemSubmissionStudio() {
               </div>
             </div>
 
-            {/* Map Mode Switcher: 500m Radar Buffer vs Interactive Pin */}
+            {/* Map Mode Switcher */}
             <div className="flex items-center space-x-2 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start">
               <button
                 type="button"
                 onClick={() => setMapTab('radar')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
                   mapTab === 'radar'
-                    ? 'bg-[#044728] text-white shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <span>📡 PostGIS 500m Radar (ADR-002)</span>
+                <span>{language === 'hi' ? 'रडार मानचित्र' : language === 'sat' ? 'ᱨᱟᱰᱟᱨ ᱢᱮᱯ' : 'Nearby Radar Map'}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setMapTab('pin')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
                   mapTab === 'pin'
-                    ? 'bg-[#044728] text-white shadow-sm'
+                    ? 'bg-blue-600 text-white shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <span>📍 Interactive Pin Calibrator</span>
+                <span>{language === 'hi' ? 'स्थान पिन' : language === 'sat' ? 'ᱴᱷᱟᱶ ᱯᱤᱱ' : 'Interactive Pin'}</span>
               </button>
             </div>
 
@@ -686,9 +798,7 @@ export default function ProblemSubmissionStudio() {
                 compact
               />
             ) : (
-              /* Interactive Visual Map Canvas with Draggable Pin */
               <div className="relative rounded-2xl overflow-hidden border border-slate-300 bg-slate-900 aspect-[16/9] max-h-[300px] select-none">
-                {/* Map SVG Canvas with Jharkhand Coordinate Projections */}
                 <svg
                   ref={mapSvgRef}
                   onClick={handleMapClickOrDrag}
@@ -699,7 +809,6 @@ export default function ProblemSubmissionStudio() {
                   className="w-full h-full cursor-crosshair"
                   viewBox="0 0 800 450"
                 >
-                  {/* Background Map Contours */}
                   <rect width="800" height="450" fill="#0f172a" />
                   <path
                     d="M 120 180 Q 240 60, 480 80 T 720 150 Q 760 300, 600 380 T 260 400 Q 80 320, 120 180 Z"
@@ -707,13 +816,10 @@ export default function ProblemSubmissionStudio() {
                     stroke="#334155"
                     strokeWidth="2"
                   />
-
-                  {/* Sub-Districts Mesh / Contours */}
-                  <circle cx="420" cy="220" r="160" fill="rgba(4, 71, 40, 0.25)" stroke="#044728" strokeWidth="1" />
+                  <circle cx="420" cy="220" r="160" fill="rgba(37, 99, 235, 0.15)" stroke="#2563eb" strokeWidth="1" />
                   <path d="M 280 180 L 450 210 L 580 160" stroke="#475569" strokeWidth="1" strokeDasharray="4 4" />
                   <path d="M 450 210 L 520 320" stroke="#475569" strokeWidth="1" strokeDasharray="4 4" />
 
-                  {/* Map Labels for Reference */}
                   <text x="420" y="210" fill="#94a3b8" fontSize="14" fontWeight="bold" textAnchor="middle">
                     Ranchi Hub
                   </text>
@@ -721,15 +827,13 @@ export default function ProblemSubmissionStudio() {
                     Dhanbad / Bokaro
                   </text>
                   <text x="540" y="340" fill="#64748b" fontSize="12" textAnchor="middle">
-                    Jamshedpur (East Singhbhum)
+                    Jamshedpur
                   </text>
                   <text x="240" y="140" fill="#64748b" fontSize="12" textAnchor="middle">
                     Palamu / Latehar
                   </text>
 
-                  {/* Draggable/Interactive Pin Marker */}
                   {(() => {
-                    // Normalize coordinates to 800x450 canvas
                     const lonNorm = (mapCoords.lon - 83.3) / (87.9 - 83.3);
                     const latNorm = 1 - (mapCoords.lat - 22.0) / (25.3 - 22.0);
                     const pinX = Math.max(20, Math.min(lonNorm * 800, 780));
@@ -741,20 +845,17 @@ export default function ProblemSubmissionStudio() {
                         onMouseDown={() => setIsDraggingPin(true)}
                         className="cursor-grab active:cursor-grabbing"
                       >
-                        {/* Radar pulse around pin */}
-                        <circle r="22" fill="rgba(217, 119, 6, 0.2)" className="animate-ping" />
-                        <circle r="12" fill="rgba(217, 119, 6, 0.4)" />
-                        {/* Pin teardrop */}
+                        <circle r="22" fill="rgba(37, 99, 235, 0.25)" className="animate-ping" />
+                        <circle r="12" fill="rgba(37, 99, 235, 0.45)" />
                         <path
                           d="M 0 0 C -6 -12, -10 -16, -10 -22 C -10 -28, -5 -34, 0 -34 C 5 -34, 10 -28, 10 -22 C 10 -16, 6 -12, 0 0 Z"
-                          fill="#D97706"
+                          fill="#2563eb"
                           stroke="#FFF"
                           strokeWidth="2"
                           className="drop-shadow-md"
                         />
                         <circle cx="0" cy="-22" r="3.5" fill="#FFF" />
-                        {/* Pin label callout */}
-                        <rect x="-45" y="-56" width="90" height="18" rx="4" fill="#044728" stroke="#D97706" strokeWidth="1" />
+                        <rect x="-45" y="-56" width="90" height="18" rx="4" fill="#1e293b" stroke="#2563eb" strokeWidth="1" />
                         <text x="0" y="-43" fill="#FFF" fontSize="10" fontWeight="bold" textAnchor="middle">
                           {activeDistrict} Pin
                         </text>
@@ -763,9 +864,12 @@ export default function ProblemSubmissionStudio() {
                   })()}
                 </svg>
 
-                {/* Map UI Overlay Info */}
                 <div className="absolute bottom-2 left-2 bg-slate-950/80 backdrop-blur px-2.5 py-1 rounded text-[10px] text-slate-300 border border-slate-800">
-                  Click or drag pin anywhere to calibrate coordinates
+                  {language === 'hi'
+                    ? 'पिन को खींचकर स्थान ठीक करें'
+                    : language === 'sat'
+                    ? 'ᱯᱤᱱ ᱚᱨ ᱠᱟᱛᱮ ᱴᱷᱟᱶ ᱴᱷᱤᱠ ᱢᱮ'
+                    : 'Click or drag pin anywhere to calibrate coordinates'}
                 </div>
               </div>
             )}
@@ -776,22 +880,39 @@ export default function ProblemSubmissionStudio() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-[#044728] hover:bg-[#03361e] text-white font-bold py-4 min-h-[52px] rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center justify-center space-x-2.5 text-base disabled:opacity-75 group active:scale-95"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 min-h-[52px] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center space-x-2.5 text-base disabled:opacity-75 group active:scale-95"
             >
               {submitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Submitting Grievance to Ingestion Network...</span>
+                  <span>
+                    {language === 'hi'
+                      ? 'समस्या दर्ज हो रही है...'
+                      : language === 'sat'
+                      ? 'ᱮᱴᱠᱮᱴᱚᱬᱮ ᱚᱞ ᱪᱟᱞᱟᱜ ᱠᱟᱱᱟ...'
+                      : 'Submitting Problem to Ingestion Network...'}
+                  </span>
                 </>
               ) : (
                 <>
-                  <Send className="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition-transform" />
-                  <span>{t('submission', 'submitBtn', 'Submit Problem to JAGRIT')}</span>
+                  <Send className="w-5 h-5 text-amber-300 group-hover:translate-x-1 transition-transform" />
+                  <span>
+                    {t('submission.submitBtn') ||
+                      (language === 'hi'
+                        ? 'समस्या दर्ज करें'
+                        : language === 'sat'
+                        ? 'ᱮᱴᱠᱮᱴᱚᱬᱮ ᱚᱞ ᱥᱚᱫᱚᱨ ᱢᱮ'
+                        : 'Submit Problem to Ingestion Network')}
+                  </span>
                 </>
               )}
             </button>
             <p className="text-center text-xs text-slate-500 mt-2">
-              Submission triggers automated PostGIS 500m deduplication and zero-shot HEI R&D routing.
+              {language === 'hi'
+                ? 'आपकी समस्या का समाधान विश्वविद्यालय के अभियंताओं और स्थानीय प्रशासन द्वारा किया जाएगा।'
+                : language === 'sat'
+                ? 'ᱱᱚᱶᱟ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱫᱚ ᱡᱮᱜᱮᱛ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱟᱨ ᱯᱨᱚᱥᱟᱥᱚᱱ ᱦᱚᱛᱮᱛᱮ ᱵᱤᱰᱟᱹᱣ ᱦᱩᱭᱩᱜᱼᱟ᱾'
+                : 'Your submission will be evaluated by university engineering labs and local administration.'}
             </p>
           </div>
         </form>

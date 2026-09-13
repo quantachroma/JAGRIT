@@ -6,7 +6,6 @@ import {
   Square,
   Play,
   Pause,
-  RotateCcw,
   Volume2,
   Trash2,
   CheckCircle2,
@@ -118,25 +117,23 @@ export default function AudioRecorder({
         for (let i = 0; i < dataArray.length; i++) {
           const barHeight = (dataArray[i] / 255) * (height * 0.85);
 
-          // Gradient from Jharkhand Emerald (#044728) to Saffron (#D97706)
           const grad = ctx.createLinearGradient(0, height / 2 - barHeight / 2, 0, height / 2 + barHeight / 2);
-          grad.addColorStop(0, '#34d399');
-          grad.addColorStop(0.5, '#f59e0b');
-          grad.addColorStop(1, '#044728');
+          grad.addColorStop(0, '#60a5fa');
+          grad.addColorStop(0.5, '#2563eb');
+          grad.addColorStop(1, '#1d4ed8');
 
           ctx.fillStyle = grad;
           ctx.fillRect(x, (height - barHeight) / 2, barWidth - 1, Math.max(barHeight, 2));
           x += barWidth;
         }
       } else {
-        // High-precision smooth sinusoidal simulated wave fallback (always active during recording)
         phase += 0.12;
         ctx.beginPath();
         ctx.lineWidth = 2.5;
         const waveGrad = ctx.createLinearGradient(0, 0, width, 0);
-        waveGrad.addColorStop(0, '#044728');
-        waveGrad.addColorStop(0.5, '#f59e0b');
-        waveGrad.addColorStop(1, '#34d399');
+        waveGrad.addColorStop(0, '#1d4ed8');
+        waveGrad.addColorStop(0.5, '#3b82f6');
+        waveGrad.addColorStop(1, '#60a5fa');
         ctx.strokeStyle = waveGrad;
 
         const sliceWidth = width / 40;
@@ -154,10 +151,9 @@ export default function AudioRecorder({
         }
         ctx.stroke();
 
-        // Mirrored wave for visual richness
         ctx.beginPath();
         ctx.lineWidth = 1.5;
-        ctx.strokeStyle = 'rgba(52, 211, 153, 0.4)';
+        ctx.strokeStyle = 'rgba(96, 165, 250, 0.4)';
         x = 0;
         for (let i = 0; i < 40; i++) {
           const amplitude = Math.cos(phase * 0.8 + i * 0.25) * (height * 0.2);
@@ -196,7 +192,6 @@ export default function AudioRecorder({
       setIsRecording(true);
       startWaveformVisualizer(stream);
 
-      // Duration counter
       timerRef.current = setInterval(() => {
         setRecordingDuration((prev) => {
           if (prev >= 120) {
@@ -207,7 +202,6 @@ export default function AudioRecorder({
         });
       }, 1000);
 
-      // MediaRecorder initialization if stream is present
       if (stream && typeof MediaRecorder !== 'undefined') {
         const mimeType = MediaRecorder.isTypeSupported('audio/webm')
           ? 'audio/webm'
@@ -246,7 +240,6 @@ export default function AudioRecorder({
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
     } else {
-      // Fallback synthetic audio generation for simulated environments
       handleRecordingStopped();
     }
 
@@ -261,7 +254,6 @@ export default function AudioRecorder({
     if (audioChunksRef.current.length > 0) {
       finalBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
     } else {
-      // Mock minimal valid WAV header payload for simulation
       const mockWavBase64 = 'UklGRi4AAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
       const byteCharacters = atob(mockWavBase64);
       const byteNumbers = new Array(byteCharacters.length);
@@ -274,7 +266,6 @@ export default function AudioRecorder({
     const url = URL.createObjectURL(finalBlob);
     setAudioUrl(url);
 
-    // Convert to base64 and emit to parent
     const reader = new FileReader();
     reader.readAsDataURL(finalBlob);
     reader.onloadend = () => {
@@ -284,7 +275,6 @@ export default function AudioRecorder({
       }
     };
 
-    // Auto-populate Title & Description based on language via simulated ASR pipeline
     generateTranscribedContent();
   };
 
@@ -300,7 +290,7 @@ export default function AudioRecorder({
     } else if (lang === 'sat') {
       title = 'ᱠᱟᱸᱠᱮ ᱪᱟᱯᱟᱠᱚᱞ ᱯᱟᱭᱤᱯ ᱵᱟᱹᱲᱤᱡ ᱟᱨ ᱢᱮᱬᱦᱮᱫ ᱫᱟᱜ ᱮᱴᱠᱮᱴᱚᱬᱮ';
       description =
-        'ᱠᱟᱸᱠᱮ ᱟᱹᱛᱩ ᱨᱮ ᱪᱟᱯᱟᱠᱚᱞ ᱯᱟᱭᱤᱯ ᱓ ᱪᱟᱸᱫᱚ ᱠᱷᱚᱱ ᱵᱟᱹᱲᱤᱡ ᱟᱠᱟᱱᱟ᱾ ᱢᱮᱬᱦᱮᱫ ᱫᱟᱜ (iron effluent) ᱚᱰᱚᱠᱚᱜ ᱠᱟᱱᱟ ᱟᱨ ᱕᱐ ᱜᱷᱟᱨᱚᱸᱡᱽ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱨᱮ ᱢᱮᱱᱟᱜ ᱠᱚᱣᱟ᱾';
+        'ᱠᱟᱸᱠᱮ ᱟᱹᱛᱩ ᱨᱮ ᱪᱟᱯᱟᱠᱚᱞ ᱯᱟᱭᱤᱯ ᱓ ᱪᱟᱸᱫᱚ ᱠᱷᱚᱱ ᱵᱟᱹᱲᱤᱡ ᱟᱠᱟᱱᱟ᱾ ᱢᱮᱬᱦᱮᱫ ᱫᱟᱜ ᱚᱰᱚᱠᱚᱜ ᱠᱟᱱᱟ ᱟᱨ ᱕᱐ ᱜᱷᱟᱨᱚᱸᱡᱽ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱨᱮ ᱢᱮᱱᱟᱜ ᱠᱚᱣᱟ᱾';
     } else {
       title = 'Severe Pipe Corrosion and Iron Contamination in Kanke Handpump';
       description =
@@ -365,22 +355,28 @@ export default function AudioRecorder({
     <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <div className="p-1.5 rounded-lg bg-amber-500/20 text-[#D97706] border border-amber-500/30">
+          <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-200">
             <Mic className="w-4 h-4" />
           </div>
           <div>
             <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-              <span>{lang === 'hi' ? 'आवाज़ में रिकॉर्ड करें' : lang === 'sat' ? 'ᱟᱲᱟᱝ ᱨᱮᱠᱚᱨᱰ (Voice Note)' : 'Voice Recording Studio'}</span>
-              <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-semibold">
-                Bhashini / ASR
+              <span>
+                {lang === 'hi'
+                  ? 'आवाज़ में विवरण रिकॉर्ड करें'
+                  : lang === 'sat'
+                  ? 'ᱟᱲᱟᱝ ᱨᱮᱠᱚᱨᱰᱤᱝ'
+                  : 'Voice Recording Studio'}
+              </span>
+              <span className="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-semibold border border-blue-200">
+                {lang === 'hi' ? 'आवाज़ पहचान' : lang === 'sat' ? 'ᱟᱲᱟᱝ ᱥᱟᱹᱵᱤᱛ' : 'Speech Recognition'}
               </span>
             </h4>
             <p className="text-[11px] text-slate-500">
               {lang === 'hi'
-                ? 'हिन्दी, संथाली (Ol Chiki) अथवा खोरठा में बोलें — एआई स्वतः टेक्स्ट भरेगा'
+                ? 'अपनी भाषा में बोलें — एआई स्वतः टेक्स्ट भरेगा'
                 : lang === 'sat'
-                ? 'ᱥᱟᱱᱛᱟᱲᱤ ᱥᱮ ᱦᱤᱱᱫᱤ ᱛᱮ ᱨᱚᱲ ᱢᱮ — ᱮᱟᱭᱤ ᱟᱯᱱᱟᱨ ᱛᱮ ᱚᱞᱟ'
-                : 'Speak in Hindi, Santhali, or English — speech-to-text auto-fills the form'}
+                ? 'ᱥᱟᱱᱛᱟᱲᱤ ᱛᱮ ᱨᱚᱲ ᱢᱮ — ᱮᱟᱭᱤ ᱟᱯᱱᱟᱨ ᱛᱮ ᱚᱞᱟ'
+                : 'Speak clearly — speech recognition auto-fills the form'}
             </p>
           </div>
         </div>
@@ -405,7 +401,13 @@ export default function AudioRecorder({
         {!isRecording && !audioUrl && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/70 backdrop-blur-xs text-slate-400 text-xs space-y-1">
             <Volume2 className="w-5 h-5 text-slate-500" />
-            <span>{lang === 'hi' ? 'माइक दबाकर बोलना शुरू करें' : 'Press mic button below to record'}</span>
+            <span>
+              {lang === 'hi'
+                ? 'माइक दबाकर बोलना शुरू करें'
+                : lang === 'sat'
+                ? 'ᱨᱚᱲ ᱞᱟᱹᱜᱤᱫ ᱢᱟᱭᱤᱠ ᱚᱛᱟᱭ ᱢᱮ'
+                : 'Press mic button below to record'}
+            </span>
           </div>
         )}
 
@@ -424,16 +426,18 @@ export default function AudioRecorder({
             <button
               type="button"
               onClick={startRecording}
-              className="inline-flex items-center space-x-2 bg-[#044728] hover:bg-[#03361e] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-md transition-all active:scale-95"
+              className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 min-h-[44px] rounded-xl font-bold text-xs shadow-md transition-all active:scale-95"
             >
               <Mic className="w-4 h-4 text-amber-300" />
               <span>
                 {audioUrl
                   ? lang === 'hi'
-                    ? 'पुनः रिकॉर्ड करें (Re-record)'
+                    ? 'पुनः रिकॉर्ड करें'
+                    : lang === 'sat'
+                    ? 'ᱫᱚᱦᱲᱟ ᱨᱮᱠᱚᱨᱰ ᱢᱮ'
                     : 'Record Over'
                   : lang === 'hi'
-                  ? 'बोलना शुरू करें (Start Speaking)'
+                  ? 'बोलना शुरू करें'
                   : lang === 'sat'
                   ? 'ᱨᱚᱲ ᱮᱦᱚᱵ ᱢᱮ'
                   : 'Start Voice Recording'}
@@ -443,10 +447,16 @@ export default function AudioRecorder({
             <button
               type="button"
               onClick={stopRecording}
-              className="inline-flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-lg transition-all animate-bounce"
+              className="inline-flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 min-h-[44px] rounded-xl font-bold text-xs shadow-lg transition-all animate-bounce"
             >
               <Square className="w-4 h-4 fill-white" />
-              <span>{lang === 'hi' ? 'रिकॉर्डिंग समाप्त करें (Stop)' : 'Stop Recording'}</span>
+              <span>
+                {lang === 'hi'
+                  ? 'रिकॉर्डिंग समाप्त करें'
+                  : lang === 'sat'
+                  ? 'ᱨᱮᱠᱚᱨᱰᱤᱝ ᱛᱷᱩᱠᱟᱹᱢ ᱢᱮ'
+                  : 'Stop Recording'}
+              </span>
             </button>
           )}
 
@@ -454,10 +464,22 @@ export default function AudioRecorder({
             <button
               type="button"
               onClick={togglePlayback}
-              className="inline-flex items-center space-x-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-all"
+              className="inline-flex items-center space-x-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 px-3.5 py-2.5 min-h-[44px] rounded-xl font-semibold text-xs transition-all"
             >
               {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-slate-800" />}
-              <span>{isPlaying ? 'Pause' : 'Play Voice Note'}</span>
+              <span>
+                {isPlaying
+                  ? lang === 'hi'
+                    ? 'रोकें'
+                    : lang === 'sat'
+                    ? 'ᱛᱷᱟᱢᱵᱷᱟᱣ ᱢᱮ'
+                    : 'Pause'
+                  : lang === 'hi'
+                  ? 'आवाज़ सुनें'
+                  : lang === 'sat'
+                  ? 'ᱟᱲᱟᱝ ᱟᱸᱡᱚᱢ ᱢᱮ'
+                  : 'Play Voice Note'}
+              </span>
             </button>
           )}
         </div>
@@ -466,29 +488,31 @@ export default function AudioRecorder({
           <button
             type="button"
             onClick={resetRecording}
-            className="inline-flex items-center space-x-1 text-slate-500 hover:text-red-600 text-xs font-medium px-2 py-1 transition-colors"
+            className="inline-flex items-center space-x-1 text-slate-500 hover:text-red-600 text-xs font-medium px-2 py-1 transition-colors min-h-[40px]"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            <span>Discard</span>
+            <span>{lang === 'hi' ? 'हटाएं' : lang === 'sat' ? 'ᱜᱤᱰᱤ ᱢᱮ' : 'Discard'}</span>
           </button>
         )}
       </div>
 
       {/* Auto-Transcription Notification Banner */}
       {transcribed && (
-        <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-start space-x-2.5 text-xs text-emerald-900 shadow-xs animate-in fade-in duration-300">
-          <Sparkles className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start space-x-2.5 text-xs text-blue-950 shadow-xs animate-in fade-in duration-300">
+          <Sparkles className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
           <div className="space-y-0.5">
             <p className="font-bold">
               {lang === 'hi'
                 ? '✨ आवाज़ से शीर्षक एवं विवरण स्वतः भर दिए गए हैं!'
                 : lang === 'sat'
-                ? '✨ ᱟᱲᱟᱝ ᱛᱮ ᱥᱚᱢᱚᱥᱭᱟ ᱧᱩᱛᱩᱢ ᱟᱨ ᱵᱤᱵᱚᱨᱚᱬ ᱚᱞ ᱮᱱᱟ!'
+                ? '✨ ᱟᱲᱟᱝ ᱛᱮ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱧᱩᱛᱩᱢ ᱟᱨ ᱵᱤᱵᱚᱨᱚᱬ ᱚᱞ ᱮᱱᱟ!'
                 : '✨ Voice note transcribed! Title and description have been auto-populated.'}
             </p>
-            <p className="text-[11px] text-emerald-700">
+            <p className="text-[11px] text-blue-700">
               {lang === 'hi'
-                ? 'आप नीचे दिए गए बॉक्स में आवश्यकतानुसार बदलाव कर सकते हैं।'
+                ? 'आप नीचे दिए गए बॉक्स में आवश्यकतानुसार संपादन कर सकते हैं।'
+                : lang === 'sat'
+                ? 'ᱟᱢ ᱞᱟᱛᱟᱨ ᱨᱮ ᱚᱞ ᱟᱠᱟᱱ ᱵᱟᱠᱥᱟ ᱨᱮ ᱵᱚᱫᱚᱞ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ᱾'
                 : 'You can review and freely edit the generated text fields below before submitting.'}
             </p>
           </div>
