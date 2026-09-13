@@ -2,9 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { GeoLocation } from '@jagrit/contracts';
+import { useLanguage } from './LanguageContext';
 import enLocale from '../../public/locales/en.json';
-import hiLocale from '../../public/locales/hi.json';
-import satLocale from '../../public/locales/sat.json';
 
 export type Language = 'hi' | 'sat' | 'en';
 
@@ -22,11 +21,10 @@ export const DEFAULT_RANCHI_LOCATION: GeoLocation = {
   panchayat: 'Kanke Panchayat',
 };
 
-const dictionaries: Record<Language, any> = {
-  hi: hiLocale,
-  sat: satLocale,
-  en: enLocale,
-};
+import hiLocale from '../../public/locales/hi.json';
+import satLocale from '../../public/locales/sat.json';
+
+const legacyDictionaries: Record<Language, any> = { hi: hiLocale, sat: satLocale, en: enLocale };
 
 export interface CitizenContextType {
   language: Language;
@@ -46,7 +44,7 @@ export interface CitizenContextType {
 const CitizenContext = createContext<CitizenContextType | undefined>(undefined);
 
 export function CitizenProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('hi');
+  const { language, setLanguage } = useLanguage();
   const [user, setUser] = useState<CitizenUser>({
     isAuthenticated: false,
   });
@@ -56,10 +54,6 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
   // Initialize stored preferences if present in browser
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedLang = localStorage.getItem('jagrit_citizen_lang') as Language;
-      if (storedLang && ['hi', 'sat', 'en'].includes(storedLang)) {
-        setLanguageState(storedLang);
-      }
       const storedUser = localStorage.getItem('jagrit_citizen_user');
       if (storedUser) {
         try {
@@ -70,13 +64,6 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
       }
     }
   }, []);
-
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('jagrit_citizen_lang', lang);
-    }
-  };
 
   const login = (phone: string, name?: string) => {
     const newUser: CitizenUser = {
@@ -132,7 +119,7 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
 
   const t = (section: string, key?: string, fallback?: string): string => {
     try {
-      const activeDict = dictionaries[language] || dictionaries.hi;
+      const activeDict = legacyDictionaries[language] || legacyDictionaries.hi;
       
       // If called with a dotted path like t('home.heroTitle', 'fallback')
       if (key === undefined || (typeof key === 'string' && fallback === undefined && section.includes('.'))) {
@@ -147,7 +134,7 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
         if (val !== undefined && typeof val === 'string') return val;
 
         // Try English fallback
-        let engVal: any = dictionaries.en;
+        let engVal: any = legacyDictionaries.en;
         for (const p of parts) {
           engVal = engVal?.[p];
           if (engVal === undefined) break;
@@ -155,7 +142,7 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
         if (engVal !== undefined && typeof engVal === 'string') return engVal;
 
         // Try Hindi fallback
-        let hiVal: any = dictionaries.hi;
+        let hiVal: any = legacyDictionaries.hi;
         for (const p of parts) {
           hiVal = hiVal?.[p];
           if (hiVal === undefined) break;
@@ -175,7 +162,7 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
         }
         if (val !== undefined && typeof val === 'string') return val;
 
-        let engVal: any = dictionaries.en;
+        let engVal: any = legacyDictionaries.en;
         for (const p of parts) {
           engVal = engVal?.[p];
           if (engVal === undefined) break;
@@ -189,7 +176,7 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
       if (sectionObj && sectionObj[key] !== undefined) {
         return sectionObj[key];
       }
-      const fallbackValue = dictionaries.en?.[section]?.[key] || dictionaries.hi?.[section]?.[key];
+      const fallbackValue = legacyDictionaries.en?.[section]?.[key] || legacyDictionaries.hi?.[section]?.[key];
       return fallbackValue !== undefined ? fallbackValue : (fallback || `${section}.${key}`);
     } catch {
       return fallback || `${section}.${key || ''}`;
@@ -210,7 +197,7 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
         detectLocation,
         isDetectingLocation,
         t,
-        dict: dictionaries[language] || dictionaries.hi,
+        dict: legacyDictionaries[language] || legacyDictionaries.hi,
       }}
     >
       {children}

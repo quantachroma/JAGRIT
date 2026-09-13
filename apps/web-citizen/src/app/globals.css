@@ -3,9 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --primary: #1D4ED8;
-  --accent-green: #16A34A;
-  --accent-saffron: #D97706;
+  --primary: #2563EB;
+  --navy: #1E3A8A;
+  --sky: #0284C7;
+  --ice: #F8FAFC;
   --border: #E2E8F0;
   --background: #F8FAFC;
   --foreground: #0F172A;
@@ -21,14 +22,14 @@ html, body {
   min-height: 100vh;
 }
 
-/* Custom smooth scrollbar */
+/* Custom smooth scrollbar in Ice Blue */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #f8fafc;
 }
 
 ::-webkit-scrollbar-thumb {

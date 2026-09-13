@@ -133,8 +133,8 @@ export default function TimeMachinePage() {
           ctx.lineWidth = 2.5;
           const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
           grad.addColorStop(0, '#1d4ed8');
-          grad.addColorStop(0.5, '#f59e0b');
-          grad.addColorStop(1, '#10b981');
+          grad.addColorStop(0.5, '#38BDF8');
+          grad.addColorStop(1, '#2563EB');
           ctx.strokeStyle = grad;
 
           const sliceWidth = canvas.width / 32;
@@ -180,13 +180,13 @@ export default function TimeMachinePage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* 1. TOP BANNER: Demo Time Machine Controller (Clean Civic Blue / Amber Banner) */}
+      {/* 1. TOP BANNER: Demo Time Machine Controller (Clean Civic Blue / sky Banner) */}
       <div className="bg-slate-900 text-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-800 relative overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center space-x-2">
               <span className="bg-blue-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-300" />
+                <Sparkles className="w-3 h-3 text-sky-300" />
                 <span>{language === 'hi' ? 'सिमुलेशन इंजन' : language === 'sat' ? 'ᱵᱤᱰᱟᱹᱣ ᱤᱧᱡᱤᱱ' : 'Simulation Engine'}</span>
               </span>
             </div>
@@ -237,7 +237,7 @@ export default function TimeMachinePage() {
                     : 'bg-blue-700/60 hover:bg-blue-600 text-white'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <Sparkles className="w-3.5 h-3.5 text-sky-300" />
                 <span>{language === 'hi' ? 'दिन 46 (खोलें)' : language === 'sat' ? '᱔᱖ ᱢᱟᱦᱟᱸ' : 'Day 46'}</span>
               </button>
             </div>
@@ -269,13 +269,13 @@ export default function TimeMachinePage() {
 
           <div>
             {isTimeMachineActive ? (
-              <span className="inline-flex items-center space-x-1.5 bg-emerald-50 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-300">
-                <Unlock className="w-3.5 h-3.5 text-emerald-700" />
+              <span className="inline-flex items-center space-x-1.5 bg-blue-50 text-blue-800 text-xs font-bold px-3 py-1 rounded-full border border-blue-300">
+                <Unlock className="w-3.5 h-3.5 text-blue-700" />
                 <span>{language === 'hi' ? 'सत्यापन मतदान खुला' : language === 'sat' ? 'ᱵᱷᱳᱴ ᱡᱷᱤᱡ ᱮᱱᱟ' : '14-Day Verification Window Active'}</span>
               </span>
             ) : (
-              <span className="inline-flex items-center space-x-1.5 bg-amber-50 text-amber-900 text-xs font-bold px-3 py-1 rounded-full border border-amber-300">
-                <Clock className="w-3.5 h-3.5 text-amber-700" />
+              <span className="inline-flex items-center space-x-1.5 bg-sky-50 text-sky-900 text-xs font-bold px-3 py-1 rounded-full border border-sky-300">
+                <Clock className="w-3.5 h-3.5 text-sky-700" />
                 <span>{language === 'hi' ? `परिपक्वता अवधि (दिन ${simulatedDay}/45)` : language === 'sat' ? `ᱵᱤᱰᱟᱹᱣ ᱚᱠᱛᱚ (ᱢᱟᱦᱟᱸ ${simulatedDay}/᱔᱕)` : `45-Day Maturation Buffer (Day ${simulatedDay}/45)`}</span>
               </span>
             )}
@@ -329,7 +329,7 @@ export default function TimeMachinePage() {
       {/* 4. 14-Day Citizen Verification Voting Card */}
       {!isTimeMachineActive ? (
         <div className="bg-white border-2 border-dashed border-slate-200 rounded-3xl p-8 text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 mx-auto flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-700 mx-auto flex items-center justify-center">
             <Lock className="w-6 h-6" />
           </div>
           <h3 className="text-base sm:text-lg font-bold text-slate-900">
@@ -352,7 +352,7 @@ export default function TimeMachinePage() {
               onClick={() => handleToggleTimeMachine(true)}
               className="inline-flex items-center space-x-2 bg-blue-700 hover:bg-blue-800 text-white font-bold px-6 py-3 min-h-[48px] rounded-2xl text-xs sm:text-sm shadow transition-all active:scale-95"
             >
-              <Sparkles className="w-4 h-4 text-amber-300" />
+              <Sparkles className="w-4 h-4 text-sky-300" />
               <span>
                 {language === 'hi'
                   ? 'टाइम मशीन चलाएं (दिन 46 पर जाएं)'
@@ -364,11 +364,11 @@ export default function TimeMachinePage() {
           </div>
         </div>
       ) : hasVoted && voteChoice === 'YES' ? (
-        <div className="bg-white border-2 border-emerald-200 rounded-3xl p-6 text-center space-y-3 shadow-xs">
-          <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-700 mx-auto flex items-center justify-center">
+        <div className="bg-white border-2 border-blue-200 rounded-3xl p-6 text-center space-y-3 shadow-xs">
+          <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-700 mx-auto flex items-center justify-center">
             <CheckCircle2 className="w-7 h-7" />
           </div>
-          <h3 className="text-lg font-black text-emerald-800">
+          <h3 className="text-lg font-black text-blue-800">
             {language === 'hi'
               ? 'सत्यापन वोट सफलतापूर्वक दर्ज!'
               : language === 'sat'
@@ -386,7 +386,7 @@ export default function TimeMachinePage() {
             <button
               type="button"
               onClick={() => setShowCelebrationModal(true)}
-              className="inline-flex items-center space-x-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 py-2.5 min-h-[48px] rounded-xl text-xs shadow transition-all"
+              className="inline-flex items-center space-x-2 bg-blue-700 hover:bg-blue-800 text-white font-bold px-5 py-2.5 min-h-[48px] rounded-xl text-xs shadow transition-all"
             >
               <PartyPopper className="w-4 h-4 text-white" />
               <span>{language === 'hi' ? 'अनुदान प्रमाण पत्र देखें' : language === 'sat' ? 'ᱥᱟᱹᱨᱤ ᱥᱟᱠᱟᱢ ᱧᱮᱞ ᱢᱮ' : 'View Approval & Escrow Release'}</span>
@@ -437,14 +437,14 @@ export default function TimeMachinePage() {
               onClick={() => handleVoteSubmit('YES')}
               className={`p-4 min-h-[48px] rounded-2xl border-2 transition-all flex flex-col items-center text-center space-y-2 active:scale-95 ${
                 voteChoice === 'YES'
-                  ? 'border-emerald-600 bg-emerald-50 text-emerald-900 shadow-sm'
-                  : 'border-slate-200 hover:border-emerald-600 hover:bg-emerald-50/50 bg-white'
+                  ? 'border-blue-600 bg-blue-50 text-blue-900 shadow-sm'
+                  : 'border-slate-200 hover:border-blue-600 hover:bg-blue-50/50 bg-white'
               }`}
             >
-              <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
-              <span className="text-sm font-black text-emerald-800">
+              <span className="text-sm font-black text-blue-800">
                 {t('timeMachine', 'yesButton', 'YES / WORKING')}
               </span>
               <span className="text-[11px] text-slate-600 font-medium">
@@ -458,14 +458,14 @@ export default function TimeMachinePage() {
               onClick={() => handleVoteSubmit('PARTIAL')}
               className={`p-4 min-h-[48px] rounded-2xl border-2 transition-all flex flex-col items-center text-center space-y-2 active:scale-95 ${
                 voteChoice === 'PARTIAL'
-                  ? 'border-amber-500 bg-amber-50 text-amber-900 shadow-sm'
-                  : 'border-slate-200 hover:border-amber-500 hover:bg-amber-50/50 bg-white'
+                  ? 'border-sky-500 bg-sky-50 text-sky-900 shadow-sm'
+                  : 'border-slate-200 hover:border-sky-500 hover:bg-sky-50/50 bg-white'
               }`}
             >
-              <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6" />
               </div>
-              <span className="text-sm font-black text-amber-800">
+              <span className="text-sm font-black text-sky-800">
                 {t('timeMachine', 'partialButton', 'PARTIALLY WORKING')}
               </span>
               <span className="text-[11px] text-slate-600 font-medium">
@@ -479,14 +479,14 @@ export default function TimeMachinePage() {
               onClick={() => handleVoteSubmit('NO')}
               className={`p-4 min-h-[48px] rounded-2xl border-2 transition-all flex flex-col items-center text-center space-y-2 active:scale-95 ${
                 voteChoice === 'NO'
-                  ? 'border-red-500 bg-red-50 text-red-900 shadow-sm'
-                  : 'border-slate-200 hover:border-red-500 hover:bg-red-50/50 bg-white'
+                  ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-sm'
+                  : 'border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 bg-white'
               }`}
             >
-              <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
                 <XCircle className="w-6 h-6" />
               </div>
-              <span className="text-sm font-black text-red-700">
+              <span className="text-sm font-black text-blue-700">
                 {t('timeMachine', 'noButton', 'NO / BROKEN')}
               </span>
               <span className="text-[11px] text-slate-600 font-medium">
@@ -502,7 +502,7 @@ export default function TimeMachinePage() {
               className="mt-6 p-5 sm:p-6 bg-slate-50 border border-slate-200 rounded-2xl space-y-5 animate-in fade-in duration-300"
             >
               <div className="flex items-center space-x-2 border-b border-slate-200 pb-3">
-                <Wrench className="w-5 h-5 text-amber-600" />
+                <Wrench className="w-5 h-5 text-sky-600" />
                 <h4 className="text-sm sm:text-base font-bold text-slate-900">
                   {language === 'hi'
                     ? 'दोष विवरण एवं मौखिक प्रतिक्रिया दर्ज करें'
@@ -547,7 +547,7 @@ export default function TimeMachinePage() {
                     <button
                       type="button"
                       onClick={stopVoiceRecording}
-                      className="bg-red-600 text-white text-xs font-bold px-4 py-2.5 min-h-[48px] rounded-xl active:scale-95"
+                      className="bg-blue-600 text-white text-xs font-bold px-4 py-2.5 min-h-[48px] rounded-xl active:scale-95"
                     >
                       {language === 'hi' ? 'रोकें' : language === 'sat' ? 'ᱵᱚᱸᱫᱽ ᱢᱮ' : 'Stop'}
                     </button>
@@ -588,7 +588,7 @@ export default function TimeMachinePage() {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 mx-auto flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-700 mx-auto flex items-center justify-center">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
@@ -632,7 +632,7 @@ export default function TimeMachinePage() {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="w-16 h-16 rounded-full bg-amber-50 text-amber-700 mx-auto flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-sky-50 text-sky-700 mx-auto flex items-center justify-center">
               <AlertTriangle className="w-8 h-8" />
             </div>
 

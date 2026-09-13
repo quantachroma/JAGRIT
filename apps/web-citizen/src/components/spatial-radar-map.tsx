@@ -507,7 +507,7 @@ export default function SpatialRadarMap({
 
                   <circle
                     r={isSelected ? '14' : '11'}
-                    fill={isHighSimilarity ? '#ef4444' : isWithinBuffer ? '#f59e0b' : '#64748b'}
+                    fill={isHighSimilarity ? '#2563EB' : isWithinBuffer ? '#38BDF8' : '#64748b'}
                     stroke="#ffffff"
                     strokeWidth="2"
                     className="transition-all duration-200 group-hover:scale-125"
@@ -527,13 +527,13 @@ export default function SpatialRadarMap({
                       height="15"
                       rx="3"
                       fill="#0f172a"
-                      stroke={isHighSimilarity ? '#ef4444' : '#475569'}
+                      stroke={isHighSimilarity ? '#2563EB' : '#475569'}
                       strokeWidth="1"
                     />
                     <text
                       x="0"
                       y="-2"
-                      fill={isHighSimilarity ? '#fca5a5' : '#e2e8f0'}
+                      fill={isHighSimilarity ? '#38BDF8' : '#F1F5F9'}
                       fontSize="8"
                       fontWeight="bold"
                       textAnchor="middle"
@@ -545,7 +545,7 @@ export default function SpatialRadarMap({
 
                   {(ch.hasMerged || optimisticMergedIds[ch.id]) && (
                     <g transform="translate(10, -10)">
-                      <circle r="6" fill="#10b981" stroke="#ffffff" strokeWidth="1" />
+                      <circle r="6" fill="#2563EB" stroke="#ffffff" strokeWidth="1" />
                       <path
                         d="M -2 0 L -0.5 1.5 L 2.5 -1.5"
                         fill="none"
@@ -609,11 +609,11 @@ export default function SpatialRadarMap({
         {/* Legend */}
         <div className="absolute bottom-3 right-3 z-10 hidden sm:flex items-center space-x-2 bg-slate-950/80 backdrop-blur px-2.5 py-1 rounded-lg border border-slate-800 text-[10px] text-slate-400">
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-red-500" />{' '}
+            <span className="w-2 h-2 rounded-full bg-blue-500" />{' '}
             {language === 'hi' ? 'समान समस्या' : language === 'sat' ? 'ᱢᱤᱫ ᱞᱮᱠᱟᱱ' : 'High Match'}
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-amber-500" />{' '}
+            <span className="w-2 h-2 rounded-full bg-sky-500" />{' '}
             {language === 'hi' ? 'आंशिक मिलान' : language === 'sat' ? 'ᱟᱫᱷᱟ ᱢᱤᱫ' : 'Partial Overlap'}
           </span>
         </div>
@@ -637,7 +637,7 @@ export default function SpatialRadarMap({
                   {selectedChallenge.id}
                 </span>
                 <span className="text-[11px] text-slate-400 flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-amber-400" />
+                  <MapPin className="w-3 h-3 text-sky-400" />
                   <span>
                     {language === 'hi'
                       ? `आपके स्थान से ${selectedChallenge.distanceMeters} मीटर दूर`
@@ -696,14 +696,14 @@ export default function SpatialRadarMap({
             <div className="bg-slate-950/70 rounded-xl p-3 border border-slate-800 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-slate-300 flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <Sparkles className="w-3.5 h-3.5 text-sky-400" />
                   {language === 'hi'
                     ? 'आपकी वर्तमान फ़ोटो / पिन'
                     : language === 'sat'
                     ? 'ᱟᱢᱟᱜ ᱱᱤᱛᱚᱜᱟᱜ ᱪᱤᱛᱟᱹᱨ'
                     : 'Your Current Upload / Live Pin'}
                 </span>
-                <span className="text-[10px] text-emerald-400 font-medium">
+                <span className="text-[10px] text-blue-400 font-medium">
                   {language === 'hi' ? 'अभी' : language === 'sat' ? 'ᱱᱤᱛ' : 'Just Now'}
                 </span>
               </div>
@@ -717,9 +717,9 @@ export default function SpatialRadarMap({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-900 to-amber-950/40 flex flex-col items-center justify-center p-3 text-center">
-                    <Camera className="w-6 h-6 text-amber-400 mb-1 opacity-70" />
-                    <span className="text-xs text-amber-200 font-medium">
+                  <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-900 to-sky-950/40 flex flex-col items-center justify-center p-3 text-center">
+                    <Camera className="w-6 h-6 text-sky-400 mb-1 opacity-70" />
+                    <span className="text-xs text-sky-200 font-medium">
                       {language === 'hi' ? 'वर्तमान समस्या फ़ोटो' : language === 'sat' ? 'ᱱᱤᱛᱚᱜᱟᱜ ᱪᱤᱛᱟᱹᱨ' : 'Current Grievance Evidence'}
                     </span>
                     <span className="text-[10px] text-slate-400 mt-0.5">
@@ -745,7 +745,7 @@ export default function SpatialRadarMap({
               </div>
               <span
                 className={`font-mono font-bold text-sm ${
-                  selectedChallenge.similarityScore >= 0.85 ? 'text-emerald-400' : 'text-amber-400'
+                  selectedChallenge.similarityScore >= 0.85 ? 'text-blue-400' : 'text-sky-400'
                 }`}
               >
                 {Math.round(selectedChallenge.similarityScore * 100)}% Match
@@ -756,8 +756,8 @@ export default function SpatialRadarMap({
               <div
                 className={`h-full transition-all duration-700 rounded-full ${
                   selectedChallenge.similarityScore >= 0.85
-                    ? 'bg-gradient-to-r from-blue-500 to-emerald-400'
-                    : 'bg-gradient-to-r from-amber-500 to-yellow-400'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-400'
+                    : 'bg-gradient-to-r from-sky-500 to-sky-400'
                 }`}
                 style={{ width: `${Math.round(selectedChallenge.similarityScore * 100)}%` }}
               />
@@ -776,13 +776,13 @@ export default function SpatialRadarMap({
               disabled={selectedChallenge.hasMerged || Boolean(optimisticMergedIds[selectedChallenge.id])}
               className={`w-full sm:flex-1 py-3.5 px-4 min-h-[48px] rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${
                 selectedChallenge.hasMerged || optimisticMergedIds[selectedChallenge.id]
-                  ? 'bg-emerald-800 text-emerald-100 cursor-not-allowed border border-emerald-600'
+                  ? 'bg-blue-800 text-blue-100 cursor-not-allowed border border-blue-600'
                   : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-950/50'
               }`}
             >
               {selectedChallenge.hasMerged || optimisticMergedIds[selectedChallenge.id] ? (
                 <>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-300" />
                   <span>
                     {language === 'hi'
                       ? 'समर्थन दर्ज (+१) • पूर्व समस्या का समर्थन किया गया'
@@ -793,7 +793,7 @@ export default function SpatialRadarMap({
                 </>
               ) : (
                 <>
-                  <ThumbsUp className="w-4 h-4 text-amber-300" />
+                  <ThumbsUp className="w-4 h-4 text-sky-300" />
                   <span>
                     {language === 'hi'
                       ? 'इस समस्या का समर्थन करें (+१)'

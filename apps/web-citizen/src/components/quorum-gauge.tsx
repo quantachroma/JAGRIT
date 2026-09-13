@@ -75,8 +75,8 @@ export default function QuorumGauge({
         {/* Quorum Badge */}
         <div className="self-start sm:self-auto">
           {isQuorumMet ? (
-            <span className="inline-flex items-center space-x-1.5 bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-300">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+            <span className="inline-flex items-center space-x-1.5 bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full border border-blue-300">
+              <CheckCircle2 className="w-3.5 h-3.5 text-blue-700" />
               <span>
                 {language === 'hi'
                   ? 'कोरम पूर्ण'
@@ -86,8 +86,8 @@ export default function QuorumGauge({
               </span>
             </span>
           ) : (
-            <span className="inline-flex items-center space-x-1.5 bg-amber-100 text-amber-900 text-xs font-bold px-3 py-1 rounded-full border border-amber-300">
-              <Sparkles className="w-3.5 h-3.5 text-[#D97706]" />
+            <span className="inline-flex items-center space-x-1.5 bg-sky-100 text-sky-900 text-xs font-bold px-3 py-1 rounded-full border border-sky-300">
+              <Sparkles className="w-3.5 h-3.5 text-[#0284C7]" />
               <span>
                 {language === 'hi'
                   ? 'कोरम प्रगति पर है'
@@ -107,14 +107,14 @@ export default function QuorumGauge({
           <div className="relative w-44 h-44 flex items-center justify-center">
             <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
               <defs>
-                <linearGradient id="quorumEmeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id="quorumblueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#1D4ED8" />
                   <stop offset="60%" stopColor="#2563EB" />
-                  <stop offset="100%" stopColor="#16A34A" />
+                  <stop offset="100%" stopColor="#2563EB" />
                 </linearGradient>
-                <linearGradient id="quorumAmberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#D97706" />
-                  <stop offset="100%" stopColor="#F59E0B" />
+                <linearGradient id="quorumskyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#0284C7" />
+                  <stop offset="100%" stopColor="#38BDF8" />
                 </linearGradient>
               </defs>
 
@@ -123,7 +123,7 @@ export default function QuorumGauge({
                 cx="80"
                 cy="80"
                 r={radius}
-                stroke="#E2E8F0"
+                stroke="#F1F5F9"
                 strokeWidth={strokeWidth}
                 fill="transparent"
                 strokeLinecap="round"
@@ -134,7 +134,7 @@ export default function QuorumGauge({
                 cx="80"
                 cy="80"
                 r={radius}
-                stroke={isQuorumMet ? 'url(#quorumEmeraldGrad)' : 'url(#quorumAmberGrad)'}
+                stroke={isQuorumMet ? 'url(#quorumblueGrad)' : 'url(#quorumskyGrad)'}
                 strokeWidth={strokeWidth}
                 fill="transparent"
                 strokeDasharray={circumference}
@@ -251,8 +251,8 @@ export default function QuorumGauge({
           {/* 1. Operational Pass Rate */}
           <div className="space-y-1">
             <div className="flex justify-between items-center text-xs">
-              <div className="flex items-center space-x-1.5 font-bold text-emerald-800">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <div className="flex items-center space-x-1.5 font-bold text-blue-800">
+                <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
                 <span>
                   {language === 'hi'
                     ? 'संतुष्ट एवं सफल संचालन'
@@ -261,11 +261,11 @@ export default function QuorumGauge({
                     : 'Operational Pass Rate'}
                 </span>
               </div>
-              <span className="font-mono font-black text-sm text-emerald-700">{operationalPassRate}%</span>
+              <span className="font-mono font-black text-sm text-blue-700">{operationalPassRate}%</span>
             </div>
             <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
               <div
-                className="bg-emerald-600 h-full rounded-full transition-all duration-700"
+                className="bg-blue-600 h-full rounded-full transition-all duration-700"
                 style={{ width: `${operationalPassRate}%` }}
               />
             </div>
@@ -283,8 +283,8 @@ export default function QuorumGauge({
           {/* 2. Cosmetic Grievances */}
           <div className="space-y-1">
             <div className="flex justify-between items-center text-xs">
-              <div className="flex items-center space-x-1.5 font-bold text-amber-800">
-                <Wrench className="w-3.5 h-3.5 text-amber-600" />
+              <div className="flex items-center space-x-1.5 font-bold text-sky-800">
+                <Wrench className="w-3.5 h-3.5 text-sky-600" />
                 <span>
                   {language === 'hi'
                     ? 'मामूली शिकायतें'
@@ -293,11 +293,11 @@ export default function QuorumGauge({
                     : 'Cosmetic Grievances'}
                 </span>
               </div>
-              <span className="font-mono font-black text-sm text-amber-700">{cosmeticGrievanceRate}%</span>
+              <span className="font-mono font-black text-sm text-sky-700">{cosmeticGrievanceRate}%</span>
             </div>
             <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
               <div
-                className="bg-amber-500 h-full rounded-full transition-all duration-700"
+                className="bg-sky-500 h-full rounded-full transition-all duration-700"
                 style={{ width: `${cosmeticGrievanceRate}%` }}
               />
             </div>
@@ -306,7 +306,7 @@ export default function QuorumGauge({
                 {language === 'hi' ? 'मुख्य टिप्पणी:' : language === 'sat' ? 'ᱢᱩᱲ ᱠᱟᱛᱷᱟ:' : 'Key remark:'} &quot;
                 {defaultCosmeticRemark}&quot;
               </span>
-              <span className="text-[10px] bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded">
+              <span className="text-[10px] bg-sky-100 text-sky-800 font-semibold px-2 py-0.5 rounded">
                 {language === 'hi' ? 'समाधान योग्य' : language === 'sat' ? 'ᱥᱟᱞᱟᱜ ᱮᱱᱟ' : 'Resolved - Non-critical'}
               </span>
             </div>
@@ -315,8 +315,8 @@ export default function QuorumGauge({
           {/* 3. Critical Defects */}
           <div className="space-y-1">
             <div className="flex justify-between items-center text-xs">
-              <div className="flex items-center space-x-1.5 font-bold text-red-700">
-                <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
+              <div className="flex items-center space-x-1.5 font-bold text-blue-700">
+                <AlertTriangle className="w-3.5 h-3.5 text-blue-600" />
                 <span>
                   {language === 'hi'
                     ? 'गंभीर तकनीकी दोष'
@@ -326,7 +326,7 @@ export default function QuorumGauge({
                 </span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-300">
                   {isCriticalDefectSafe
                     ? language === 'hi'
                       ? 'स्वीकृत सीमा के अंतर्गत'
@@ -339,12 +339,12 @@ export default function QuorumGauge({
                     ? 'ᱥᱤᱢᱟᱹ ᱯᱟᱨᱚᱢ ᱮᱱᱟ'
                     : 'Threshold Breached'}
                 </span>
-                <span className="font-mono font-black text-sm text-red-600">{criticalDefectRate}%</span>
+                <span className="font-mono font-black text-sm text-blue-600">{criticalDefectRate}%</span>
               </div>
             </div>
             <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
               <div
-                className="bg-red-500 h-full rounded-full transition-all duration-700"
+                className="bg-blue-500 h-full rounded-full transition-all duration-700"
                 style={{ width: `${criticalDefectRate}%` }}
               />
             </div>

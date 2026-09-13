@@ -624,16 +624,16 @@ export default function SamvaadPage() {
         );
       case 'GOVT_OFFICER':
         return (
-          <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
-            <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+          <span className="inline-flex items-center gap-1 bg-sky-50 text-sky-800 border border-sky-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+            <ShieldCheck className="w-3.5 h-3.5 text-sky-700" />
             <span>{label}</span>
           </span>
         );
       case 'CITIZEN':
       default:
         return (
-          <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
-            <User className="w-3.5 h-3.5 text-emerald-700" />
+          <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+            <User className="w-3.5 h-3.5 text-blue-700" />
             <span>{label}</span>
           </span>
         );
@@ -645,7 +645,7 @@ export default function SamvaadPage() {
       {/* Feedback Toast */}
       {toastMessage && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white border border-slate-700 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold shadow-2xl flex items-center space-x-2 animate-in fade-in slide-in-from-top duration-200 max-w-[90%] text-center">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <CheckCircle2 className="w-4 h-4 text-blue-400 flex-shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -815,13 +815,13 @@ export default function SamvaadPage() {
                       onClick={() => handleToggleLike(thread.id)}
                       className={`flex items-center space-x-1.5 px-3.5 py-2 min-h-[48px] rounded-xl transition-all active:scale-95 ${
                         thread.isLiked
-                          ? 'bg-rose-50 text-rose-600'
+                          ? 'bg-blue-50 text-blue-600'
                           : 'hover:bg-slate-100 text-slate-600'
                       }`}
                     >
                       <Heart
                         className={`w-4 h-4 ${
-                          thread.isLiked ? 'fill-rose-600 text-rose-600' : 'text-slate-400'
+                          thread.isLiked ? 'fill-blue-600 text-blue-600' : 'text-slate-400'
                         }`}
                       />
                       <span>{thread.likesCount}</span>

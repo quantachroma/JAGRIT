@@ -374,9 +374,9 @@ export default function ProblemSubmissionStudio() {
 
       {submitResult ? (
         /* Submission Success Ticket View */
-        <div className="bg-white border-2 border-emerald-600 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 animate-in fade-in duration-300">
-          <div className="flex items-center space-x-3.5 text-emerald-700">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-700 shadow-inner">
+        <div className="bg-white border-2 border-blue-600 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 animate-in fade-in duration-300">
+          <div className="flex items-center space-x-3.5 text-blue-700">
+            <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-700 shadow-inner">
               <CheckCircle2 className="w-7 h-7" />
             </div>
             <div>
@@ -397,14 +397,14 @@ export default function ProblemSubmissionStudio() {
             </div>
           </div>
 
-          <div className="bg-emerald-50/70 rounded-2xl p-5 border border-emerald-200 space-y-3 text-sm">
-            <div className="flex justify-between items-center py-1.5 border-b border-emerald-100">
+          <div className="bg-blue-50/70 rounded-2xl p-5 border border-blue-200 space-y-3 text-sm">
+            <div className="flex justify-between items-center py-1.5 border-b border-blue-100">
               <span className="text-slate-600">
                 {language === 'hi' ? 'टिकट संख्या' : language === 'sat' ? 'ᱴᱤᱠᱮᱴ ᱮᱞ' : 'Ticket ID'}:
               </span>
               <span className="font-mono font-black text-blue-700 text-lg">{submitResult.ticketNumber}</span>
             </div>
-            <div className="flex justify-between items-center py-1.5 border-b border-emerald-100">
+            <div className="flex justify-between items-center py-1.5 border-b border-blue-100">
               <span className="text-slate-600">
                 {language === 'hi' ? 'वर्तमान स्थिति' : language === 'sat' ? 'ᱱᱤᱛᱚᱜᱟᱜ ᱦᱟᱞᱚᱛ' : 'Lifecycle Status'}:
               </span>
@@ -416,7 +416,7 @@ export default function ProblemSubmissionStudio() {
                   : 'Pending Expert Evaluation'}
               </span>
             </div>
-            <div className="flex justify-between items-center py-1.5 border-b border-emerald-100">
+            <div className="flex justify-between items-center py-1.5 border-b border-blue-100">
               <span className="text-slate-600">
                 {language === 'hi' ? 'सत्यापित स्थान' : language === 'sat' ? 'ᱪᱤᱱᱦᱟᱹᱣ ᱟᱠᱟᱱ ᱴᱷᱟᱶ' : 'GeoLocation Verified'}:
               </span>
@@ -463,7 +463,7 @@ export default function ProblemSubmissionStudio() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-8">
           {errorMsg && (
-            <div className="bg-red-50 text-red-700 text-xs p-4 rounded-xl border border-red-200 flex items-center space-x-2">
+            <div className="bg-blue-50 text-blue-700 text-xs p-4 rounded-xl border border-blue-200 flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <span>{errorMsg}</span>
             </div>
@@ -498,7 +498,7 @@ export default function ProblemSubmissionStudio() {
           {/* Section 2: Audio Recording Studio */}
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-4">
             <div className="flex items-center space-x-2 text-slate-900 font-bold text-base">
-              <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs flex items-center justify-center font-bold">
+              <span className="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">
                 2
               </span>
               <span>{language === 'hi' ? 'आवाज़ में विवरण रिकॉर्ड करें' : language === 'sat' ? 'ᱟᱲᱟᱝ ᱨᱮᱠᱚᱨᱰᱤᱝ' : 'Voice Note Ingestion'}</span>
@@ -527,7 +527,7 @@ export default function ProblemSubmissionStudio() {
                 <span>{language === 'hi' ? 'शीर्षक एवं विस्तृत विवरण' : language === 'sat' ? 'ᱧᱩᱛᱩᱢ ᱟᱨ ᱵᱤᱵᱚᱨᱚᱬ' : 'Title & Problem Description'}</span>
               </div>
               <span className="text-[11px] text-slate-500 flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <Sparkles className="w-3.5 h-3.5 text-sky-500" />
                 {language === 'hi' ? 'आवाज़ से स्वतः भरा गया' : language === 'sat' ? 'ᱟᱲᱟᱝ ᱛᱮ ᱯᱮᱨᱮᱡ ᱮᱱᱟ' : 'Auto-filled from Voice'}
               </span>
             </div>
@@ -565,7 +565,7 @@ export default function ProblemSubmissionStudio() {
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center space-x-2 text-slate-900 font-bold text-base">
-                <span className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 text-xs flex items-center justify-center font-bold">
+                <span className="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">
                   4
                 </span>
                 <span>{language === 'hi' ? 'स्थल फ़ोटो एवं प्रमाण' : language === 'sat' ? 'ᱪᱤᱛᱟᱹᱨ ᱟᱨ ᱥᱟᱹᱵᱤᱛ' : 'Photo Evidence & Compression'}</span>
@@ -615,8 +615,8 @@ export default function ProblemSubmissionStudio() {
 
             {/* Compression Feedback */}
             {isCompressing && (
-              <div className="flex items-center space-x-2 text-xs text-amber-700 bg-amber-50 p-3 rounded-xl border border-amber-200">
-                <Loader2 className="w-4 h-4 animate-spin text-amber-600" />
+              <div className="flex items-center space-x-2 text-xs text-sky-700 bg-sky-50 p-3 rounded-xl border border-sky-200">
+                <Loader2 className="w-4 h-4 animate-spin text-sky-600" />
                 <span>
                   {language === 'hi'
                     ? 'फ़ोटो का आकार अनुकूलित किया जा रहा है...'
@@ -628,9 +628,9 @@ export default function ProblemSubmissionStudio() {
             )}
 
             {compressionStats && !isCompressing && (
-              <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-4 text-xs text-emerald-950 flex items-center justify-between flex-wrap gap-2 shadow-xs">
+              <div className="bg-blue-50 border border-blue-300 rounded-2xl p-4 text-xs text-blue-950 flex items-center justify-between flex-wrap gap-2 shadow-xs">
                 <div className="flex items-center space-x-2.5">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0" />
                   <div>
                     <span className="font-bold">
                       {language === 'hi'
@@ -639,18 +639,18 @@ export default function ProblemSubmissionStudio() {
                         ? 'ᱪᱤᱛᱟᱹᱨ ᱥᱟᱭᱤᱡᱽ ᱥᱟᱹᱛ ᱮᱱᱟ!'
                         : 'Image Compression Complete!'}
                     </span>
-                    <p className="text-[11px] text-emerald-800">
+                    <p className="text-[11px] text-blue-800">
                       {language === 'hi' ? 'मूल आकार:' : language === 'sat' ? 'ᱢᱩᱲ ᱥᱟᱭᱤᱡᱽ:' : 'Original:'}{' '}
                       <span className="font-mono">{compressionStats.originalSizeKb} KB</span> &rarr;{' '}
                       {language === 'hi' ? 'संकुचित:' : language === 'sat' ? 'ᱠᱟᱹᱴᱤᱡ ᱥᱟᱭᱤᱡᱽ:' : 'Compressed:'}{' '}
-                      <span className="font-mono font-bold text-emerald-900">
+                      <span className="font-mono font-bold text-blue-900">
                         {compressionStats.compressedSizeKb} KB
                       </span>{' '}
                       ({compressionStats.ratio}% {language === 'hi' ? 'बचत' : language === 'sat' ? 'ᱠᱟᱹᱴᱤᱡ' : 'reduced'})
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono font-black bg-emerald-200 text-emerald-900 px-2.5 py-1 rounded-md">
+                <span className="text-[10px] font-mono font-black bg-blue-200 text-blue-900 px-2.5 py-1 rounded-md">
                   &le; 500 KB OK
                 </span>
               </div>
@@ -895,7 +895,7 @@ export default function ProblemSubmissionStudio() {
                 </>
               ) : (
                 <>
-                  <Send className="w-5 h-5 text-amber-300 group-hover:translate-x-1 transition-transform" />
+                  <Send className="w-5 h-5 text-sky-300 group-hover:translate-x-1 transition-transform" />
                   <span>
                     {t('submission.submitBtn') ||
                       (language === 'hi'
