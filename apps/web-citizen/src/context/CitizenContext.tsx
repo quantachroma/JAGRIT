@@ -7,10 +7,13 @@ import hiLocale from '../../public/locales/hi.json';
 import satLocale from '../../public/locales/sat.json';
 
 export type Language = 'hi' | 'sat' | 'en';
+export type UserRole = 'citizen' | 'university' | 'industry' | 'government';
 
 export interface CitizenUser {
   phone?: string;
   name?: string;
+  role?: UserRole;
+  institution?: string;
   isAuthenticated: boolean;
 }
 
@@ -31,9 +34,11 @@ const dictionaries: Record<Language, any> = {
 export interface CitizenContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
+  role: UserRole;
+  setRole: (role: UserRole) => void;
   user: CitizenUser;
   setUser: React.Dispatch<React.SetStateAction<CitizenUser>>;
-  login: (phone: string, name?: string) => void;
+  login: (phone: string, name?: string, role?: UserRole, institution?: string) => void;
   logout: () => void;
   currentLocation: GeoLocation;
   setCurrentLocation: (loc: GeoLocation) => void;
@@ -47,8 +52,10 @@ const CitizenContext = createContext<CitizenContextType | undefined>(undefined);
 
 export function CitizenProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('hi');
+  const [role, setRoleState] = useState<UserRole>('citizen');
   const [user, setUser] = useState<CitizenUser>({
     isAuthenticated: false,
+    role: 'citizen',
   });
   const [currentLocation, setCurrentLocation] = useState<GeoLocation>(DEFAULT_RANCHI_LOCATION);
   const [isDetectingLocation, setIsDetectingLocation] = useState<boolean>(false);
@@ -60,10 +67,18 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
       if (storedLang && ['hi', 'sat', 'en'].includes(storedLang)) {
         setLanguageState(storedLang);
       }
+      const storedRole = localStorage.getItem('jagrit_citizen_role') as UserRole;
+      if (storedRole && ['citizen', 'university', 'industry', 'government'].includes(storedRole)) {
+        setRoleState(storedRole);
+      }
       const storedUser = localStorage.getItem('jagrit_citizen_user');
       if (storedUser) {
         try {
-          setUser(JSON.parse(storedUser));
+          const parsed = JSON.parse(storedUser);
+          setUser(parsed);
+          if (parsed.role) {
+            setRoleState(parsed.role);
+          }
         } catch {
           // ignore corrupted storage
         }
@@ -78,23 +93,44 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = (phone: string, name?: string) => {
+  const setRole = (newRole: UserRole) => {
+    setRoleState(newRole);
+    setUser((prev) => {
+      const updated = { ...prev, role: newRole };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('jagrit_citizen_role', newRole);
+        localStorage.setItem('jagrit_citizen_user', JSON.stringify(updated));
+      }
+      return updated;
+    });
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('jagrit_citizen_role', newRole);
+    }
+  };
+
+  const login = (phone: string, name?: string, newRole: UserRole = 'citizen', institution?: string) => {
     const newUser: CitizenUser = {
       phone,
-      name: name || 'Jharkhand Citizen',
+      name: name || 'Jharkhand Stakeholder',
+      role: newRole,
+      institution,
       isAuthenticated: true,
     };
     setUser(newUser);
+    setRoleState(newRole);
     if (typeof window !== 'undefined') {
+      localStorage.setItem('jagrit_citizen_role', newRole);
       localStorage.setItem('jagrit_citizen_user', JSON.stringify(newUser));
     }
   };
 
   const logout = () => {
-    const emptyUser: CitizenUser = { isAuthenticated: false };
+    const emptyUser: CitizenUser = { isAuthenticated: false, role: 'citizen' };
     setUser(emptyUser);
+    setRoleState('citizen');
     if (typeof window !== 'undefined') {
       localStorage.removeItem('jagrit_citizen_user');
+      localStorage.setItem('jagrit_citizen_role', 'citizen');
     }
   };
 
@@ -201,6 +237,8 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
       value={{
         language,
         setLanguage,
+        role,
+        setRole,
         user,
         setUser,
         login,

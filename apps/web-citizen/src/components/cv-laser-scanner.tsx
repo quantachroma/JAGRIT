@@ -37,7 +37,7 @@ interface CVLaserScannerProps {
 const DEFAULT_DEFECTS: DetectedDefect[] = [
   {
     id: 'iron-effluent',
-    label: 'Iron Effluent',
+    label: 'Iron-Fluoride Sediment',
     category: 'Aquifer Contamination',
     confidence: 0.94,
     color: 'green',
@@ -48,13 +48,13 @@ const DEFAULT_DEFECTS: DetectedDefect[] = [
       height: 36,
     },
     details:
-      'Leached ferric precipitate (Fe3+) detected in water discharge. Aquifer oxidation requires university nano-filtration.',
+      'Leached ferric precipitate and fluoride concentration detected in water discharge. Aquifer oxidation requires university nano-filtration.',
   },
   {
     id: 'pipe-corrosion',
-    label: 'Pipe Corrosion',
+    label: 'Pump Base Corrosion',
     category: 'Structural Metallurgical Defect',
-    confidence: 0.88,
+    confidence: 0.89,
     color: 'red',
     box: {
       x: 14,
@@ -63,7 +63,7 @@ const DEFAULT_DEFECTS: DetectedDefect[] = [
       height: 36,
     },
     details:
-      'Galvanic degradation and wall thinning along riser cylinder. Exceeds standard local mending threshold.',
+      'Galvanic degradation, structural fracture, and baseplate thinning along riser cylinder. Exceeds standard local mending threshold.',
   },
 ];
 

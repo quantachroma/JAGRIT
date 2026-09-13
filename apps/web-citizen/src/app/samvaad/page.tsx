@@ -610,30 +610,30 @@ export default function SamvaadPage() {
     switch (role) {
       case 'RESEARCHER':
         return (
-          <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
-            <GraduationCap className="w-3.5 h-3.5 text-blue-700" />
+          <span className="inline-flex items-center gap-1 bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE] px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+            <GraduationCap className="w-3.5 h-3.5 text-[#1D4ED8]" />
             <span>{label}</span>
           </span>
         );
       case 'STUDENT':
         return (
-          <span className="inline-flex items-center gap-1 bg-sky-50 text-sky-800 border border-sky-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
-            <Sparkles className="w-3.5 h-3.5 text-sky-700" />
+          <span className="inline-flex items-center gap-1 bg-[#EFF6FF] text-[#2563EB] border border-[#BFDBFE] px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+            <Sparkles className="w-3.5 h-3.5 text-[#2563EB]" />
             <span>{label}</span>
           </span>
         );
       case 'GOVT_OFFICER':
         return (
-          <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
-            <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+          <span className="inline-flex items-center gap-1 bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A] px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#D97706]" />
             <span>{label}</span>
           </span>
         );
       case 'CITIZEN':
       default:
         return (
-          <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold">
-            <User className="w-3.5 h-3.5 text-emerald-700" />
+          <span className="inline-flex items-center gap-1 bg-[#DCFCE7] text-[#15803D] border border-[#BBF7D0] px-2.5 py-0.5 rounded-full text-[11px] font-bold">
+            <User className="w-3.5 h-3.5 text-[#15803D]" />
             <span>{label}</span>
           </span>
         );
@@ -655,17 +655,18 @@ export default function SamvaadPage() {
         <div>
           <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>{t('samvaad', 'title', 'Jan Samvaad Community Forum')}</span>
+            <span>{t('samvaad.title') || (language === 'hi' ? 'जन संवाद सामुदायिक मंच' : language === 'sat' ? 'ᱡᱚᱱ ᱥᱚᱢᱵᱟᱫᱽ ᱟᱹᱛᱩ ᱨᱚᱯᱚᱲ' : 'Jan Samvaad Community Forum')}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1.5">
-            {t('samvaad', 'title', 'Jan Samvaad Community Forum')}
+            {t('samvaad.title') || (language === 'hi' ? 'जन संवाद सामुदायिक मंच' : language === 'sat' ? 'ᱡᱚᱱ ᱥᱚᱢᱵᱟᱫᱽ ᱟᱹᱛᱩ ᱨᱚᱯᱚᱲ' : 'Jan Samvaad Community Forum')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl leading-relaxed">
-            {t(
-              'samvaad',
-              'subtitle',
-              'Collaborative forum uniting citizens, university researchers, and student innovators.'
-            )}
+            {t('samvaad.subtitle') ||
+              (language === 'hi'
+                ? 'नागरिकों, विश्वविद्यालय शोधकर्ताओं और सरकारी नेतृत्व को जोड़ने वाला सहयोगात्मक विचार मंच।'
+                : language === 'sat'
+                ? 'ᱟᱹᱛᱩ ᱦᱚᱲ, ᱠᱷᱚᱸᱫᱽᱨᱚᱸᱫᱽᱤᱭᱟᱹ ᱟᱨ ᱥᱚᱨᱠᱟᱨ ᱠᱚ ᱡᱚᱲᱟᱣ ᱟᱠᱟᱱ ᱨᱚᱯᱚᱲ ᱜᱟᱲ᱾'
+                : 'Micro-blogging collaborative network connecting citizens, researchers, and government leaders.')}
           </p>
         </div>
 
@@ -676,7 +677,7 @@ export default function SamvaadPage() {
           className="inline-flex items-center justify-center space-x-2 bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 min-h-[48px] rounded-2xl text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all self-start sm:self-auto active:scale-95 group"
         >
           <Plus className="w-4 h-4 text-white group-hover:rotate-90 transition-transform" />
-          <span>{t('samvaad', 'newDiscussion', 'Start a Discussion')}</span>
+          <span>{t('samvaad.startDiscussion') || (language === 'hi' ? 'नई चर्चा शुरू करें' : language === 'sat' ? '+ ᱱᱟᱶᱟ ᱨᱚᱯᱚᱲ ᱮᱦᱚᱵ' : '+ Start a Discussion')}</span>
         </button>
       </div>
 

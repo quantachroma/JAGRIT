@@ -14,6 +14,8 @@ import {
   ShieldCheck,
   Send,
   Clock,
+  BookOpen,
+  Check,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -22,18 +24,19 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: '/', label: t('common', 'home', 'Home'), icon: ShieldCheck },
-    { href: '/report', label: t('common', 'report', 'Report Problem'), icon: AlertCircle },
-    { href: '/dashboard', label: t('common', 'dashboard', 'My Grievances'), icon: LayoutDashboard },
-    { href: '/samvaad', label: t('common', 'samvaad', 'Jan Samvaad'), icon: MessageSquare },
-    { href: '/time-machine', label: t('common', 'timeMachine', 'Time Machine'), icon: Clock },
-    { href: '/whatsapp-simulator', label: t('common', 'whatsappSim', 'WhatsApp Seva Bot'), icon: Send },
+    { href: '/', label: t('common.home'), icon: ShieldCheck },
+    { href: '/report', label: t('common.report'), icon: AlertCircle },
+    { href: '/dashboard', label: t('common.dashboard'), icon: LayoutDashboard },
+    { href: '/samvaad', label: t('common.samvaad'), icon: MessageSquare },
+    { href: '/time-machine', label: t('common.timeMachine'), icon: Clock },
+    { href: '/whatsapp-simulator', label: t('common.whatsappSim'), icon: Send },
+    { href: '/repository', label: t('common.repository'), icon: BookOpen },
   ];
 
   const languages: { code: Language; label: string }[] = [
-    { code: 'en', label: 'English' },
     { code: 'hi', label: 'हिन्दी' },
     { code: 'sat', label: 'ᱥᱟᱱᱛᱟᱲᱤ' },
+    { code: 'en', label: 'English' },
   ];
 
   // Strictly localized portal branding
@@ -142,7 +145,7 @@ export default function Navbar() {
             <div
               role="radiogroup"
               aria-label="Select Language"
-              className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200 gap-1"
+              className="flex items-center bg-slate-50 p-1 rounded-2xl border border-slate-200 gap-1"
             >
               {languages.map((l) => {
                 const isSelected = language === l.code;
@@ -153,13 +156,14 @@ export default function Navbar() {
                     role="radio"
                     aria-checked={isSelected}
                     onClick={() => setLanguage(l.code)}
-                    className={`px-3 sm:px-4 py-2 min-h-[48px] rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 active:scale-95 flex items-center justify-center ${
+                    className={`px-3 sm:px-3.5 py-2 min-h-[48px] rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-1.5 ${
                       isSelected
-                        ? 'bg-blue-700 text-white shadow-md ring-2 ring-blue-700/20'
-                        : 'text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 border border-transparent'
+                        ? 'bg-[#1D4ED8] text-white shadow-sm ring-1 ring-[#1D4ED8]'
+                        : 'bg-white text-slate-700 hover:text-slate-900 border border-[#E2E8F0] hover:bg-slate-50'
                     }`}
                   >
-                    {l.label}
+                    <span>{l.label}</span>
+                    {isSelected && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
                   </button>
                 );
               })}

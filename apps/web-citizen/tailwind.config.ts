@@ -10,54 +10,88 @@ const config: Config = {
     extend: {
       colors: {
         // Design System Colors:
-        // Primary Civic Blue (#1D4ED8 / #2563EB)
+        // Base Canvas & Surfaces
+        canvas: {
+          DEFAULT: '#FFFFFF',
+          neutral: '#F8FAFC',
+        },
+        // Primary Civic Trust Blue (#1D4ED8 / #2563EB / #1E40AF)
         primary: {
           DEFAULT: '#1D4ED8',
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#2563EB',
+          600: '#1D4ED8',
+          700: '#1E40AF',
+          800: '#1E3A8A',
+          900: '#172554',
+          950: '#0F172A',
         },
-        // Fresh Jharkhand Emerald Green (#16A34A) for success badges/actions
+        // Regional Accent: Forest Emerald (#15803D, #16A34A, #DCFCE7)
         emerald: {
           DEFAULT: '#16A34A',
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
+          50: '#F0FDF4',
+          100: '#DCFCE7',
+          200: '#BBF7D0',
+          300: '#86EFAC',
+          400: '#4ADE80',
+          500: '#22C55E',
+          600: '#16A34A',
+          700: '#15803D',
           800: '#166534',
-          900: '#14532d',
-          950: '#052e16',
+          900: '#14532D',
+          950: '#052E16',
         },
-        // Warm Saffron/Amber accents (#D97706) for alerts
+        // Regional Accent: Warm Saffron (#D97706, #B45309, #FEF3C7)
         accent: {
           DEFAULT: '#D97706',
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
+          50: '#FFFBEB',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          300: '#FCD34D',
+          400: '#FBBF24',
+          500: '#F59E0B',
+          600: '#D97706',
+          700: '#B45309',
+          800: '#92400E',
+          900: '#78350F',
         },
-        // Slate Gray borders & Neutral surfaces
+        // Charcoal Slate Text & Borders
         border: '#E2E8F0',
         background: '#FFFFFF',
         foreground: '#0F172A',
+        muted: {
+          DEFAULT: '#F1F5F9',
+          foreground: '#334155',
+          subdued: '#64748B',
+        },
+      },
+      boxShadow: {
+        'card-subtle': '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+        'card-hover': '0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04)',
+      },
+      animation: {
+        'namaste-rise': 'namasteRise 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'pulse-ring': 'pulseRing 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'laser-sweep': 'laserSweep 1.5s ease-in-out infinite',
+      },
+      keyframes: {
+        namasteRise: {
+          '0%': { transform: 'translateY(14px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        pulseRing: {
+          '0%, 100%': { transform: 'scale(0.95)', opacity: '0.4' },
+          '50%': { transform: 'scale(1.12)', opacity: '0.85' },
+        },
+        laserSweep: {
+          '0%': { top: '0%' },
+          '50%': { top: '100%' },
+          '100%': { top: '0%' },
+        },
       },
     },
   },

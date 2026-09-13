@@ -16,9 +16,9 @@ export interface QuorumGaugeProps {
 }
 
 export default function QuorumGauge({
-  population = 850,
-  quorumTarget = 42,
-  votesLogged = 45,
+  population = 1230,
+  quorumTarget = 43,
+  votesLogged = 46,
   operationalPassRate = 88,
   cosmeticGrievanceRate = 10,
   criticalDefectRate = 2,
@@ -210,15 +210,15 @@ export default function QuorumGauge({
                   : 'AI Population Quorum Formula:'}
               </span>
             </div>
-            <p className="font-mono text-[11px] text-blue-800 bg-white px-2.5 py-1 rounded border border-slate-200">
-              Quorum_min = max(15, ⌈k · √N⌉) &rarr; max(15, ⌈1.44 · √{population}⌉) = {quorumTarget}
+            <p className="font-mono text-[11px] text-blue-900 bg-white px-2.5 py-1.5 rounded border border-blue-200 font-bold">
+              Target Quorum = ceil(sqrt(Adult Population * 1.5)) = {quorumTarget} verified local votes
             </p>
             <p className="text-[11px] text-slate-600 leading-relaxed">
               {language === 'hi'
-                ? 'यह सूत्र पूरे गांव के निष्पक्ष प्रतिनिधित्व को अनिवार्य करता है।'
+                ? 'यह सूत्र वयस्क जनसंख्या (~' + population + ') के आधार पर न्यूनतम जन-प्रतिनिधित्व को अनिवार्य करता है।'
                 : language === 'sat'
-                ? 'ᱱᱚᱶᱟ ᱥᱩᱛᱩᱨ ᱫᱚ ᱜᱚᱴᱟ ᱟᱹᱛᱩ ᱨᱤᱱ ᱦᱚᱲ ᱠᱚᱣᱟᱜ ᱥᱚᱦᱚᱫ ᱞᱟᱹᱠᱛᱤᱭᱟ᱾'
-                : 'Enforces representative democratic validation across the village prior to fund release.'}
+                ? 'ᱱᱚᱶᱟ ᱥᱩᱛᱩᱨ ᱫᱚ ᱟᱹᱛᱩ ᱦᱚᱲ ᱮᱞ ᱞᱮᱠᱟᱛᱮ ᱠᱳᱨᱚᱢ ᱯᱩᱨᱟᱹᱣ ᱥᱟᱹᱵᱤᱛᱟᱭ᱾'
+                : 'Statutory mathematical quorum ensuring equitable community sign-off before milestone funding release.'}
             </p>
           </div>
         </div>
@@ -355,6 +355,25 @@ export default function QuorumGauge({
                 ? `᱓᱐% ᱠᱷᱚᱱ ᱠᱚᱢ ᱠᱷᱟᱹᱢᱤ ᱠᱷᱟᱹᱛᱤᱨ ᱯᱨᱚᱠᱚᱞᱯᱚ ᱥᱟᱹᱛ ᱮᱱᱟ᱾ (${criticalDefectRate}%)`
                 : `System passed validation as defect rate (${criticalDefectRate}%) remains strictly below the 30% failure threshold.`}
             </p>
+          </div>
+
+          {/* Automated Transfer to Incubation Pipeline Status Banner */}
+          <div className="pt-2 border-t border-slate-200">
+            <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center justify-between flex-wrap gap-2 text-xs">
+              <div className="flex items-center space-x-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <span className="font-extrabold text-emerald-900">
+                  {language === 'hi'
+                    ? 'स्थिति: स्वीकृत -> इनक्यूबेशन पाइपलाइन में स्वतः स्थानांतरण'
+                    : language === 'sat'
+                    ? 'ᱦᱟᱞᱚᱛ: ᱥᱟᱹᱛ ᱮᱱᱟ -> ᱤᱱᱠᱭᱩᱵᱮᱥᱚᱱ ᱨᱮ ᱩᱪᱟᱹᱲ'
+                    : 'Status: PASSED -> Automated transfer to Incubation Pipeline'}
+                </span>
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-600 text-white px-2.5 py-0.5 rounded shadow-xs">
+                {language === 'hi' ? 'स्वीकृत' : language === 'sat' ? 'ᱥᱟᱹᱛ' : 'PASSED'}
+              </span>
+            </div>
           </div>
         </div>
       </div>

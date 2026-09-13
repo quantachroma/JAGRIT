@@ -4,11 +4,15 @@
 
 :root {
   --primary: #1D4ED8;
+  --primary-hover: #1E40AF;
   --accent-green: #16A34A;
   --accent-saffron: #D97706;
   --border: #E2E8F0;
-  --background: #F8FAFC;
+  --background: #FFFFFF;
+  --background-neutral: #F8FAFC;
   --foreground: #0F172A;
+  --foreground-muted: #334155;
+  --foreground-subdued: #64748B;
 }
 
 html, body {
@@ -17,8 +21,18 @@ html, body {
   max-width: 100vw;
   -webkit-tap-highlight-color: transparent;
   color: var(--foreground);
-  background-color: var(--background);
+  background-color: var(--background-neutral);
   min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Micro-interaction transitions & touch accessibility */
+.btn-civic {
+  @apply min-h-[48px] px-5 py-2.5 rounded-xl font-bold transition-all duration-200 ease-out active:scale-[0.98] hover:-translate-y-0.5 inline-flex items-center justify-center gap-2;
+}
+
+.card-civic {
+  @apply bg-white border border-[#E2E8F0] rounded-2xl shadow-card-subtle transition-all duration-200 ease-out hover:shadow-card-hover hover:-translate-y-0.5;
 }
 
 /* Custom smooth scrollbar */

@@ -43,8 +43,8 @@ export default function TimeMachinePage() {
     titleSat: 'ᱯᱟᱞᱟᱢᱩ ᱥᱮᱸᱜᱮᱞ ᱪᱟᱯᱟᱠᱚᱞ ᱠᱟᱹᱢᱤ',
     installedBy: 'BIT Mesra (Civil & Environmental Eng.)',
     location: 'Palamu, Satbarwa Block',
-    settlementPopulation: 850,
-    quorumTarget: 42,
+    settlementPopulation: 1230,
+    quorumTarget: 43,
     deploymentDate: '28 July 2026',
     escrowTotal: '₹14,50,000',
   };
@@ -55,8 +55,8 @@ export default function TimeMachinePage() {
     return projectDetails.titleEn;
   };
 
-  // Voting State
-  const [initialVotes, setInitialVotes] = useState(44);
+  // Voting State: 46 / 43 votes logged (107% Quorum Met)
+  const [initialVotes, setInitialVotes] = useState(46);
   const [hasVoted, setHasVoted] = useState(false);
   const [voteChoice, setVoteChoice] = useState<'YES' | 'NO' | 'PARTIAL' | null>(null);
   const [showCelebrationModal, setShowCelebrationModal] = useState(false);
@@ -180,67 +180,105 @@ export default function TimeMachinePage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* 1. TOP BANNER: Demo Time Machine Controller (Clean Civic Blue / Amber Banner) */}
-      <div className="bg-slate-900 text-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-800 relative overflow-hidden">
+      {/* 1. TOP WARNING BAR: Amber Banner & Interactive Time Slider */}
+      <div className="bg-amber-500/10 border-2 border-amber-400 text-amber-950 p-5 sm:p-6 rounded-3xl shadow-sm space-y-4 relative overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <div className="flex items-center space-x-2">
-              <span className="bg-blue-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-300" />
-                <span>{language === 'hi' ? 'सिमुलेशन इंजन' : language === 'sat' ? 'ᱵᱤᱰᱟᱹᱣ ᱤᱧᱡᱤᱱ' : 'Simulation Engine'}</span>
+              <span className="bg-amber-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1">
+                <span>DEMO CONTROLLER</span>
               </span>
             </div>
-            <h2 className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-2">
-              <span>{t('timeMachine', 'bannerTitle', 'Demo Time Machine: Advance Clock to Day 46')}</span>
+            <h2 className="text-base sm:text-lg font-black tracking-tight text-amber-950 flex items-center gap-2">
+              <span>⚡ HACKATHON DEMO TIME MACHINE: Advance clock to Day 46 to simulate post-deployment community usage.</span>
             </h2>
-            <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
-              {t(
-                'timeMachine',
-                'bannerSubtitle',
-                'Simulate 45-day durability testing in seconds to unlock the 14-day Gram Sabha citizen verification voting window.'
-              )}
+            <p className="text-xs text-amber-800/90 max-w-xl leading-relaxed">
+              {language === 'hi'
+                ? '45-दिवसीय परिपक्वता अवधि को सेकंडों में सिमुलेट करें ताकि 14-दिवसीय ग्राम सभा नागरिक सत्यापन मतदान खिड़की खुल सके।'
+                : language === 'sat'
+                ? '᱔᱕ ᱢᱟᱦᱟᱸ ᱨᱮᱱᱟᱜ ᱵᱤᱰᱟᱹᱣ ᱥᱮᱠᱮᱱᱰ ᱨᱮ ᱪᱟᱞᱟᱣ ᱢᱮ ᱡᱮᱢᱚᱱ ᱑᱔ ᱢᱟᱦᱟᱸ ᱨᱮᱱᱟᱜ ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱵᱷᱳᱴ ᱡᱷᱤᱡᱚᱜᱼᱟ᱾'
+                : 'Scrub the timeline to fast-forward through village durability validation and unlock Gram Sabha voting.'}
             </p>
           </div>
 
-          {/* Interactive Fast-Forward Toggle */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-800/80 p-3 rounded-2xl border border-slate-700 self-start lg:self-auto">
-            <div className="text-left sm:text-right">
-              <span className="text-[11px] font-bold text-slate-400 block">
-                {t('timeMachine', 'clockLabel', 'Simulated Clock:')}
-              </span>
-              <span className="text-sm font-black font-mono text-white">
-                {isTimeMachineActive
-                  ? t('timeMachine', 'unlockedStatus', 'Day 46 of 45 (Unlocked)')
-                  : t('timeMachine', 'lockedStatus', 'Day 15 of 45 (Locked)')}
-              </span>
-            </div>
+          <div className="flex items-center gap-2 self-start lg:self-auto">
+            <button
+              type="button"
+              onClick={() => handleToggleTimeMachine(false)}
+              className={`px-3.5 py-2 min-h-[48px] text-xs rounded-xl font-bold transition-all border active:scale-95 ${
+                !isTimeMachineActive
+                  ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
+                  : 'bg-white text-amber-900 border-amber-300 hover:bg-amber-100/50'
+              }`}
+            >
+              {language === 'hi' ? 'दिन 15 (तालाबंद)' : language === 'sat' ? '᱑᱕ ᱢᱟᱦᱟᱸ' : 'Day 15 (Locked)'}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleToggleTimeMachine(true)}
+              className={`px-4 py-2 min-h-[48px] text-xs rounded-xl font-bold transition-all flex items-center gap-1.5 border active:scale-95 ${
+                isTimeMachineActive
+                  ? 'bg-amber-600 text-white border-amber-600 shadow-md ring-2 ring-amber-400/40'
+                  : 'bg-white text-amber-900 border-amber-300 hover:bg-amber-100/50'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              <span>{language === 'hi' ? 'दिन 46 (खोलें)' : language === 'sat' ? '᱔᱖ ᱢᱟᱦᱟᱸ' : 'Day 46 (Unlocked)'}</span>
+            </button>
+          </div>
+        </div>
 
-            {/* Quick One-Click Jump Buttons (>= 48px touch targets) */}
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => handleToggleTimeMachine(false)}
-                className={`px-3.5 py-2 min-h-[48px] text-xs rounded-xl font-bold transition-all active:scale-95 ${
-                  !isTimeMachineActive
-                    ? 'bg-white text-slate-900 shadow-sm'
-                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                }`}
-              >
-                {language === 'hi' ? 'दिन 15' : language === 'sat' ? '᱑᱕ ᱢᱟᱦᱟᱸ' : 'Day 15'}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleToggleTimeMachine(true)}
-                className={`px-4 py-2 min-h-[48px] text-xs rounded-xl font-bold transition-all flex items-center gap-1.5 active:scale-95 ${
-                  isTimeMachineActive
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-blue-700/60 hover:bg-blue-600 text-white'
-                }`}
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                <span>{language === 'hi' ? 'दिन 46 (खोलें)' : language === 'sat' ? '᱔᱖ ᱢᱟᱦᱟᱸ' : 'Day 46'}</span>
-              </button>
-            </div>
+        {/* Interactive Time Slider: scrub from Day 0 through Day 45/46 */}
+        <div className="bg-white/80 backdrop-blur rounded-2xl p-4 border border-amber-300/80 space-y-2">
+          <div className="flex justify-between items-center text-xs font-bold text-amber-950">
+            <span>
+              {language === 'hi' ? 'टाइमलाइन स्क्रबर:' : language === 'sat' ? 'ᱚᱠᱛᱚ ᱥᱞᱟᱭᱰᱟᱨ:' : 'Interactive Time Slider:'}{' '}
+              <span className="font-mono text-blue-700 font-black">
+                {simulatedDay >= 46 ? 'Day 46 (Voting Window Open)' : `Day ${simulatedDay} of 45`}
+              </span>
+            </span>
+            <span className="text-[11px] font-mono font-semibold text-amber-800">
+              {simulatedDay >= 46 ? '14-Day Quorum Open' : 'Durability Maturation'}
+            </span>
+          </div>
+
+          <input
+            type="range"
+            min="0"
+            max="46"
+            step="1"
+            value={simulatedDay}
+            onChange={(e) => setSimulatedDay(Number(e.target.value))}
+            className="w-full h-2.5 bg-amber-200 rounded-lg appearance-none cursor-pointer accent-amber-600"
+          />
+
+          {/* Milestone Indicators */}
+          <div className="flex justify-between text-[10px] font-bold text-amber-900 pt-1">
+            <span className="flex flex-col items-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mb-0.5" />
+              <span>Day 0</span>
+              <span className="text-[9px] font-normal text-amber-700">Deploy</span>
+            </span>
+            <span className="flex flex-col items-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mb-0.5" />
+              <span>Day 15</span>
+              <span className="text-[9px] font-normal text-amber-700">Initial Check</span>
+            </span>
+            <span className="flex flex-col items-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-600 mb-0.5" />
+              <span>Day 30</span>
+              <span className="text-[9px] font-normal text-amber-700">Midway Stress</span>
+            </span>
+            <span className="flex flex-col items-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-700 mb-0.5" />
+              <span>Day 45</span>
+              <span className="text-[9px] font-normal text-amber-700">Buffer End</span>
+            </span>
+            <span className="flex flex-col items-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mb-0.5" />
+              <span className="text-emerald-800 font-extrabold">Day 46+</span>
+              <span className="text-[9px] font-bold text-emerald-700">Quorum Open</span>
+            </span>
           </div>
         </div>
       </div>
@@ -425,7 +463,12 @@ export default function TimeMachinePage() {
           {/* Core Question */}
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-center space-y-2">
             <h4 className="text-lg sm:text-xl font-black text-slate-900 max-w-xl mx-auto leading-snug">
-              {t('timeMachine', 'coreQuestion', 'Is clean, potable water flowing continuously from the handpump?')}
+              {t('timeMachine.coreQuestion') ||
+                (language === 'hi'
+                  ? 'क्या यह चापाकल अब सुरक्षित और स्वच्छ पेयजल प्रदान कर रहा है?'
+                  : language === 'sat'
+                  ? 'ᱪᱮᱫ ᱱᱚᱶᱟ ᱪᱟᱯᱟᱠᱚᱞ ᱠᱷᱚᱱ ᱱᱤᱛᱚᱜ ᱥᱟᱯᱷᱟ ᱟᱨ ᱥᱤᱵᱤᱞ ᱫᱟᱜ ᱧᱟᱢᱚᱜ ᱠᱟᱱᱟ?'
+                  : 'Is the borewell now delivering safe, clean drinking water?')}
             </h4>
           </div>
 

@@ -180,30 +180,30 @@ export default function WhatsAppSimulatorPage() {
         ? 'पेयजल एवं चापाकल'
         : language === 'sat'
         ? 'ᱪᱟᱯᱟᱠᱚᱞ ᱟᱨ ᱫᱟᱜ'
-        : 'Drinking Water and Handpumps';
+        : 'Drinking Water & Handpumps';
 
     const triageText =
       language === 'hi'
-        ? 'विश्वविद्यालय शोध एवं हैकथॉन ट्रैक'
+        ? 'बीआईटी मेसरा पर्यावरण प्रयोगशाला'
         : language === 'sat'
-        ? 'ᱡᱮᱜᱮᱛ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱠᱷᱚᱸᱫᱽᱨᱚᱸᱫᱽ'
-        : 'Applied University R&D Track';
+        ? 'ᱵᱤ.ᱟᱭ.ᱴᱤ ᱢᱮᱥᱨᱟ ᱠᱷᱚᱸᱫᱽᱨᱚᱸᱫᱽ ᱞᱮᱵᱽ'
+        : 'BIT Mesra Environmental Lab';
 
     const ticketSummaryText =
       language === 'hi'
-        ? 'शिकायत संख्या JAG-4102 सफलतापूर्वक दर्ज कर ली गई है।'
+        ? 'टिकट #JAG-PLM-0082 पंजीकृत हो गया है। बीआईटी मेसरा पर्यावरण प्रयोगशाला को आवंटित। समर्थन मत: 19।'
         : language === 'sat'
-        ? 'ᱴᱤᱠᱮᱴ JAG-4102 ᱥᱟᱹᱛ ᱛᱮ ᱫᱟᱨᱡᱽ ᱮᱱᱟ᱾'
-        : 'Ticket JAG-4102 has been successfully registered.';
+        ? 'ᱴᱤᱠᱮᱴ #JAG-PLM-0082 ᱫᱟᱨᱡᱽ ᱮᱱᱟ᱾ ᱵᱤ.ᱟᱭ.ᱴᱤ ᱢᱮᱥᱨᱟ ᱥᱟᱶ ᱡᱚᱲᱟᱣ ᱮᱱᱟ᱾ ᱵᱷᱳᱴ ᱮᱞ: ᱑᱙᱾'
+        : 'Ticket #JAG-PLM-0082 has been registered. Matched to BIT Mesra Environmental Lab. Upvote count: 19.';
 
     const userMsg: ChatMessage = {
       id: `usr-${Date.now()}`,
       sender: 'user',
       type: 'location',
       locationDetails: {
-        name: 'Kanke Block, Ranchi, Jharkhand',
-        lat: 23.3441,
-        lon: 85.3096,
+        name: 'Lesliganj, Palamu, Jharkhand',
+        lat: 24.0384,
+        lon: 84.0706,
       },
       time,
       isRead: true,
@@ -221,11 +221,11 @@ export default function WhatsAppSimulatorPage() {
         type: 'ticket',
         text: ticketSummaryText,
         ticketData: {
-          ticketNumber: 'JAG-4102',
+          ticketNumber: 'JAG-PLM-0082',
           domain: domainText,
-          location: 'Kanke Panchayat, Ranchi',
+          location: 'Lesliganj, Palamu',
           triageType: triageText,
-          universities: ['BIT Mesra', 'NIT Jamshedpur', 'Ranchi University'],
+          universities: ['BIT Mesra Environmental Lab'],
           dashboardUrl: '/dashboard',
         },
         time: getCurrentTime(),
