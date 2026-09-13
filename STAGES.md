@@ -40,10 +40,10 @@
 *Goal: Ensure the database, contracts, and development servers are running before writing business logic.*
 
 ### Role 1 (Citizen Experience Lead)
-- [ ] **Task 1.0.1:** Initialize Next.js PWA app inside `apps/web-citizen/` with Tailwind CSS and Lucide React.
-- [ ] **Task 1.0.2:** Configure `next-intl` localization dictionaries in `public/locales/` (`hi.json`, `sat.json`, `en.json`).
-- [ ] **Task 1.0.3:** Scaffold global state wrapper for user authentication and location context.
-- [ ] **Task 1.0.4:** Set up mock API handlers for submission endpoints (`/api/mock/submit`).
+- [x] **Task 1.0.1:** Initialize Next.js PWA app inside `apps/web-citizen/` with Tailwind CSS and Lucide React.
+- [x] **Task 1.0.2:** Configure `next-intl` localization dictionaries in `public/locales/` (`hi.json`, `sat.json`, `en.json`).
+- [x] **Task 1.0.3:** Scaffold global state wrapper for user authentication and location context.
+- [x] **Task 1.0.4:** Set up mock API handlers for submission endpoints (`/api/mock/submit`).
 - *Cline Verification:* `cd apps/web-citizen && pnpm run dev` (Ensure HTTP 200 at `http://localhost:3000`).
 
 ### Role 2 (University & Hackathon Lead)
@@ -71,14 +71,14 @@
 *Goal: Working multimodal intake via App and WhatsApp, auto-deduplication, and HITL verification.*
 
 ### Role 1 (Citizen Experience Lead)
-- [ ] **Task 1.1.1:** Build Screen 1 (Splash Screen) with Namaste animation and language selector pills.
-- [ ] **Task 1.1.2:** Build Screen 4 (Problem Submission Studio):
+- [x] **Task 1.1.1:** Build Screen 1 (Splash Screen) with Namaste animation and language selector pills.
+- [x] **Task 1.1.2:** Build Screen 4 (Problem Submission Studio):
   - Client-side image compression ($\le 500\text{ KB}$).
   - Audio recording hook with live microphone visualization.
   - Interactive Leaflet/MapmyIndia GPS picker.
-- [ ] **Task 1.1.3:** Build the WhatsApp Ingestion Simulator (`/whatsapp-simulator`):
+- [x] **Task 1.1.3:** Build the WhatsApp Ingestion Simulator (`/whatsapp-simulator`):
   - Simulated chat interface (audio upload, image upload, live location sharing).
-- [ ] **Task 1.1.4:** Build `cv-laser-scanner.tsx`: Animated canvas drawing bounding boxes with confidence labels.
+- [x] **Task 1.1.4:** Build `cv-laser-scanner.tsx`: Animated canvas drawing bounding boxes with confidence labels.
 - *Cline Verification:* Run `web-citizen` and perform a dummy submission with a recorded voice note and image.
 
 ### Role 2 (University & Hackathon Lead)
@@ -117,12 +117,12 @@
 *Goal: 10-day bidding window, dynamic switching to 3-stage hackathon, and milestone tranche escrow.*
 
 ### Role 1 (Citizen Experience Lead)
-- [ ] **Task 1.2.1:** Build `spatial-radar-map.tsx`:
+- [x] **Task 1.2.1:** Build `spatial-radar-map.tsx`:
   - Mapbox map with pulsing 500m radius circle and nearby matched tickets.
-- [ ] **Task 1.2.2:** Build Screen 3 (Citizen Dashboard):
+- [x] **Task 1.2.2:** Build Screen 3 (Citizen Dashboard):
   - Metric counters (Resolved, In Progress, Escrow Disbursed).
   - Trending challenges list sorted by upvote count.
-- [ ] **Task 1.2.3:** Build Screen 11 (Samvaad / Threads Community Feed):
+- [x] **Task 1.2.3:** Build Screen 11 (Samvaad / Threads Community Feed):
   - Feed list, thread creation modal, tag filtering (`Agritech`, `Water`, `Livelihoods`).
 - *Cline Verification:* Navigate to `/samvaad`, create a test thread, and verify optimistic UI update.
 
@@ -162,12 +162,12 @@
 *Goal: Closed-loop resolution via 45-day maturation buffer, citizen quorum, APAAR credits, and failure indexing.*
 
 ### Role 1 (Citizen Experience Lead)
-- [ ] **Task 1.3.1:** Build Screen 8.3 (45-Day Feedback Quorum & Time Machine Simulator):
+- [x] **Task 1.3.1:** Build Screen 8.3 (45-Day Feedback Quorum & Time Machine Simulator):
   - Clock advance toggle (`Advance Clock to Day 46`).
   - Core Operational Check buttons: `✅ HAAN / YES` vs `❌ NAHI / NO`.
-- [ ] **Task 1.3.2:** Build `quorum-gauge.tsx`:
+- [x] **Task 1.3.2:** Build `quorum-gauge.tsx`:
   - Circular progress ring showing verified votes against calculated minimum quorum threshold.
-- [ ] **Task 1.3.3:** Add feedback audio recording prompt for partially solved or failed issues.
+- [x] **Task 1.3.3:** Add feedback audio recording prompt for partially solved or failed issues.
 - *Cline Verification:* Toggle the Time Machine to Day 46 and verify the verification voting card activates.
 
 ### Role 2 (University & Hackathon Lead)
@@ -203,7 +203,7 @@
 *Goal: Flawless system demo, seed data hydration, zero console warnings, and presentation readiness.*
 
 ### Joint Cross-Role Checklist
-- [ ] **Task 4.4.1 (All Roles):** Run complete integration sweep:
+- [x] **Task 4.4.1 (All Roles):** Run complete integration sweep:
   1. Citizen submits issue in Santhali via WhatsApp Simulator.
   2. AI transcribes, runs ViT laser scan, and flags 500m deduplication.
   3. HITL Evaluator approves problem for university bidding.
@@ -213,7 +213,7 @@
   7. Time Machine advances to Day 46.
   8. Citizen quorum votes "Solved" $\rightarrow$ NEP 2020 APAAR credits awarded.
 - [ ] **Task 4.4.2 (Role 3 & Role 4):** Seed database with realistic Jharkhand test fixtures (Palamu groundwater fluorosis, Khunti lac storage, Chaibasa solar pump).
-- [ ] **Task 4.4.3 (Role 1 & Role 2):** Fix responsive UI layout issues on mobile and desktop viewports.
+- [x] **Task 4.4.3 (Role 1 & Role 2):** Fix responsive UI layout issues on mobile and desktop viewports.
 - [ ] **Task 4.4.4 (Lead):** Execute monorepo production build: `pnpm run build`.
 
 ---
