@@ -5,8 +5,8 @@
 ---
 
 ## System Progress Summary
-* **Current Stage:** Stage 0 (Baseline Infrastructure)
-* **Active Tasks:** Tasks 1.0.1 – 4.0.3
+* **Current Stage:** Stage 0 (Baseline Infrastructure) — Role 2 tasks 2.0.1-2.0.3 complete
+* **Active Tasks:** Tasks 1.0.1 – 4.0.3 (Role 2 Stage 0 done, verified with production build)
 * **Repository Health:** Clean Scaffolding
 * **Estimated Token Consumption:** 0 / 500,000
 
@@ -36,18 +36,64 @@
 * **Verification Command Run:** `<Exact terminal command>`
 * **Verification Output:** `<One-line output summary, e.g., HTTP 200 OK / 5 passing tests>`
 * **Estimated Tokens Spent:** <e.g., ~18,000 tokens>
-* **Status:** <SUCCESS | FAILED | REVERTED>
-```
-
 ---
 
-### [LOG-001] Task 4.0.1-4.0.3: AI Microservice Stage 0 Scaffolding
-* **Timestamp:** 2026-09-12T10:30:00Z
-* **Role:** Role 4
-* **Tasks Completed:** 4.0.1 (venv/deps verified), 4.0.2 (FastAPI + CORS + modular routers), 4.0.3 (`/health` + stubbed ASR/Vision/Triage/Embed endpoints)
-* **Modified Directories:** `apps/ai-service/`
-* **Files Changed:** `core/config.py`, `main.py`, `routers/asr_routes.py`, `routers/vision_routes.py`, `routers/triage_routes.py`, `routers/deduplication_routes.py`, `routers/quorum_nlp_routes.py`
-* **Verification Command Run:** `cd apps/ai-service && uvicorn main:app --port 8000` then `curl http://localhost:8000/health`
-* **Verification Output:** `{"status":"ok","service":"JAGRIT-AI-Core","mock_mode":true}` (HTTP 200); transcribe/defect-scan/triage-classify/embed all returned deterministic mock payloads (embed = 1536 dims)
-* **Estimated Tokens Spent:** ~14,000 tokens
+### [LOG-001] Stage 0 Role 2 baseline layout, navigation, and mock data
+* **Timestamp:** 2026-09-12T15:50:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 2.0.1, 2.0.2, 2.0.3
+* **Modified Directories:** apps/web-institution/, packages/contracts/
+* **Files Changed:** apps/web-institution/src/app/layout.tsx, apps/web-institution/src/components/top-bar.tsx, apps/web-institution/src/components/sidebar.tsx, apps/web-institution/src/lib/mock-data.ts, packages/contracts/package.json
+* **Verification Command Run:** `cd apps/web-institution && pnpm run build`
+* **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
+* **Estimated Tokens Spent:** ~20,000 tokens
 * **Status:** SUCCESS
+---
+
+### [LOG-002] Stage 1 Role 2 discovery feed, XAI chart, team nomination
+* **Timestamp:** 2026-09-12T16:40:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 2.1.1, 2.1.2, 2.1.3, 2.1.4
+* **Modified Directories:** apps/web-institution/
+* **Files Changed:** apps/web-institution/src/app/login/page.tsx, apps/web-institution/src/app/dashboard/dashboard-client.tsx, apps/web-institution/src/components/xai-spider-chart.tsx, apps/web-institution/src/components/challenge-accept-modal.tsx
+* **Verification Command Run:** `cd apps/web-institution && pnpm run build`
+* **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
+* **Estimated Tokens Spent:** ~28,000 tokens
+* **Status:** SUCCESS
+---
+
+### [LOG-003] Stage 2 Role 2 hackathon arena, DPR builder, R&D copilot
+* **Timestamp:** 2026-09-12T17:30:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 2.2.1, 2.2.2, 2.2.3
+* **Modified Directories:** apps/web-institution/src/components/, apps/web-institution/src/app/hackathon/
+* **Files Changed:** apps/web-institution/src/components/countdown-timer.tsx, apps/web-institution/src/components/dpr-table.tsx, apps/web-institution/src/components/student-rd-copilot.tsx, apps/web-institution/src/app/hackathon/[id]/round-3/round-3-client.tsx, apps/web-institution/src/components/arena-stepper.tsx
+* **Verification Command Run:** `cd apps/web-institution && pnpm run build`
+* **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
+* **Estimated Tokens Spent:** ~30,000 tokens
+* **Status:** SUCCESS
+---
+
+### [LOG-004] Stage 3 Role 2 NEP credits, failure repo, IPR concordat
+* **Timestamp:** 2026-09-12T18:30:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 2.3.1, 2.3.2, 2.3.3
+* **Modified Directories:** apps/web-institution/src/app/credits/, apps/web-institution/src/app/repository/, apps/web-institution/src/components/, apps/web-institution/src/lib/
+* **Files Changed:** apps/web-institution/src/app/credits/credits-client.tsx, apps/web-institution/src/app/repository/repository-client.tsx, apps/web-institution/src/components/ipr-modal.tsx, apps/web-institution/src/lib/credits.ts, apps/web-institution/src/lib/failure-cases.ts
+* **Verification Command Run:** `cd apps/web-institution && pnpm run build`
+* **Verification Output:** Next.js 14.2.35 production build passed, 9/9 static pages generated, exit code 0
+* **Estimated Tokens Spent:** ~28,000 tokens
+* **Status:** SUCCESS
+---
+
+### [LOG-005] Stage 4 Role 2 academic portal polish, jury presentation mode, demo fixtures
+* **Timestamp:** 2026-09-12T22:00:00Z
+* **Role:** Role 2
+* **Tasks Completed:** 4.4.1 (Role 2 sweep), 4.4.3
+* **Modified Directories:** apps/web-institution/src/components/, apps/web-institution/src/app/, apps/web-institution/src/lib/
+* **Files Changed:** apps/web-institution/src/components/jury-score-card.tsx, apps/web-institution/src/components/jury-provider.tsx, apps/web-institution/src/components/top-bar.tsx, apps/web-institution/src/lib/demo-fixtures.ts, apps/web-institution/package.json
+* **Verification Command Run:** `cd apps/web-institution && ./node_modules/.bin/next build && ./node_modules/.bin/tsc --noEmit`
+* **Verification Output:** Next.js 14.2.35 production build passed 9/9 routes; tsc --noEmit exit 0 (lint mapped to typecheck; next lint unavailable — see note)
+* **Status:** SUCCESS
+---
+

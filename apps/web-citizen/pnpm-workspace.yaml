@@ -1,0 +1,6 @@
+packages:
+  - '.'
+  - '../../packages/contracts'
+
+allowBuilds:
+  unrs-resolver: true
