@@ -17,7 +17,7 @@ export default function TopBar() {
         <div className="flex items-center gap-2">
           <span className={`flex h-8 w-8 items-center justify-center rounded-md text-sm font-bold ${juryMode ? "bg-sky-400 text-slate-950" : "bg-[#1E3A8A] text-white"}`}>J</span>
           <div className="leading-tight">
-            <p className="text-sm font-semibold">JAGRIT — Jharkhand Academic &amp; Grassroots Resolution for Innovation and Transformation Institution Portal</p>
+            <p className="text-sm font-semibold">JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society</p>
             <p className={`text-xs ${juryMode ? "text-sky-200" : "text-slate-300"}`}>Jharkhand R&amp;D Collaboration{juryMode ? " · Jury View" : ""}</p>
           </div>
         </div>

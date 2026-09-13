@@ -46,6 +46,39 @@ interface ChatMessage {
   isRead?: boolean;
 }
 
+function createMockVoiceWavBlob(): string {
+  if (typeof window === 'undefined') return '';
+  const sampleRate = 8000;
+  const numSamples = sampleRate * 6;
+  const buffer = new ArrayBuffer(44 + numSamples);
+  const view = new DataView(buffer);
+
+  view.setUint32(0, 0x52494646, false);
+  view.setUint32(4, 36 + numSamples, true);
+  view.setUint32(8, 0x57415645, false);
+  view.setUint32(12, 0x666d7420, false);
+  view.setUint16(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate, true);
+  view.setUint16(32, 1, true);
+  view.setUint16(34, 8, true);
+  view.setUint32(36, 0x64617461, false);
+  view.setUint32(40, numSamples, true);
+
+  for (let i = 0; i < numSamples; i++) {
+    const t = i / sampleRate;
+    const speechCadence = Math.sin(2 * Math.PI * 2.5 * t);
+    const formant = Math.sin(2 * Math.PI * 220 * t) * 0.5 + Math.sin(2 * Math.PI * 440 * t) * 0.25;
+    const sample = Math.floor(128 + 45 * formant * Math.max(0, speechCadence));
+    view.setUint8(44 + i, sample);
+  }
+
+  const blob = new Blob([buffer], { type: 'audio/wav' });
+  return URL.createObjectURL(blob);
+}
+
 export default function WhatsAppSimulatorPage() {
   const { language, t } = useCitizen();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -63,7 +96,7 @@ export default function WhatsAppSimulatorPage() {
     if (language === 'sat') {
       return 'ᱡᱚᱦᱟᱨ! ᱡᱟᱜᱽᱨᱤᱛ ᱥᱮᱵᱟ ᱵᱳᱴ ᱨᱮ ᱥᱟᱹᱜᱩᱱ ᱫᱟᱨᱟᱢ᱾\n\nᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱨᱮᱱᱟᱜ ᱪᱤᱛᱟᱹᱨ ᱥᱮ ᱟᱲᱟᱝ ᱨᱮᱠᱚᱨᱰ ᱠᱟᱛᱮ ᱵᱷᱮᱡᱟᱭ ᱢᱮ ᱟᱨᱵᱟᱝ ᱟᱢᱟᱜ ᱴᱷᱟᱶ ᱞᱟᱹᱭ ᱢᱮ᱾';
     }
-    return 'Johar! Welcome to the JAGRIT — Jharkhand Academic & Grassroots Resolution for Innovation and Transformation Civic Service Bot (Government of Jharkhand).\n\nPlease send a photo of the civic defect, a voice note describing the issue, or share your live GPS location.';
+    return 'Johar! Welcome to the JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society Civic Service Bot (Government of Jharkhand).\n\nPlease send a photo of the civic defect, a voice note describing the issue, or share your live GPS location.';
   }, [language]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -73,6 +106,8 @@ export default function WhatsAppSimulatorPage() {
   const [isRecordingVoice, setIsRecordingVoice] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
+  const [audioCurrentTime, setAudioCurrentTime] = useState<number>(0);
+  const [audioDuration, setAudioDuration] = useState<number>(6);
 
   // Initialize messages whenever language changes
   useEffect(() => {
@@ -147,20 +182,15 @@ export default function WhatsAppSimulatorPage() {
     }, 1200);
   };
 
-  const getVoiceResponse = () => language === 'hi'
-    ? "आपकी आवाज़ दर्ज कर ली गई है: 'चापाकल से लाल पानी निकल रहा है'। टिकट #JAG-4102 जनरेट हो गया है।"
-    : language === 'sat'
-    ? "Aapka voice note darj ho gaya: 'Chapekal khon laal daah oḍok kan-a'। Ticket #JAG-4102 tayar ho gaya."
-    : "Voice note received: 'Red sediment from borewell pump'. Ticket #JAG-4102 generated.";
-
-  const insertVoiceMessage = (audioUrl?: string, duration = recordingSeconds) => {
+  const insertVoiceMessage = (audioUrl?: string, duration = 6) => {
     const time = getCurrentTime();
+    const effectiveAudioUrl = audioUrl || createMockVoiceWavBlob();
     const userMsg: ChatMessage = {
       id: `usr-${Date.now()}`,
       sender: 'user',
       type: 'voice',
-      voiceDuration: `0:${String(Math.max(1, duration)).padStart(2, '0')}`,
-      audioUrl,
+      voiceDuration: '0:06',
+      audioUrl: effectiveAudioUrl,
       time,
       isRead: true,
     };
@@ -175,11 +205,11 @@ export default function WhatsAppSimulatorPage() {
         id: `bot-${Date.now()}`,
         sender: 'bot',
         type: 'text',
-        text: getVoiceResponse(),
+        text: '✅ आपकी समस्या दर्ज हो गई है! Ticket #JAG-4102 जनरेट किया गया है। विश्वविद्यालय अनुसंधान दल को सूचित कर दिया गया है।',
         time: getCurrentTime(),
       };
       setMessages((prev) => [...prev, botResponse]);
-    }, 1200);
+    }, 700);
   };
 
   const stopVoiceRecording = () => {
@@ -194,7 +224,7 @@ export default function WhatsAppSimulatorPage() {
     }
     mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
     mediaStreamRef.current = null;
-    insertVoiceMessage(undefined);
+    insertVoiceMessage(createMockVoiceWavBlob(), 6);
   };
 
   const startVoiceRecording = async () => {
@@ -214,7 +244,7 @@ export default function WhatsAppSimulatorPage() {
 
     recordingTimerRef.current = setInterval(() => {
       setRecordingSeconds((current) => {
-        if (current >= 120) {
+        if (current >= 6) {
           stopVoiceRecording();
           return current;
         }
@@ -235,27 +265,53 @@ export default function WhatsAppSimulatorPage() {
         mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
         mediaStreamRef.current = null;
         mediaRecorderRef.current = null;
-        insertVoiceMessage(url);
+        insertVoiceMessage(url, 6);
       };
       recorder.start();
     } else {
-      fallbackTimerRef.current = setTimeout(stopVoiceRecording, 5000);
+      fallbackTimerRef.current = setTimeout(stopVoiceRecording, 3000);
     }
   };
 
   const toggleVoicePlayback = (message: ChatMessage) => {
-    if (!message.audioUrl) return;
+    const url = message.audioUrl || createMockVoiceWavBlob();
     if (playingVoiceId === message.id) {
       audioPlayerRef.current?.pause();
       setPlayingVoiceId(null);
       return;
     }
     audioPlayerRef.current?.pause();
-    const player = new Audio(message.audioUrl);
+    const player = new Audio(url);
     audioPlayerRef.current = player;
-    player.onended = () => setPlayingVoiceId(null);
-    player.play().catch(() => setPlayingVoiceId(null));
+    setAudioCurrentTime(0);
+    setAudioDuration(6);
+    player.ontimeupdate = () => {
+      setAudioCurrentTime(player.currentTime);
+      if (player.duration && !isNaN(player.duration)) {
+        setAudioDuration(player.duration);
+      }
+    };
+    player.onended = () => {
+      setPlayingVoiceId(null);
+      setAudioCurrentTime(0);
+    };
+    player.play().catch(() => {
+      setPlayingVoiceId(null);
+    });
     setPlayingVoiceId(message.id);
+  };
+
+  const handleVoiceSeek = (e: React.MouseEvent<HTMLDivElement>, message: ChatMessage) => {
+    e.stopPropagation();
+    if (!audioPlayerRef.current || playingVoiceId !== message.id) {
+      toggleVoicePlayback(message);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const targetTime = ratio * (audioPlayerRef.current.duration || 6);
+    audioPlayerRef.current.currentTime = targetTime;
+    setAudioCurrentTime(targetTime);
   };
 
   useEffect(() => () => {
@@ -385,7 +441,7 @@ export default function WhatsAppSimulatorPage() {
   const getHeaderTitle = () => {
     if (language === 'hi') return 'व्हाट्सएप सेवा बॉट';
     if (language === 'sat') return 'ᱣᱟᱴᱥᱟᱯ ᱥᱮᱵᱟ ᱵᱳᱴ';
-    return 'JAGRIT — Jharkhand Academic & Grassroots Resolution for Innovation and Transformation Seva Bot';
+    return 'JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society Seva Bot';
   };
 
   const getHeaderSubtitle = () => {
@@ -426,9 +482,9 @@ export default function WhatsAppSimulatorPage() {
       </div>
 
       {/* WhatsApp Frame Mockup */}
-      <div className="bg-[#ECE5DD] rounded-3xl overflow-hidden shadow-xl border-4 border-slate-800 max-w-lg mx-auto flex flex-col h-[680px]">
+      <div className="bg-[#F8FAFC] rounded-3xl overflow-hidden shadow-xl border-4 border-slate-800 max-w-lg mx-auto flex flex-col h-[680px]">
         {/* WhatsApp Header */}
-        <div className="bg-blue-900 text-white px-4 py-3 flex items-center justify-between shadow-sm z-10 select-none">
+        <div className="bg-[#1E3A8A] text-white px-4 py-3 flex items-center justify-between shadow-sm z-10 select-none">
           <div className="flex items-center space-x-3">
             <Link href="/" className="text-white hover:opacity-80 md:hidden">
               <ArrowLeft className="w-5 h-5" />
@@ -441,7 +497,7 @@ export default function WhatsAppSimulatorPage() {
             <div>
               <div className="flex items-center space-x-1.5">
                 <h3 className="font-bold text-sm">{getHeaderTitle()}</h3>
-                <span className="text-[#25D366] text-xs font-bold">✓</span>
+                <span className="text-sky-300 text-xs font-bold">✓</span>
               </div>
               <p className="text-[11px] text-blue-100">{getHeaderSubtitle()}</p>
             </div>
@@ -455,9 +511,9 @@ export default function WhatsAppSimulatorPage() {
         </div>
 
         {/* Chat Messages Body */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 relative">
-          <div className="relative z-10 mx-auto max-w-xs bg-[#FFEECD] text-[#54656F] text-[10px] text-center p-2 rounded-lg shadow-xs border border-[#FFE0A3] flex items-center justify-center space-x-1.5">
-            <Shield className="w-3.5 h-3.5 text-sky-700 flex-shrink-0" />
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 relative bg-slate-100/70">
+          <div className="relative z-10 mx-auto max-w-xs bg-blue-50 text-blue-900 text-[10px] text-center p-2 rounded-lg shadow-xs border border-blue-200 flex items-center justify-center space-x-1.5">
+            <Shield className="w-3.5 h-3.5 text-blue-700 flex-shrink-0" />
             <span>{t('whatsapp', 'encryptedBanner', 'Messages and calls are end-to-end encrypted.')}</span>
           </div>
 
@@ -470,10 +526,10 @@ export default function WhatsAppSimulatorPage() {
                 className={`relative z-10 flex ${isUser ? 'justify-end' : 'justify-start'} animate-in fade-in duration-200`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl p-3 text-xs shadow-xs space-y-1.5 ${
+                  className={`max-w-[88%] rounded-2xl p-3 text-xs shadow-xs space-y-2 ${
                     isUser
-                      ? 'bg-[#DCF8C6] text-slate-900 rounded-tr-none'
-                      : 'bg-white text-slate-900 rounded-tl-none border border-slate-200/60'
+                      ? 'bg-[#EFF6FF] text-slate-900 rounded-tr-none border border-blue-200'
+                      : 'bg-white text-slate-900 rounded-tl-none border border-slate-200/80'
                   }`}
                 >
                   {m.type === 'image' && m.mediaUrl && (
@@ -483,26 +539,68 @@ export default function WhatsAppSimulatorPage() {
                   )}
 
                   {m.type === 'voice' && (
-                    <div className="flex items-center space-x-3 bg-blue-50 p-2.5 rounded-xl border border-blue-200">
-                      <button type="button" onClick={() => toggleVoicePlayback(m)} disabled={!m.audioUrl} className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center disabled:opacity-50" aria-label={playingVoiceId === m.id ? 'Pause voice note' : 'Play voice note'}>
-                        {playingVoiceId === m.id ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white ml-0.5" />}
-                      </button>
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center space-x-0.5 h-4">
-                          {[4, 10, 16, 8, 14, 20, 12, 6, 18, 14, 8, 12, 16, 6].map((h, i) => (
-                            <span
-                              key={i}
-                              style={{ height: `${h}px` }}
-                              className={`w-1 bg-blue-600 rounded-full inline-block ${playingVoiceId === m.id ? 'animate-pulse' : ''}`}
-                            />
-                          ))}
-                        </div>
-                        <div className="flex justify-between text-[9px] text-slate-500 font-mono">
-                          <span>{m.voiceDuration || '0:14'}</span>
-                          <span>{language === 'hi' ? 'आवाज़ रिकॉर्डिंग' : language === 'sat' ? 'ᱟᱲᱟᱝ' : 'Voice Note'}</span>
+                    <div className="space-y-2.5">
+                      {/* Playable Voice Note Bubble */}
+                      <div className="flex items-center space-x-3 bg-white/90 p-3 rounded-xl border border-blue-200 shadow-xs">
+                        <button
+                          type="button"
+                          onClick={() => toggleVoicePlayback(m)}
+                          className="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-xs active:scale-95 transition-transform shrink-0"
+                          aria-label={playingVoiceId === m.id ? 'Pause voice note' : 'Play voice note'}
+                        >
+                          {playingVoiceId === m.id ? (
+                            <Pause className="w-4 h-4 fill-white" />
+                          ) : (
+                            <Play className="w-4 h-4 fill-white ml-0.5" />
+                          )}
+                        </button>
+
+                        <div className="flex-1 space-y-1 cursor-pointer" onClick={(e) => handleVoiceSeek(e, m)}>
+                          {/* Animated Waveform Progress Scrub Bar */}
+                          <div className="flex items-center space-x-1 h-6">
+                            {[6, 14, 20, 10, 16, 22, 14, 8, 20, 16, 10, 14, 18, 8, 12, 6].map((h, i) => {
+                              const barProgress = (i + 1) / 16;
+                              const currentProgress = playingVoiceId === m.id ? audioCurrentTime / (audioDuration || 6) : 0;
+                              const isPlayed = currentProgress >= barProgress;
+                              return (
+                                <span
+                                  key={i}
+                                  style={{ height: `${h}px` }}
+                                  className={`w-1 rounded-full transition-all duration-100 ${
+                                    isPlayed ? 'bg-blue-600' : 'bg-blue-200'
+                                  } ${playingVoiceId === m.id ? 'animate-pulse' : ''}`}
+                                />
+                              );
+                            })}
+                          </div>
+
+                          <div className="flex justify-between text-[10px] text-slate-600 font-mono font-semibold">
+                            <span>
+                              {playingVoiceId === m.id
+                                ? `0:0${Math.min(6, Math.floor(audioCurrentTime))}`
+                                : m.voiceDuration || '0:06'}
+                            </span>
+                            <span className="text-blue-700 font-medium">
+                              {playingVoiceId === m.id ? 'Playing ▶' : 'Tap to play'}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                      <span className="text-[9px] font-semibold text-blue-700">{m.audioUrl ? t('whatsapp', 'listen', 'Listen') : t('whatsapp', 'recording', 'Recording...')}</span>
+
+                      {/* Visible Transcribed Text Box */}
+                      <div className="rounded-xl border border-blue-200 bg-white p-3 text-xs shadow-xs space-y-1.5">
+                        <div className="flex items-center justify-between flex-wrap gap-1">
+                          <span className="font-bold text-blue-900 flex items-center gap-1 text-[11px]">
+                            📝 ट्रांसक्रिप्ट / Transcribed Text:
+                          </span>
+                          <span className="rounded-full bg-blue-50 border border-blue-200 px-2 py-0.5 text-[10px] font-bold text-blue-800">
+                            🏷️ Detected: Santhali / Hindi (94% confidence)
+                          </span>
+                        </div>
+                        <p className="font-semibold text-slate-900 bg-blue-50/60 p-2.5 rounded-lg border border-blue-100 leading-relaxed">
+                          &ldquo;चापाकल से लाल पानी निकल रहा है, पीने योग्य नहीं है।&rdquo;
+                        </p>
+                      </div>
                     </div>
                   )}
 

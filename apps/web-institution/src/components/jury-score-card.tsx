@@ -86,7 +86,7 @@ export function JuryScoreCard({ ticketId, compact = false }: { ticketId: string;
         </button>
       </div>
       {submitted && (
-        <p role="status" className="mt-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">
+        <p role="status" className="mt-2 rounded-lg bg-blue-50 border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-900">
           {submitted}
         </p>
       )}

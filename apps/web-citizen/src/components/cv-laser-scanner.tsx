@@ -139,7 +139,7 @@ export default function CVLaserScanner({
   // Fallback demo image if no file was uploaded
   const displayImage =
     imageUrl ||
-    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="100%" height="100%" fill="%231e293b"/><circle cx="300" cy="200" r="120" fill="%23334155"/><rect x="270" y="80" width="60" height="180" rx="6" fill="%2364748b"/><path d="M 230 190 L 370 190 L 350 250 L 250 250 Z" fill="%2394a3b8"/><circle cx="300" cy="300" r="40" fill="%230284C7" opacity="0.8"/><text x="50%" y="90%" dominant-baseline="middle" text-anchor="middle" fill="%2394a3b8" font-family="sans-serif" font-size="16">JAGRIT — Jharkhand Academic &amp; Grassroots Resolution for Innovation and Transformation Civic Defect Sample</text></svg>';
+    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="100%" height="100%" fill="%231e293b"/><circle cx="300" cy="200" r="120" fill="%23334155"/><rect x="270" y="80" width="60" height="180" rx="6" fill="%2364748b"/><path d="M 230 190 L 370 190 L 350 250 L 250 250 Z" fill="%2394a3b8"/><circle cx="300" cy="300" r="40" fill="%230284C7" opacity="0.8"/><text x="50%" y="90%" dominant-baseline="middle" text-anchor="middle" fill="%2394a3b8" font-family="sans-serif" font-size="16">JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society Civic Defect Sample</text></svg>';
 
   return (
     <div className="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-xl space-y-4">

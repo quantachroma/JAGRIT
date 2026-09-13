@@ -46,19 +46,19 @@ export default function Round1Form({ ticketId, onToast }: { ticketId: string; on
         <span className="text-sm font-semibold text-slate-800">Click to upload PDF</span>
         <span className="mt-1 block text-xs text-slate-500">Client-validated: PDF only, max 10 MB, confirm 5-slide count</span>
       </label>
-      {fileName && !fileErr && <p role="status" className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-emerald-800"><CheckCircle2 className="h-3.5 w-3.5" />{fileName}</p>}
+      {fileName && !fileErr && <p role="status" className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-blue-800"><CheckCircle2 className="h-3.5 w-3.5 text-[#2563EB]" />{fileName}</p>}
       {fileErr && <p role="alert" className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-red-700"><AlertTriangle className="h-3.5 w-3.5" />{fileErr}</p>}
       <div className="mt-4">
-        <label htmlFor="r1-video" className="flex items-center gap-1.5 text-sm font-bold"><Video className="h-4 w-4" /> 2-min video (YouTube / Loom)</label>
-        <input id="r1-video" value={video} onChange={(e) => setVideo(e.target.value)} placeholder="https://loom.com/share/… or https://youtu.be/…" className="mt-2 w-full rounded-lg border border-[#E2E8F0] px-3 py-2 text-sm outline-none focus:border-[#4F46E5]" />
+        <label htmlFor="r1-video" className="flex items-center gap-1.5 text-sm font-bold"><Video className="h-4 w-4 text-[#2563EB]" /> 2-min video (YouTube / Loom)</label>
+        <input id="r1-video" value={video} onChange={(e) => setVideo(e.target.value)} placeholder="https://loom.com/share/… or https://youtu.be/…" className="mt-2 w-full rounded-lg border border-[#E2E8F0] px-3 py-2 text-sm outline-none focus:border-[#2563EB]" />
         {video && !videoOk && <p role="alert" className="mt-1 text-xs font-semibold text-red-700">Enter a valid YouTube / youtu.be / Loom / Vimeo link.</p>}
-        {videoOk && <p role="status" className="mt-1 text-xs font-semibold text-emerald-800">Video link looks valid.</p>}
+        {videoOk && <p role="status" className="mt-1 text-xs font-semibold text-blue-800">Video link looks valid.</p>}
       </div>
       <div className="mt-4">
         <label htmlFor="r1-narrative" className="text-sm font-bold">Approach narrative (min 40 chars)</label>
-        <textarea id="r1-narrative" value={narrative} onChange={(e) => setNarrative(e.target.value)} rows={4} placeholder="Problem, local insight, method, 14-day test plan…" className="mt-2 w-full rounded-lg border border-[#E2E8F0] px-3 py-2 text-sm outline-none focus:border-[#4F46E5]" />
+        <textarea id="r1-narrative" value={narrative} onChange={(e) => setNarrative(e.target.value)} rows={4} placeholder="Problem, local insight, method, 14-day test plan…" className="mt-2 w-full rounded-lg border border-[#E2E8F0] px-3 py-2 text-sm outline-none focus:border-[#2563EB]" />
       </div>
-      <button disabled={!ready} onClick={() => onToast(`Round 1 locked for ${ticketId}. Deck + video queued for shortlisting.`)} className="mt-4 w-full rounded-lg bg-[#044728] px-4 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:bg-slate-300">
+      <button disabled={!ready} onClick={() => onToast(`Round 1 locked for ${ticketId}. Deck + video queued for shortlisting.`)} className="mt-4 w-full rounded-lg bg-[#1E3A8A] hover:bg-[#2563EB] px-4 py-2.5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:bg-slate-300 transition-colors">
         Submit Round 1 entry
       </button>
     </div>

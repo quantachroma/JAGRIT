@@ -48,17 +48,17 @@ export default function ChallengeAcceptModal({ open, challenge, onClose, onSubmi
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/60 p-4 sm:items-center" role="dialog" aria-modal="true" aria-label="Challenge acceptance">
       <div className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3">
-          <div><p className="text-xs font-semibold uppercase tracking-wide text-[#4F46E5]">{challenge.ticketId} · Acceptance</p>
+          <div><p className="text-xs font-semibold uppercase tracking-wide text-[#2563EB]">{challenge.ticketId} · Acceptance</p>
           <h2 className="text-lg font-bold text-[#0F172A]">Nominate team & accept challenge</h2></div>
           <button onClick={onClose} aria-label="Close" className="rounded-full p-1.5 hover:bg-slate-100"><X className="h-5 w-5" /></button>
         </div>
         <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          <button onClick={() => setMode("SOLO")} className={`rounded-xl border p-3 text-left ${mode === "SOLO" ? "border-[#4F46E5] bg-indigo-50" : "border-[#E2E8F0]"}`}>
-            <p className="flex items-center gap-1.5 text-sm font-bold"><UserCheck className="h-4 w-4 text-[#4F46E5]" /> Option A: Accept Solo & Form Team</p>
+          <button onClick={() => setMode("SOLO")} className={`rounded-xl border p-3 text-left ${mode === "SOLO" ? "border-[#2563EB] bg-blue-50" : "border-[#E2E8F0]"}`}>
+            <p className="flex items-center gap-1.5 text-sm font-bold"><UserCheck className="h-4 w-4 text-[#2563EB]" /> Option A: Accept Solo & Form Team</p>
             <p className="mt-1 text-xs text-slate-600">Direct R&D Track — single HEI owns delivery.</p>
           </button>
-          <button onClick={() => setMode("CONSORTIUM")} className={`rounded-xl border p-3 text-left ${mode === "CONSORTIUM" ? "border-[#044728] bg-emerald-50" : "border-[#E2E8F0]"}`}>
-            <p className="flex items-center gap-1.5 text-sm font-bold"><Building2 className="h-4 w-4 text-[#044728]" /> Option B: Propose Joint Consortium</p>
+          <button onClick={() => setMode("CONSORTIUM")} className={`rounded-xl border p-3 text-left ${mode === "CONSORTIUM" ? "border-[#1E3A8A] bg-blue-50" : "border-[#E2E8F0]"}`}>
+            <p className="flex items-center gap-1.5 text-sm font-bold"><Building2 className="h-4 w-4 text-[#1E3A8A]" /> Option B: Propose Joint Consortium</p>
             <p className="mt-1 text-xs text-slate-600">e.g. BIT Mesra + Birsa Agricultural University bid.</p>
           </button>
         </div>
@@ -87,14 +87,14 @@ export default function ChallengeAcceptModal({ open, challenge, onClose, onSubmi
                 <input value={s.name} onChange={(e) => upd(i, "name", e.target.value)} placeholder="Student name" className="rounded-lg border border-[#E2E8F0] px-2.5 py-1.5 text-sm" />
                 <input value={s.dept} onChange={(e) => upd(i, "dept", e.target.value)} placeholder="Department" className="rounded-lg border border-[#E2E8F0] px-2.5 py-1.5 text-sm" />
                 <input value={s.apaar} onChange={(e) => upd(i, "apaar", e.target.value)} placeholder="APAAR / ID" className="rounded-lg border border-[#E2E8F0] px-2.5 py-1.5 text-sm" />
-                <button onClick={() => setStudents(students.filter((_, j) => j !== i))} aria-label="Remove" className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600"><Trash2 className="h-4 w-4" /></button>
+                <button onClick={() => setStudents(students.filter((_, j) => j !== i))} aria-label="Remove" className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"><Trash2 className="h-4 w-4" /></button>
               </div>
             ))}
           </div>
         </div>
-        {error && (<p role="alert" className="mt-3 flex items-start gap-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</p>)}
-        {done && (<p role="status" className="mt-3 flex items-start gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />{done}</p>)}
-        <button onClick={submit} className="mt-4 w-full rounded-lg bg-[#044728] px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-900">Submit acceptance & nominate team</button>
+        {error && (<p role="alert" className="mt-3 flex items-start gap-2 rounded-lg bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</p>)}
+        {done && (<p role="status" className="mt-3 flex items-start gap-2 rounded-lg bg-blue-50 px-3 py-2 text-xs font-medium text-blue-800"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />{done}</p>)}
+        <button onClick={submit} className="mt-4 w-full rounded-lg bg-[#1E3A8A] px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-900">Submit acceptance & nominate team</button>
       </div>
     </div>
   );

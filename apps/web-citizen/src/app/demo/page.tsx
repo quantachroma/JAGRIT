@@ -134,9 +134,9 @@ export default function DemoHubPage() {
       <header className="shrink-0 border-b border-white/10 bg-[#020617]/95 px-4 py-3 backdrop-blur-xl sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-blue-300/30 bg-[#1E3A8A] text-lg font-black text-blue-100 shadow-[0_0_24px_rgba(16,185,129,0.16)]">J</div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-blue-300/30 bg-[#1E3A8A] text-lg font-black text-blue-100 shadow-[0_0_24px_rgba(37,99,235,0.2)]">J</div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-300">JAGRIT — Jharkhand Academic &amp; Grassroots Resolution for Innovation and Transformation / LIVE JURY MODE</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-300">JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society / LIVE JURY MODE</p>
               <h1 className="text-base font-black tracking-tight text-white sm:text-lg">Master Presentation Hub</h1>
             </div>
           </div>

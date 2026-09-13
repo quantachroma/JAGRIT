@@ -6,7 +6,6 @@ import { useCitizen } from '@/context/CitizenContext';
 import { useLanguage } from '@/context/LanguageContext';
 import SpatialRadarMap from '@/components/spatial-radar-map';
 import {
-  LayoutDashboard,
   Search,
   CheckCircle2,
   Clock,
@@ -18,8 +17,6 @@ import {
   Building2,
   Sparkles,
   Compass,
-  Plus,
-  Flame,
   Radio,
   ChevronRight,
 } from 'lucide-react';
@@ -35,9 +32,9 @@ export interface ChallengeItem {
   status: 'PENDING_HITL' | 'ROUTED_CIVIC' | 'OPEN_FOR_BIDS' | 'DYNAMIC_HACKATHON' | 'IN_PILOT' | 'RESOLVED';
   upvotes: number;
   date: string;
-  descriptionHi: string;
-  descriptionSat: string;
-  descriptionEn: string;
+  daysLeft: number;
+  aiFit: number;
+  grantAmount: string;
   assignedHei?: string;
   thumbnailEmoji: string;
 }
@@ -54,9 +51,9 @@ const MOCK_CHALLENGES: ChallengeItem[] = [
     status: 'IN_PILOT',
     upvotes: 142,
     date: '12 Sep 2026',
-    descriptionHi: 'सतबरवा के 4 गांवों में भूजल में फ्लोराइड पाया गया है। बीआईटी मेसरा द्वारा स्थापित सौर डी-फ्लोराइडेशन इकाई 45-दिवसीय परिपक्वता बफ़र में है।',
-    descriptionSat: 'ᱥᱟᱛᱵᱟᱨᱣᱟ ᱟᱹᱛᱩ ᱨᱮ ᱫᱟᱜ ᱥᱟᱯᱷᱟᱭ ᱞᱟᱹᱜᱤᱫ ᱵᱤᱟᱭᱤᱴᱤ ᱢᱮᱥᱨᱟ ᱦᱚᱛᱮᱛᱮ ᱥᱮᱸᱜᱮᱞ ᱪᱟᱯᱟᱠᱚᱞ ᱠᱟᱹᱢᱤ ᱪᱟᱞᱟᱜ ᱠᱟᱱᱟ᱾',
-    descriptionEn: 'Critical fluoride contamination in public borewells. BIT Mesra solar defluoridation unit active in 45-day operational maturation buffer.',
+    daysLeft: 4,
+    aiFit: 94,
+    grantAmount: '₹3,50,000',
     assignedHei: 'BIT Mesra (Civil & Environmental Eng.)',
     thumbnailEmoji: '🚰',
   },
@@ -71,9 +68,9 @@ const MOCK_CHALLENGES: ChallengeItem[] = [
     status: 'OPEN_FOR_BIDS',
     upvotes: 98,
     date: '10 Sep 2026',
-    descriptionHi: 'मानसून के दौरान अत्यधिक नमी से कुसमी और रंगीनी लाह में सड़न हो रही है। किसान सोलर ड्रायर अनुसंधान मांग रहे हैं।',
-    descriptionSat: 'ᱫᱟᱜ ᱫᱤᱱ ᱞᱟᱦᱟ ᱵᱟᱹᱲᱤᱡᱚᱜ ᱠᱟᱱᱟ᱾ ᱪᱟᱹᱥᱤ ᱠᱚ ᱥᱮᱸᱜᱮᱞ ᱰᱨᱟᱭᱟᱨ ᱠᱚ ᱠᱷᱚᱡᱚᱜ ᱠᱟᱱᱟ᱾',
-    descriptionEn: 'Farmers suffering post-harvest fungal spoilage in raw lac due to monsoon humidity. Open for university solar dryer engineering bids.',
+    daysLeft: 6,
+    aiFit: 91,
+    grantAmount: '₹4,20,000',
     assignedHei: 'Birsa Agricultural University (BAU)',
     thumbnailEmoji: '🌾',
   },
@@ -88,9 +85,9 @@ const MOCK_CHALLENGES: ChallengeItem[] = [
     status: 'DYNAMIC_HACKATHON',
     upvotes: 115,
     date: '08 Sep 2026',
-    descriptionHi: 'प्राथमिक स्वास्थ्य केंद्र के वैक्सीन रेफ्रिजरेटर में शाम को वोल्टेज गिर जाता है। एनआईटी जमशेदपुर छात्र टीम बीएमएस का विकास कर रही है।',
-    descriptionSat: 'ᱦᱟᱥᱯᱟᱛᱟᱞ ᱨᱮ ᱨᱟᱱ ᱫᱚᱦᱚ ᱞᱟᱹᱜᱤᱫ ᱵᱤᱡᱞᱤ ᱵᱷᱳᱞᱴᱮᱡᱽ ᱠᱚᱢᱚᱜ ᱠᱟᱱ ᱛᱟᱦᱮᱸᱫ᱾ ᱮᱱᱟᱭᱤᱴᱤ ᱯᱟᱹᱴᱷᱩᱣᱟᱹ ᱠᱚ ᱱᱟᱣᱟ ᱥᱚᱞᱦᱮ ᱠᱚ ᱵᱮᱱᱟᱣ ᱠᱮᱫᱟ᱾',
-    descriptionEn: 'Microgrid battery voltage drop threatening cold-chain vaccine storage in Tonto PHC. NIT Jamshedpur student team developing battery telemetry.',
+    daysLeft: 3,
+    aiFit: 96,
+    grantAmount: '₹2,80,000',
     assignedHei: 'NIT Jamshedpur',
     thumbnailEmoji: '⚡',
   },
@@ -105,9 +102,9 @@ const MOCK_CHALLENGES: ChallengeItem[] = [
     status: 'OPEN_FOR_BIDS',
     upvotes: 42,
     date: '12 Sep 2026',
-    descriptionHi: 'चापाकल से अत्यधिक मटमैला पानी निकल रहा है। 45 परिवार प्रभावित हैं।',
-    descriptionSat: 'ᱪᱟᱯᱟᱠᱚᱞ ᱠᱷᱚᱱ ᱵᱟᱹᱲᱤᱡ ᱫᱟᱜ ᱚᱰᱚᱠᱚᱜ ᱠᱟᱱᱟ᱾ ᱔᱕ ᱜᱷᱟᱨᱚᱸᱡᱽ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱨᱮ ᱢᱮᱱᱟᱜ ᱠᱚᱣᱟ᱾',
-    descriptionEn: 'Heavy silt contamination in public borewell casing affecting 45 families.',
+    daysLeft: 8,
+    aiFit: 88,
+    grantAmount: '₹1,50,000',
     assignedHei: 'BIT Mesra',
     thumbnailEmoji: '🚰',
   },
@@ -122,17 +119,17 @@ const MOCK_CHALLENGES: ChallengeItem[] = [
     status: 'RESOLVED',
     upvotes: 114,
     date: '24 Aug 2026',
-    descriptionHi: 'परियोजना पूर्ण एवं ग्राम सभा पेसा अधिनियम द्वारा सत्यापित।',
-    descriptionSat: 'ᱠᱟᱹᱢᱤ ᱯᱩᱨᱟᱹᱣ ᱮᱱᱟ ᱟᱨ ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱠᱚ ᱥᱟᱹᱨᱤ ᱠᱮᱫᱟ᱾',
-    descriptionEn: 'Project completed and approved with Gram Sabha PESA Act verification.',
+    daysLeft: 0,
+    aiFit: 98,
+    grantAmount: '₹2,50,000',
     assignedHei: 'Ranchi University',
     thumbnailEmoji: '🏫',
   },
 ];
 
 export default function CitizenDashboardPage() {
-  const { t: legacyT, language, currentLocation } = useCitizen();
-  const { t } = useLanguage();
+  const { currentLocation } = useCitizen();
+  const { language, t } = useLanguage();
 
   // Filter States
   const [proximityFilter, setProximityFilter] = useState<'<5km' | '<15km' | 'district'>('<5km');
@@ -183,46 +180,81 @@ export default function CitizenDashboardPage() {
   }, [proximityFilter, selectedCategory, searchQuery]);
 
   const renderStatusBadge = (status: ChallengeItem['status']) => {
+    const statusLabels: Record<ChallengeItem['status'], { en: string; hi: string; sat: string }> = {
+      PENDING_HITL: {
+        en: 'Pending Expert Evaluation',
+        hi: 'विशेषज्ञ मूल्यांकन लंबित',
+        sat: 'Goroic Nel Baki',
+      },
+      OPEN_FOR_BIDS: {
+        en: 'Open for University Bids',
+        hi: 'विश्वविद्यालय निविदा हेतु खुला',
+        sat: 'University Nel Khula',
+      },
+      DYNAMIC_HACKATHON: {
+        en: 'Active Hackathon Solution',
+        hi: 'सक्रिय हैकाथॉन समाधान',
+        sat: 'Hackathon Hal Chalu',
+      },
+      IN_PILOT: {
+        en: 'Field Testing',
+        hi: 'क्षेत्रीय परीक्षण जारी',
+        sat: 'Khet Bidaw Chalu',
+      },
+      RESOLVED: {
+        en: 'Resolved & Approved',
+        hi: 'स्वीकृत एवं पूर्ण',
+        sat: 'Hal Sari Ena',
+      },
+      ROUTED_CIVIC: {
+        en: 'Routed to Civic Body',
+        hi: 'नगर निकाय को प्रेषित',
+        sat: 'Nagar Palika Send',
+      },
+    };
+
+    const label = statusLabels[status]?.[language] || status;
+
     switch (status) {
       case 'PENDING_HITL':
         return (
           <span className="inline-flex items-center gap-1 bg-sky-50 text-sky-800 border border-sky-200 px-2.5 py-1 rounded-full text-[11px] font-bold">
             <Clock className="w-3 h-3 text-sky-700" />
-            <span>{legacyT('dashboard.statuses', 'PENDING_HITL', 'Pending Expert Evaluation')}</span>
+            <span>{label}</span>
           </span>
         );
       case 'OPEN_FOR_BIDS':
         return (
           <span className="inline-flex items-center gap-1 bg-sky-50 text-sky-800 border border-sky-200 px-2.5 py-1 rounded-full text-[11px] font-bold">
             <Radio className="w-3 h-3 text-sky-600 animate-pulse" />
-            <span>{legacyT('dashboard.statuses', 'OPEN_FOR_BIDS', 'Open for University Bids')}</span>
+            <span>{label}</span>
           </span>
         );
       case 'DYNAMIC_HACKATHON':
         return (
           <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-1 rounded-full text-[11px] font-bold">
             <Sparkles className="w-3 h-3 text-blue-600" />
-            <span>{legacyT('dashboard.statuses', 'DYNAMIC_HACKATHON', 'Active Hackathon Solution')}</span>
+            <span>{label}</span>
           </span>
         );
       case 'IN_PILOT':
         return (
           <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-1 rounded-full text-[11px] font-bold">
             <Clock className="w-3 h-3 text-blue-700" />
-            <span>{legacyT('dashboard.statuses', 'IN_PILOT', 'Field Testing')}</span>
+            <span>{label}</span>
           </span>
         );
       case 'RESOLVED':
         return (
           <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-1 rounded-full text-[11px] font-bold">
             <CheckCircle2 className="w-3 h-3 text-blue-700" />
-            <span>{legacyT('dashboard.statuses', 'RESOLVED', 'Resolved & Approved')}</span>
+            <span>{label}</span>
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-800 px-2.5 py-1 rounded-full text-[11px] font-bold">
-            {status}
+            {label}
           </span>
         );
     }
@@ -234,21 +266,39 @@ export default function CitizenDashboardPage() {
     return item.titleEn;
   };
 
-  const getLocalizedDesc = (item: ChallengeItem) => {
-    if (language === 'hi') return item.category === 'drinking_water' ? 'चापाकल से लाल पानी' : item.category === 'agriculture' ? 'लाह की फसल खराब हो रही है' : 'गांव की बिजली समस्या';
-    if (language === 'sat') return item.category === 'drinking_water' ? 'Chapekal khon laal daah' : item.category === 'agriculture' ? 'Laha fasal kharab' : 'Aatu reah bijli samasya';
-    return item.category === 'drinking_water' ? 'Red water from handpump' : item.category === 'agriculture' ? 'Lac crop is spoiling' : 'Village power problem';
+  const getLocalizedLocation = (loc: string) => {
+    if (language === 'hi') {
+      const map: Record<string, string> = {
+        'Palamu, Satbarwa Block': 'पलामू, सतबरवा प्रखंड',
+        'Khunti, Murhu Block': 'खूंटी, मुरहू प्रखंड',
+        'West Singhbhum, Chaibasa': 'पश्चिमी सिंहभूम, चाईबासा',
+        'Ranchi, Kanke Panchayat': 'राँची, कांके पंचायत',
+        'Ranchi, Angara Block': 'राँची, अनगड़ा प्रखंड',
+      };
+      return map[loc] || loc;
+    }
+    return loc;
+  };
+
+  const getLocalizedHei = (hei?: string) => {
+    if (!hei) return '';
+    if (language === 'hi') {
+      const map: Record<string, string> = {
+        'BIT Mesra (Civil & Environmental Eng.)': 'बीआईटी मेसरा (सिविल एवं पर्यावरण इंजीनियरिंग)',
+        'Birsa Agricultural University (BAU)': 'बिरसा कृषि विश्वविद्यालय (बीएयू)',
+        'NIT Jamshedpur': 'एनआईटी जमशेदपुर',
+        'BIT Mesra': 'बीआईटी मेसरा',
+        'Ranchi University': 'राँची विश्वविद्यालय',
+      };
+      return map[hei] || hei;
+    }
+    return hei;
   };
 
   const categories = [
     {
       id: 'ALL',
-      label:
-        language === 'hi'
-          ? 'सभी श्रेणियां'
-          : language === 'sat'
-          ? 'ᱡᱚᱛᱚ ᱦᱟᱹᱴᱤᱧ'
-          : 'All Categories',
+      label: t.dashboard.allCategories,
     },
     {
       id: 'drinking_water',
@@ -300,90 +350,95 @@ export default function CitizenDashboardPage() {
   return (
     <div className="space-y-6 pb-24 relative max-w-7xl mx-auto">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            <span>{t.dashboard.title}</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-bold border border-blue-200">
+            <span>🌐</span>
+            <span>{t.gridBadge}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1.5">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             {t.dashboard.title}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-600 font-medium">
             {t.dashboard.subtitle}
           </p>
         </div>
 
         <Link
           href="/report"
-          className="inline-flex items-center justify-center space-x-2 bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 min-h-[48px] rounded-2xl text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all self-start sm:self-auto active:scale-95"
+          className="inline-flex items-center justify-center space-x-2 bg-[#1E3A8A] hover:bg-[#2563EB] text-white px-5 py-3 min-h-[48px] rounded-2xl text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all self-start sm:self-auto active:scale-95"
         >
-          <Plus className="w-4 h-4 text-white" />
-          <span>{t.dashboard.reportProblemBtn}</span>
+          <span>{t.dashboard.reportBtn}</span>
         </Link>
       </div>
 
-      {/* 1. Metric Strip: Clean White Cards */}
+      {/* 1. Metric Strip: Clean White Cards with Large Bold Numbers */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Metric 1: Resolved */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-2">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-800">
-              {language === 'hi' ? 'ग्राम सभा अनुमोदित' : language === 'sat' ? 'ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱥᱟᱹᱨᱤ' : 'Verified Quorum'}
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#1E3A8A]">
+              {t.dashboard.verifiedQuorum}
             </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">412</div>
-            <p className="text-xs font-bold text-slate-800 mt-0.5">
-              {t.dashboard.resolved}
+            <div className="text-3xl sm:text-4xl font-black text-[#1E3A8A] tracking-tight">
+              {t.dashboard.resolvedCount}
+            </div>
+            <p className="text-xs font-bold text-slate-800 mt-1">
+              {t.dashboard.resolvedLabel}
             </p>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[11px] text-slate-500 font-medium">
               {t.dashboard.resolvedSub}
             </p>
           </div>
         </div>
 
         {/* Metric 2: Active Solving */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-2">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-800">
-              {language === 'hi' ? 'सक्रिय शोध' : language === 'sat' ? 'ᱠᱷᱚᱸᱫᱽᱨᱚᱸᱫᱽ ᱪᱟᱞᱟᱜ ᱠᱟᱱᱟ' : 'University R&D'}
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#1E3A8A]">
+              {t.dashboard.universityRnd}
             </span>
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
               <Building2 className="w-5 h-5" />
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-900">184</div>
-            <p className="text-xs font-bold text-slate-800 mt-0.5">
-              {t.dashboard.active}
+            <div className="text-3xl sm:text-4xl font-black text-[#1E3A8A] tracking-tight">
+              {t.dashboard.activeCount}
+            </div>
+            <p className="text-xs font-bold text-slate-800 mt-1">
+              {t.dashboard.activeLabel}
             </p>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[11px] text-slate-500 font-medium">
               {t.dashboard.activeSub}
             </p>
           </div>
         </div>
 
         {/* Metric 3: Escrow Funds */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-2">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
-              {language === 'hi' ? 'अनुदान लेजर' : language === 'sat' ? 'ᱴᱟᱠᱟ ᱪᱟᱞ' : 'Escrow Ledger'}
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#1E3A8A]">
+              {t.dashboard.escrowLedger}
             </span>
-            <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#2563EB] flex items-center justify-center">
               <IndianRupee className="w-5 h-5" />
             </div>
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-blue-700">₹1.8 Cr</div>
-            <p className="text-xs font-bold text-slate-800 mt-0.5">
-              {t.dashboard.escrow}
+            <div className="text-3xl sm:text-4xl font-black text-[#2563EB] tracking-tight">
+              {t.dashboard.fundsAmount}
+            </div>
+            <p className="text-xs font-bold text-slate-800 mt-1">
+              {t.dashboard.fundsLabel}
             </p>
-            <p className="text-[10px] text-slate-500">
-              {t.dashboard.escrowSub}
+            <p className="text-[11px] text-slate-500 font-medium">
+              {t.dashboard.fundsSub}
             </p>
           </div>
         </div>
@@ -394,14 +449,14 @@ export default function CitizenDashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div className="flex items-center space-x-2.5">
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
-              <Flame className="w-5 h-5" />
+              <span className="text-base">🔥</span>
             </div>
             <div>
               <h2 className="text-lg sm:text-xl font-black text-slate-900">
-                {t.dashboard.nearbyTitle}
+                {t.dashboard.problemsNearTitle}
               </h2>
               <p className="text-xs text-slate-500">
-                {t.dashboard.nearbySubtitle}
+                {t.dashboard.problemsNearSubtitle}
               </p>
             </div>
           </div>
@@ -418,7 +473,7 @@ export default function CitizenDashboardPage() {
               }`}
             >
               <Layers className="w-4 h-4" />
-              <span>{t.dashboard.cards}</span>
+              <span>{t.dashboard.cardsFeed}</span>
             </button>
             <button
               type="button"
@@ -430,7 +485,7 @@ export default function CitizenDashboardPage() {
               }`}
             >
               <Compass className="w-4 h-4" />
-              <span>{t.dashboard.radar}</span>
+              <span>{t.dashboard.radarMap}</span>
             </button>
           </div>
         </div>
@@ -452,7 +507,7 @@ export default function CitizenDashboardPage() {
                   : 'text-slate-700 hover:bg-slate-200/60'
               }`}
             >
-              {t.dashboard.filterNear}
+              {language === 'hi' ? '< ५ किमी' : '< 5 km'}
             </button>
             <button
               type="button"
@@ -463,7 +518,7 @@ export default function CitizenDashboardPage() {
                   : 'text-slate-700 hover:bg-slate-200/60'
               }`}
             >
-              {language === 'hi' ? '१५ किमी के अंदर' : language === 'sat' ? '< 15 km' : '< 15 km'}
+              {language === 'hi' ? '< १५ किमी' : '< 15 km'}
             </button>
             <button
               type="button"
@@ -485,7 +540,7 @@ export default function CitizenDashboardPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={language === 'hi' ? 'टिकट या गांव खोजें...' : language === 'sat' ? 'Ticket ba aatu khoje...' : 'Search tickets or villages...'}
+              placeholder={t.dashboard.searchPlaceholder}
               className="w-full pl-9 pr-3 py-2.5 min-h-[48px] text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-700 bg-slate-50/50"
             />
           </div>
@@ -551,25 +606,47 @@ export default function CitizenDashboardPage() {
                         </span>
                         <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-blue-600" />
-                          <span>{item.distanceKm} km</span>
+                          <span>{item.distanceKm} {language === 'hi' ? 'किमी' : 'km'}</span>
                         </span>
                       </div>
                       <div>{renderStatusBadge(item.status)}</div>
                     </div>
 
                     {/* Card Content & Thumbnail */}
-                    <div className="flex gap-3">
-                      <div className="w-14 h-14 rounded-xl bg-slate-100 border border-slate-200 flex-shrink-0 flex items-center justify-center text-2xl shadow-inner">
+                    <div className="flex gap-3 items-center">
+                      <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 flex-shrink-0 flex items-center justify-center text-2xl shadow-inner">
                         {item.thumbnailEmoji}
                       </div>
 
-                      <div className="space-y-1 flex-1 min-w-0">
-                        <h3 className="text-sm sm:text-base font-extrabold text-slate-900 leading-snug">
+                      <div className="space-y-0.5 flex-1 min-w-0">
+                        <h3 className="text-sm sm:text-base font-extrabold text-slate-900 leading-snug line-clamp-1">
                           {getLocalizedTitle(item)}
                         </h3>
-                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                          {getLocalizedDesc(item)}
+                        <p className="text-[11px] font-medium text-slate-500 truncate">
+                          {getLocalizedLocation(item.location)} • {item.date}
                         </p>
+                      </div>
+                    </div>
+
+                    {/* Vital Metrics: ⏱️ Days Left | 🧠 AI Fit | ₹ Grant */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="rounded-xl bg-blue-50/70 border border-blue-100 p-2 text-center">
+                        <span className="block text-[10px] uppercase font-bold text-slate-500">{t.dashboard.timeline}</span>
+                        <span className="text-xs font-black text-blue-900 mt-0.5 block whitespace-nowrap">
+                          ⏱️ {item.daysLeft} {t.dashboard.daysLeft}
+                        </span>
+                      </div>
+                      <div className="rounded-xl bg-blue-50/70 border border-blue-100 p-2 text-center">
+                        <span className="block text-[10px] uppercase font-bold text-slate-500">{t.dashboard.aiMatch}</span>
+                        <span className="text-xs font-black text-blue-900 mt-0.5 block whitespace-nowrap">
+                          🧠 {t.dashboard.aiFit} {item.aiFit}%
+                        </span>
+                      </div>
+                      <div className="rounded-xl bg-blue-50/70 border border-blue-100 p-2 text-center">
+                        <span className="block text-[10px] uppercase font-bold text-slate-500">{t.dashboard.grant}</span>
+                        <span className="text-xs font-black text-blue-900 mt-0.5 block whitespace-nowrap">
+                          {item.grantAmount}
+                        </span>
                       </div>
                     </div>
 
@@ -578,9 +655,9 @@ export default function CitizenDashboardPage() {
                       <div className="text-[11px] bg-slate-50 text-slate-700 p-2 rounded-xl border border-slate-100 flex items-center space-x-1.5">
                         <Building2 className="w-3.5 h-3.5 text-blue-700 flex-shrink-0" />
                         <span className="font-semibold text-slate-800">
-                          {language === 'hi' ? 'संबद्ध संस्थान:' : language === 'sat' ? 'ᱥᱮᱪᱮᱫ ᱛᱟᱞᱢᱟ:' : 'HEI Partner:'}
+                          {t.dashboard.heiPartner}
                         </span>
-                        <span className="truncate">{item.assignedHei}</span>
+                        <span className="truncate">{getLocalizedHei(item.assignedHei)}</span>
                       </div>
                     )}
 
@@ -588,7 +665,7 @@ export default function CitizenDashboardPage() {
                     <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
                       <div className="text-[11px] text-slate-400 flex items-center gap-1 truncate">
                         <MapPin className="w-3 h-3 flex-shrink-0" />
-                        <span className="truncate">{item.location}</span>
+                        <span className="truncate">{getLocalizedLocation(item.location)}</span>
                       </div>
 
                       <div className="flex items-center space-x-2">
@@ -607,7 +684,8 @@ export default function CitizenDashboardPage() {
                               isUpvoted ? 'fill-white' : 'text-slate-600'
                             }`}
                           />
-                          <span>{currentCount}</span>
+                          <span>{isUpvoted ? t.dashboard.upvotedBtn : t.dashboard.upvoteBtn}</span>
+                          <span className="text-[11px] opacity-80">({currentCount})</span>
                         </button>
 
                         <Link
@@ -625,7 +703,6 @@ export default function CitizenDashboardPage() {
           </div>
         )}
       </div>
-
     </div>
   );
 }

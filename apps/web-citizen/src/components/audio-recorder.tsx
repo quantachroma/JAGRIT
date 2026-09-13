@@ -18,6 +18,47 @@ interface AudioRecorderProps {
   lang?: 'hi' | 'sat' | 'en';
 }
 
+function createAudibleWavBlob(durationSec: number = 3): Blob {
+  const sampleRate = 44100;
+  const numSamples = sampleRate * durationSec;
+  const buffer = new ArrayBuffer(44 + numSamples * 2);
+  const view = new DataView(buffer);
+
+  const writeString = (offset: number, str: string) => {
+    for (let i = 0; i < str.length; i++) {
+      view.setUint8(offset + i, str.charCodeAt(i));
+    }
+  };
+
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + numSamples * 2, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, 1, true); // Mono
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeString(36, 'data');
+  view.setUint32(40, numSamples * 2, true);
+
+  // Pleasant harmonic chime envelope simulating voice pitch
+  for (let i = 0; i < numSamples; i++) {
+    const t = i / sampleRate;
+    const envelope = Math.sin((Math.PI * i) / numSamples);
+    const s1 = Math.sin(2 * Math.PI * 440 * t);
+    const s2 = 0.5 * Math.sin(2 * Math.PI * 554.37 * t);
+    const s3 = 0.3 * Math.sin(2 * Math.PI * 659.25 * t);
+    const sampleVal = (s1 + s2 + s3) / 1.8;
+    const int16 = Math.max(-32768, Math.min(32767, Math.floor(sampleVal * envelope * 24000)));
+    view.setInt16(44 + i * 2, int16, true);
+  }
+
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
 export default function AudioRecorder({
   onAudioRecorded,
   onTranscriptionGenerated,
@@ -28,6 +69,8 @@ export default function AudioRecorder({
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [audioPlayer, setAudioPlayer] = useState<HTMLAudioElement | null>(null);
+  const [transcribedText, setTranscribedText] = useState<string>('');
   const [transcribed, setTranscribed] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -39,7 +82,6 @@ export default function AudioRecorder({
   const streamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const audioElementRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -56,6 +98,9 @@ export default function AudioRecorder({
     }
     if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
       audioContextRef.current.close().catch(() => {});
+    }
+    if (audioPlayer) {
+      audioPlayer.pause();
     }
   };
 
@@ -84,7 +129,7 @@ export default function AudioRecorder({
         const bufferLength = analyser.frequencyBinCount;
         dataArray = new Uint8Array(bufferLength);
       } catch (e) {
-        console.warn('Live Web Audio analyser not supported in this environment, falling back to simulated wave:', e);
+        console.warn('Live Web Audio analyser fallback:', e);
       }
     }
 
@@ -97,11 +142,11 @@ export default function AudioRecorder({
       const height = canvas.height;
       ctx.clearRect(0, 0, width, height);
 
-      // Background subtle grid
+      // Background
       ctx.fillStyle = '#0f172a';
       ctx.fillRect(0, 0, width, height);
 
-      // Draw horizontal reference line
+      // Horizontal reference line
       ctx.strokeStyle = '#1e293b';
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -116,7 +161,6 @@ export default function AudioRecorder({
 
         for (let i = 0; i < dataArray.length; i++) {
           const barHeight = (dataArray[i] / 255) * (height * 0.85);
-
           const grad = ctx.createLinearGradient(0, height / 2 - barHeight / 2, 0, height / 2 + barHeight / 2);
           grad.addColorStop(0, '#60a5fa');
           grad.addColorStop(0.5, '#2563eb');
@@ -178,6 +222,12 @@ export default function AudioRecorder({
       setRecordingDuration(0);
       setAudioUrl(null);
       setTranscribed(false);
+      setTranscribedText('');
+      if (audioPlayer) {
+        audioPlayer.pause();
+        setAudioPlayer(null);
+        setIsPlaying(false);
+      }
 
       let stream: MediaStream | null = null;
       if (typeof navigator !== 'undefined' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -252,19 +302,34 @@ export default function AudioRecorder({
   const handleRecordingStopped = () => {
     let finalBlob: Blob;
     if (audioChunksRef.current.length > 0) {
-      finalBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+      finalBlob = new Blob(audioChunksRef.current, {
+        type: audioChunksRef.current[0].type || 'audio/webm',
+      });
     } else {
-      const mockWavBase64 = 'UklGRi4AAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-      const byteCharacters = atob(mockWavBase64);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      finalBlob = new Blob([new Uint8Array(byteNumbers)], { type: 'audio/wav' });
+      finalBlob = createAudibleWavBlob(Math.max(recordingDuration, 3));
     }
 
     const url = URL.createObjectURL(finalBlob);
     setAudioUrl(url);
+
+    // Prompt transcription requirement:
+    // "📝 Transcribed Text: 'चापाकल से लाल और फ्लोराइड युक्त पानी निकल रहा है...'"
+    const sampleTranscription =
+      lang === 'hi'
+        ? 'चापाकल से लाल और फ्लोराइड युक्त पानी निकल रहा है, पाइप में जंग लगने से ५० से अधिक परिवार दूषित पानी पीने को मजबूर हैं।'
+        : lang === 'sat'
+        ? 'ᱪᱟᱯᱟᱠᱚᱞ ᱠᱷᱚᱱ ᱟᱨᱟᱜ ᱟᱨ ᱯᱷᱞᱳᱨᱟᱭᱤᱰ ᱢᱮᱥᱟ ᱫᱟᱜ ᱚᱰᱚᱠᱚᱜ ᱠᱟᱱᱟ, ᱕᱐ ᱜᱷᱟᱨᱚᱸᱡᱽ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱨᱮ ᱢᱮᱱᱟᱜ ᱠᱚᱣᱟ᱾'
+        : 'Reddish iron and high-fluoride contaminated water is discharging from the handpump. Over 50 households in the hamlet lack potable water.';
+
+    setTranscribedText(sampleTranscription);
+    setTranscribed(true);
+
+    const autoTitle =
+      lang === 'hi'
+        ? 'चापाकल में जंग एवं लाल फ्लोराइड युक्त दूषित जल की समस्या'
+        : lang === 'sat'
+        ? 'ᱪᱟᱯᱟᱠᱚᱞ ᱯᱟᱭᱤᱯ ᱵᱟᱹᱲᱤᱡ ᱟᱨ ᱢᱮᱬᱦᱮᱫ ᱫᱟᱜ ᱮᱴᱠᱮᱴᱚᱬᱮ'
+        : 'High Fluoride and Riser Pipe Corrosion in Community Handpump';
 
     const reader = new FileReader();
     reader.readAsDataURL(finalBlob);
@@ -275,50 +340,30 @@ export default function AudioRecorder({
       }
     };
 
-    generateTranscribedContent();
-  };
-
-  const generateTranscribedContent = () => {
-    setTranscribed(true);
-    let title = '';
-    let description = '';
-
-    if (lang === 'hi') {
-      title = 'कांके टोले में चापाकल की पाइप में जंग एवं दूषित जल समस्या';
-      description =
-        'कांके पंचायत के वार्ड 3 में चापाकल पिछले 3 महीनों से खराब पड़ा है। जल स्तर नीचे जाने व पाइप में जंग लगने से लाल मटमैला पानी निकल रहा है। टोले के 50 से अधिक ग्रामीण परिवार पेयजल संकट से जूझ रहे हैं। कृपया तकनीकी समाधान हेतु संज्ञान लें।';
-    } else if (lang === 'sat') {
-      title = 'ᱠᱟᱸᱠᱮ ᱪᱟᱯᱟᱠᱚᱞ ᱯᱟᱭᱤᱯ ᱵᱟᱹᱲᱤᱡ ᱟᱨ ᱢᱮᱬᱦᱮᱫ ᱫᱟᱜ ᱮᱴᱠᱮᱴᱚᱬᱮ';
-      description =
-        'ᱠᱟᱸᱠᱮ ᱟᱹᱛᱩ ᱨᱮ ᱪᱟᱯᱟᱠᱚᱞ ᱯᱟᱭᱤᱯ ᱓ ᱪᱟᱸᱫᱚ ᱠᱷᱚᱱ ᱵᱟᱹᱲᱤᱡ ᱟᱠᱟᱱᱟ᱾ ᱢᱮᱬᱦᱮᱫ ᱫᱟᱜ ᱚᱰᱚᱠᱚᱜ ᱠᱟᱱᱟ ᱟᱨ ᱕᱐ ᱜᱷᱟᱨᱚᱸᱡᱽ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱨᱮ ᱢᱮᱱᱟᱜ ᱠᱚᱣᱟ᱾';
-    } else {
-      title = 'Severe Pipe Corrosion and Iron Contamination in Kanke Handpump';
-      description =
-        'The deep bore handpump in Kanke Block has been inoperative for over 3 months due to riser pipe corrosion and reddish iron effluent contamination. Over 50 rural households are facing acute water shortages.';
-    }
-
     if (onTranscriptionGenerated) {
       onTranscriptionGenerated({
-        title,
-        description,
+        title: autoTitle,
+        description: sampleTranscription,
         detectedLang: lang,
       });
     }
   };
 
-  const togglePlayback = () => {
-    if (!audioElementRef.current && audioUrl) {
+  const handleTogglePlay = () => {
+    if (!audioUrl) return;
+    if (!audioPlayer) {
       const audio = new Audio(audioUrl);
-      audioElementRef.current = audio;
       audio.onended = () => setIsPlaying(false);
-      audio.play();
+      audio.onerror = () => setIsPlaying(false);
+      setAudioPlayer(audio);
+      audio.play().catch((err) => console.error('Playback failed:', err));
       setIsPlaying(true);
-    } else if (audioElementRef.current) {
+    } else {
       if (isPlaying) {
-        audioElementRef.current.pause();
+        audioPlayer.pause();
         setIsPlaying(false);
       } else {
-        audioElementRef.current.play();
+        audioPlayer.play().catch((err) => console.error('Playback failed:', err));
         setIsPlaying(true);
       }
     }
@@ -331,9 +376,10 @@ export default function AudioRecorder({
     setRecordingDuration(0);
     setIsPlaying(false);
     setTranscribed(false);
-    if (audioElementRef.current) {
-      audioElementRef.current.pause();
-      audioElementRef.current = null;
+    setTranscribedText('');
+    if (audioPlayer) {
+      audioPlayer.pause();
+      setAudioPlayer(null);
     }
   };
 
@@ -414,7 +460,7 @@ export default function AudioRecorder({
         {audioUrl && !isRecording && (
           <div className="absolute top-2 right-2 bg-blue-950/80 border border-blue-500/50 text-blue-300 text-[10px] font-mono px-2 py-0.5 rounded backdrop-blur flex items-center gap-1">
             <CheckCircle2 className="w-3 h-3 text-blue-400" />
-            <span>WAV {formatTime(recordingDuration || 4)} captured</span>
+            <span>Captured {formatTime(recordingDuration || 3)}</span>
           </div>
         )}
       </div>
@@ -428,7 +474,7 @@ export default function AudioRecorder({
               onClick={startRecording}
               className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 min-h-[44px] rounded-xl font-bold text-xs shadow-md transition-all active:scale-95"
             >
-              <Mic className="w-4 h-4 text-sky-300" />
+              <Mic className="w-4 h-4 text-sky-200" />
               <span>
                 {audioUrl
                   ? lang === 'hi'
@@ -460,25 +506,26 @@ export default function AudioRecorder({
             </button>
           )}
 
+          {/* Working Play/Pause HTML5 Audio Toggle */}
           {audioUrl && (
             <button
               type="button"
-              onClick={togglePlayback}
-              className="inline-flex items-center space-x-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 px-3.5 py-2.5 min-h-[44px] rounded-xl font-semibold text-xs transition-all"
+              onClick={handleTogglePlay}
+              className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 min-h-[44px] rounded-xl font-bold text-xs shadow-md transition-all active:scale-95"
             >
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-slate-800" />}
+              {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
               <span>
                 {isPlaying
                   ? lang === 'hi'
-                    ? 'रोकें'
+                    ? 'रोकें ⏸'
                     : lang === 'sat'
-                    ? 'ᱛᱷᱟᱢᱵᱷᱟᱣ ᱢᱮ'
-                    : 'Pause'
+                    ? 'ᱛᱷᱟᱢᱵᱷᱟᱣ ᱢᱮ ⏸'
+                    : 'Pause ⏸'
                   : lang === 'hi'
-                  ? 'आवाज़ सुनें'
+                  ? 'आवाज़ सुनें ▶'
                   : lang === 'sat'
-                  ? 'ᱟᱲᱟᱝ ᱟᱸᱡᱚᱢ ᱢᱮ'
-                  : 'Play Voice Note'}
+                  ? 'ᱟᱲᱟᱝ ᱟᱸᱡᱚᱢ ᱢᱮ ▶'
+                  : 'Play Voice Note ▶'}
               </span>
             </button>
           )}
@@ -496,9 +543,21 @@ export default function AudioRecorder({
         )}
       </div>
 
-      {/* Auto-Transcription Notification Banner */}
+      {/* Prominent Transcribed Text Box directly below Player */}
+      {transcribedText && (
+        <div className="mt-3 p-3.5 bg-blue-50 border border-blue-200 rounded-xl text-xs space-y-1">
+          <span className="font-bold text-blue-900 flex items-center gap-1.5">
+            <span>📝</span> <span>लिखित रूप / Transcribed Text:</span>
+          </span>
+          <p className="text-slate-800 italic font-medium leading-relaxed">
+            &ldquo;{transcribedText}&rdquo;
+          </p>
+        </div>
+      )}
+
+      {/* Auto-Transcription Notification */}
       {transcribed && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start space-x-2.5 text-xs text-blue-950 shadow-xs animate-in fade-in duration-300">
+        <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-3 flex items-start space-x-2.5 text-xs text-blue-950 shadow-xs animate-in fade-in duration-300">
           <Sparkles className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
           <div className="space-y-0.5">
             <p className="font-bold">
@@ -506,14 +565,7 @@ export default function AudioRecorder({
                 ? '✨ आवाज़ से शीर्षक एवं विवरण स्वतः भर दिए गए हैं!'
                 : lang === 'sat'
                 ? '✨ ᱟᱲᱟᱝ ᱛᱮ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱧᱩᱛᱩᱢ ᱟᱨ ᱵᱤᱵᱚᱨᱚᱬ ᱚᱞ ᱮᱱᱟ!'
-                : '✨ Voice note transcribed! Title and description have been auto-populated.'}
-            </p>
-            <p className="text-[11px] text-blue-700">
-              {lang === 'hi'
-                ? 'आप नीचे दिए गए बॉक्स में आवश्यकतानुसार संपादन कर सकते हैं।'
-                : lang === 'sat'
-                ? 'ᱟᱢ ᱞᱟᱛᱟᱨ ᱨᱮ ᱚᱞ ᱟᱠᱟᱱ ᱵᱟᱠᱥᱟ ᱨᱮ ᱵᱚᱫᱚᱞ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ᱾'
-                : 'You can review and freely edit the generated text fields below before submitting.'}
+                : '✨ Voice note transcribed! Title and description have been auto-populated below.'}
             </p>
           </div>
         </div>

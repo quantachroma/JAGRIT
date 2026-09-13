@@ -41,12 +41,12 @@ export default function XaiSpiderChart({ data, studentPool = 82, ticketId }: { d
         </ul>
       </div>
 
-      <div className="rounded-xl border border-[#044728]/20 bg-emerald-50/60 p-4">
-        <p className="inline-flex items-center gap-1.5 rounded-full bg-[#044728] px-2.5 py-1 text-[11px] font-semibold text-white"><Microscope className="h-3 w-3" /> Explainability card</p>
+      <div className="rounded-xl border border-blue-200 bg-[#EFF6FF] p-4">
+        <p className="inline-flex items-center gap-1.5 rounded-full bg-[#1E3A8A] px-2.5 py-1 text-[11px] font-semibold text-white"><Microscope className="h-3 w-3" /> Explainability card</p>
         <h4 className="mt-2 text-sm font-bold text-[#0F172A]">Exact evidence behind the score</h4>
         <div className="mt-3 space-y-3 text-xs leading-relaxed text-slate-700">
           <div className="rounded-lg bg-white p-3">
-            <p className="flex items-center gap-1.5 font-semibold text-slate-800"><FlaskConical className="h-3.5 w-3.5 text-[#4F46E5]" /> NABL lab equipment (+35%)</p>
+            <p className="flex items-center gap-1.5 font-semibold text-slate-800"><FlaskConical className="h-3.5 w-3.5 text-[#2563EB]" /> NABL lab equipment (+35%)</p>
             <ul className="mt-1.5 list-disc space-y-0.5 pl-5">
               <li>Water Quality Lab — AAS (NABL/2024-31) for fluoride/arsenic assay</li>
               <li>Sensor Systems Lab — field fluorimeters + 14 IoT logger nodes</li>
@@ -54,7 +54,7 @@ export default function XaiSpiderChart({ data, studentPool = 82, ticketId }: { d
             </ul>
           </div>
           <div className="rounded-lg bg-white p-3">
-            <p className="flex items-center gap-1.5 font-semibold text-slate-800"><Quote className="h-3.5 w-3.5 text-[#4F46E5]" /> Faculty citations (+30%)</p>
+            <p className="flex items-center gap-1.5 font-semibold text-slate-800"><Quote className="h-3.5 w-3.5 text-[#2563EB]" /> Faculty citations (+30%)</p>
             <ul className="mt-1.5 list-disc space-y-0.5 pl-5">
               <li>Prof. R. K. Verma — IN Patent 202341052117: fluoride adsorbent (41 cites)</li>
               <li>Dr. S. Marandi — arsenic dual-media column, Palamu pilot 2024</li>

@@ -9,10 +9,8 @@ export default function Footer() {
   const text = {
     title:
       language === 'hi'
-        ? 'JAGRIT — झारखंड एकेडमिक एवं जमीनी स्तर नवाचार और रूपांतरण समाधान'
-        : language === 'sat'
-        ? 'JAGRIT — ᱡᱷᱟᱨᱠᱷᱚᱸᱰ ᱥᱮᱪᱮᱫ ᱟᱨ ᱜᱟᱹᱦᱤᱨ ᱛᱷᱚᱠ ᱨᱮᱱᱟᱜ ᱱᱟᱶᱟ ᱩᱭᱦᱟᱹᱨ ᱟᱨ ᱵᱚᱫᱚᱞ ᱥᱚᱞᱦᱮ'
-        : 'JAGRIT — Jharkhand Academic & Grassroots Resolution for Innovation and Transformation',
+        ? 'JAGRIT — झारखंड एकेडेमिया इंडस्ट्री गेटवे फॉर रिसर्च, इनोवेशन एंड ट्रांसफॉर्मेशन ऑफ सोसाइटी'
+        : 'JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society',
     dept:
       language === 'hi'
         ? 'उच्च एवं तकनीकी शिक्षा विभाग, झारखंड सरकार'

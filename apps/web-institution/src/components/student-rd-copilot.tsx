@@ -71,7 +71,7 @@ export function CopilotBody() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") setAsked(query); }}
             placeholder="Ask about materials, methods, failure history…"
-            className="flex-1 rounded-lg border border-[#E2E8F0] px-3 py-2 text-sm outline-none focus:border-[#4F46E5]"
+            className="flex-1 rounded-lg border border-[#E2E8F0] px-3 py-2 text-sm outline-none focus:border-[#2563EB]"
           />
           <button onClick={() => setAsked(query)} aria-label="Ask copilot" className="rounded-lg bg-[#0F172A] px-3 py-2 text-white hover:bg-slate-800">
             <Send className="h-4 w-4" />
@@ -82,16 +82,16 @@ export function CopilotBody() {
         <p className="text-xs text-slate-500">Context: {asked}</p>
         {result.materials.map((m) => (
           <div key={m.title} className="rounded-lg border border-[#E2E8F0] p-3">
-            <p className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-[#044728]">
-              <MapPin className="h-3 w-3" /> {m.tag} · Jharkhand-local
+            <p className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-[#1E3A8A]">
+              <MapPin className="h-3 w-3 text-[#2563EB]" /> {m.tag} · Jharkhand-local
             </p>
-            <p className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold"><FlaskConical className="h-3.5 w-3.5 text-[#4F46E5]" />{m.title}</p>
+            <p className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold"><FlaskConical className="h-3.5 w-3.5 text-[#2563EB]" />{m.title}</p>
             <p className="mt-1 text-xs text-slate-600">{m.detail}</p>
           </div>
         ))}
         {result.warnings.map((w) => (
-          <p key={w.id} role="alert" className="flex items-start gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">
-            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" /> Warning: {w.warning}
+          <p key={w.id} role="alert" className="flex items-start gap-1.5 rounded-lg bg-blue-50 border border-blue-200 px-3 py-2 text-xs font-semibold text-[#1E3A8A]">
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#2563EB]" /> Advisory: {w.warning}
           </p>
         ))}
         <div className="rounded-lg bg-slate-50 p-3">

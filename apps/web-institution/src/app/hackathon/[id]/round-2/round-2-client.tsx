@@ -14,7 +14,7 @@ export default function Round2Client({ ticketId }: { ticketId: string }) {
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#4F46E5]">Round 2 · Mentoring and Prototype (21 Days) · {ticketId}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-[#2563EB]">Round 2 · Mentoring and Prototype (21 Days) · {ticketId}</p>
         <h1 className="mt-1 text-xl font-bold tracking-tight text-[#0F172A] sm:text-2xl">Industry mentor + bench-scale evidence</h1>
         <p className="mt-1 text-sm text-slate-600">Top 2 advance. Book a mentor slot, upload lab telemetry, clear the revision checklist.</p>
       </div>
@@ -28,7 +28,7 @@ export default function Round2Client({ ticketId }: { ticketId: string }) {
         <p className="font-bold text-slate-800">Prototype gate</p>
         <p className="mt-1">Advance needs: 1 booked session + 1 telemetry file + all revisions checked.</p>
         <p className="mt-1 font-semibold">{ready ? "Gate: READY — eligible for Top-2 shortlist." : "Gate: IN PROGRESS."}</p>
-        {toast && <p role="status" className="mt-2 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900">{toast}</p>}
+        {toast && <p role="status" className="mt-2 rounded-lg bg-blue-50 border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-900">{toast}</p>}
       </div>
     </div>
   );

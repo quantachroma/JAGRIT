@@ -40,13 +40,13 @@ export default function Round2Proto({ onTele, done, setDone, onToast }: { onTele
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-[#E2E8F0] bg-white p-4 shadow-sm">
-        <h3 className="flex items-center gap-1.5 text-sm font-bold"><Upload className="h-4 w-4" /> Bench-scale telemetry + lab test log</h3>
-        <label className="mt-3 block cursor-pointer rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-5 text-center hover:border-[#4F46E5]">
+        <h3 className="flex items-center gap-1.5 text-sm font-bold"><Upload className="h-4 w-4 text-[#2563EB]" /> Bench-scale telemetry + lab test log</h3>
+        <label className="mt-3 block cursor-pointer rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-5 text-center hover:border-[#2563EB]">
           <input type="file" accept=".csv,.xlsx" className="sr-only" onChange={(e) => onFile(e.target.files?.[0])} />
           <span className="text-sm font-semibold">Upload CSV / XLSX (max 10 MB)</span>
           <span className="mt-1 block text-xs text-slate-500">Flow, F-in/out, pH, bed volumes per day</span>
         </label>
-        {tele && !teleErr && <p role="status" className="mt-2 text-xs font-semibold text-emerald-800">Queued: {tele}</p>}
+        {tele && !teleErr && <p role="status" className="mt-2 text-xs font-semibold text-blue-800">Queued: {tele}</p>}
         {teleErr && <p role="alert" className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-red-700"><AlertTriangle className="h-3.5 w-3.5" />{teleErr}</p>}
         <button onClick={() => setDrawer(true)} className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#0F172A] px-4 py-2.5 text-sm font-bold text-white">
           <ClipboardList className="h-4 w-4" /> Open mentor feedback + checklist ({done.length}/{REVISIONS.length})
@@ -67,11 +67,11 @@ export default function Round2Proto({ onTele, done, setDone, onToast }: { onTele
               </div>
               {REVISIONS.map((r) => (
                 <label key={r.id} className="flex cursor-pointer items-start gap-2 rounded-lg border border-[#E2E8F0] p-3 text-sm hover:bg-slate-50">
-                  <input type="checkbox" checked={done.includes(r.id)} onChange={() => toggle(r.id)} className="mt-1" />
+                  <input type="checkbox" checked={done.includes(r.id)} onChange={() => toggle(r.id)} className="mt-1 accent-[#1E3A8A]" />
                   <span className={done.includes(r.id) ? "line-through text-slate-500" : "font-medium"}>{r.label}</span>
                 </label>
               ))}
-              <button onClick={() => { setDrawer(false); onToast("Revision checklist saved. Mentor notified for re-review."); }} className="w-full rounded-lg bg-[#044728] px-4 py-2.5 text-sm font-bold text-white">Save checklist</button>
+              <button onClick={() => { setDrawer(false); onToast("Revision checklist saved. Mentor notified for re-review."); }} className="w-full rounded-lg bg-[#1E3A8A] hover:bg-[#2563EB] px-4 py-2.5 text-sm font-bold text-white transition-colors">Save checklist</button>
             </div>
           </aside>
         </div>

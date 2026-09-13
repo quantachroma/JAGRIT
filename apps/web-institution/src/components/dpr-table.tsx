@@ -54,7 +54,7 @@ export default function DprTable({ allocationCeiling = 350000, stateShare, csrSh
     <section aria-label="Bill of Materials calculator" className="rounded-xl border border-[#E2E8F0] bg-white p-4 shadow-sm">
       <div className="flex flex-wrap items-center gap-2">
         <h3 className="inline-flex items-center gap-1.5 text-sm font-bold text-[#0F172A]">
-          <IndianRupee className="h-4 w-4 text-[#044728]" /> Bill of Materials (BOM)
+          <IndianRupee className="h-4 w-4 text-[#1E3A8A]" /> Bill of Materials (BOM)
         </h3>
         <span className="ml-auto rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
           Ceiling {formatINR(allocationCeiling)}
@@ -81,20 +81,20 @@ export default function DprTable({ allocationCeiling = 350000, stateShare, csrSh
             {rows.map((r) => (
               <tr key={r.id} className="border-t border-[#E2E8F0]">
                 <td className="px-2 py-2">
-                  <input value={r.component} onChange={(e) => update(r.id, { component: e.target.value })} placeholder="e.g. SS vessel 200L" aria-label="Component" className="w-full rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm outline-none focus:border-[#4F46E5]" />
+                  <input value={r.component} onChange={(e) => update(r.id, { component: e.target.value })} placeholder="e.g. SS vessel 200L" aria-label="Component" className="w-full rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm outline-none focus:border-[#2563EB]" />
                 </td>
                 <td className="px-2 py-2">
-                  <input type="number" min={0} value={r.qty} onChange={(e) => update(r.id, { qty: Number(e.target.value) })} aria-label="Quantity" className="w-20 rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm outline-none focus:border-[#4F46E5]" />
+                  <input type="number" min={0} value={r.qty} onChange={(e) => update(r.id, { qty: Number(e.target.value) })} aria-label="Quantity" className="w-20 rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm outline-none focus:border-[#2563EB]" />
                 </td>
                 <td className="px-2 py-2">
-                  <input type="number" min={0} value={r.unitCost} onChange={(e) => update(r.id, { unitCost: Number(e.target.value) })} aria-label="Unit cost" className="w-28 rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm outline-none focus:border-[#4F46E5]" />
+                  <input type="number" min={0} value={r.unitCost} onChange={(e) => update(r.id, { unitCost: Number(e.target.value) })} aria-label="Unit cost" className="w-28 rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm outline-none focus:border-[#2563EB]" />
                 </td>
                 <td className="px-2 py-2">
-                  <input value={r.vendor} onChange={(e) => update(r.id, { vendor: e.target.value })} placeholder="Vendor" aria-label="Vendor" className="w-full rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm outline-none focus:border-[#4F46E5]" />
+                  <input value={r.vendor} onChange={(e) => update(r.id, { vendor: e.target.value })} placeholder="Vendor" aria-label="Vendor" className="w-full rounded-md border border-[#E2E8F0] px-2 py-1.5 text-sm outline-none focus:border-[#2563EB]" />
                 </td>
                 <td className="px-2 py-2 text-right font-semibold tabular-nums">{formatINR(bomRowTotal(r))}</td>
                 <td className="px-2 py-2 text-right">
-                  <button onClick={() => remove(r.id)} aria-label="Remove row" className="rounded-md p-1.5 text-slate-500 hover:bg-red-50 hover:text-red-700">
+                  <button onClick={() => remove(r.id)} aria-label="Remove row" className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </td>
@@ -108,21 +108,21 @@ export default function DprTable({ allocationCeiling = 350000, stateShare, csrSh
       </button>
       <div className="mt-4 rounded-lg bg-slate-50 p-3">
         <div className="h-2 overflow-hidden rounded-full bg-slate-200" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Budget utilisation">
-          <div className={over ? "h-full bg-red-500" : "h-full bg-[#044728]"} style={{ width: `${pct}%` }} />
+          <div className={over ? "h-full bg-slate-400" : "h-full bg-[#1E3A8A]"} style={{ width: `${pct}%` }} />
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
           <p className="font-bold tabular-nums">Total: {formatINR(total)}</p>
-          <p className={over ? "text-xs font-semibold text-red-700" : "text-xs font-semibold text-emerald-800"}>
+          <p className={over ? "text-xs font-semibold text-slate-700" : "text-xs font-semibold text-blue-800"}>
             {over ? `Over ceiling by ${formatINR(total - allocationCeiling)}` : `${formatINR(remaining)} remaining`}
           </p>
           <span className="ml-auto" />
           {over ? (
-            <p role="alert" className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-1 text-[11px] font-semibold text-red-800">
-              <AlertTriangle className="h-3.5 w-3.5" /> Exceeds State + CSR ceiling — trim scope before DPR sign-off.
+            <p role="alert" className="inline-flex items-center gap-1 rounded-full bg-slate-200 px-2.5 py-1 text-[11px] font-semibold text-slate-800">
+              <AlertTriangle className="h-3.5 w-3.5 text-[#1E3A8A]" /> Exceeds State + CSR ceiling — trim scope before DPR sign-off.
             </p>
           ) : (
-            <p role="status" className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-900">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Within ceiling — DPR eligible.
+            <p role="status" className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-1 text-[11px] font-semibold text-blue-900">
+              <CheckCircle2 className="h-3.5 w-3.5 text-[#2563EB]" /> Within ceiling — DPR eligible.
             </p>
           )}
         </div>

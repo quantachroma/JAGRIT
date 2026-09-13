@@ -135,7 +135,7 @@ export default function AIAssistantDrawer() {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-              aria-label="Open JAGRIT — Jharkhand Academic & Grassroots Resolution for Innovation and Transformation AI Copilot"
+              aria-label="Open JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society AI Copilot"
           className="group relative flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full shadow-md border border-blue-300 active:scale-95 transition-all duration-200"
         >
           {/* Active Radar Pulse Ring */}
@@ -169,7 +169,7 @@ export default function AIAssistantDrawer() {
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-black tracking-wide text-white uppercase">
-                  JAGRIT — Jharkhand Academic &amp; Grassroots Resolution for Innovation and Transformation AI Copilot
+                  JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society AI Copilot
                 </span>
                 <span className="bg-sky-500/20 text-sky-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-sky-400/30">
                   Live Microservice

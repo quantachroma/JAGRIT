@@ -19,14 +19,14 @@ export const IPR_CLAUSES: IprClause[] = [
     icon: "🏛️",
     title: "Custody of patent + royalty share",
     points: ["Institutional custody of patent", "20-30% royalty share on commercial licensing", "Funds departmental research"],
-    accent: "border-emerald-200 bg-emerald-50",
+    accent: "border-blue-200 bg-blue-50",
   },
   {
     party: "Industry CSR Co-Sponsor",
     icon: "🏢",
     title: "ROFR + internal use licence",
     points: ["Right of First Refusal (ROFR) for manufacturing", "Royalty-free internal operational licence", "CSR Schedule VII credit + branding"],
-    accent: "border-amber-200 bg-amber-50",
+    accent: "border-sky-200 bg-sky-50/70",
   },
   {
     party: "Government of Jharkhand",

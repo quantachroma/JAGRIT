@@ -1,7 +1,7 @@
 {
   "common": {
     "appName": "JAGRIT",
-    "portalTitle": "Jharkhand Societal Innovation Collaboration Portal",
+    "portalTitle": "Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society",
     "department": "Department of Higher and Technical Education, Government of Jharkhand",
     "deptShort": "Govt. of Jharkhand • DHTE",
     "johar": "Johar Jharkhand",
@@ -22,9 +22,9 @@
     "offlineNotice": "Working in offline mode. Submissions will sync automatically when reconnected.",
     "phone": "Mobile Phone Number",
     "name": "Citizen Name",
-    "login": "Login / Register",
+    "login": "Login or Register",
     "logout": "Logout",
-    "footerText": "JAGRIT — Jharkhand Societal Innovation Collaboration Portal",
+    "footerText": "JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society",
     "footerSubtext": "Department of Higher and Technical Education, Government of Jharkhand | NEP 2020 & PESA 1996 Aligned",
     "footerDistricts": "Ranchi • Dhanbad • Jamshedpur • Dumka • Hazaribagh • Palamu • Khunti • Chaibasa"
   },
@@ -32,7 +32,7 @@
     "heroBadge": "Government of Jharkhand Initiative",
     "heroTitle": "Empowering Rural Jharkhand Through Higher Education Innovation",
     "heroSubtitle": "Connecting grassroots village challenges in water, electricity, and roads directly with university engineering research and hackathons.",
-    "welcomeGreeting": "Johar! Welcome to the Jharkhand Societal Innovation Collaboration Portal.",
+    "welcomeGreeting": "Johar! Welcome to JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society.",
     "welcomeTagline": "Transforming rural challenges into applied engineering hackathons across 42 Higher Education Institutions in Jharkhand.",
     "chooseLanguage": "Choose Your Preferred Language:",
     "actionCardReportTitle": "Report a Problem",
@@ -42,7 +42,7 @@
     "actionCardWhatsAppDesc": "Chat directly on WhatsApp with our civic bot. Send voice notes, photos, or location without installing any application.",
     "actionCardWhatsAppButton": "Open WhatsApp Chat",
     "actionCardDashboardTitle": "Grievance Dashboard",
-    "actionCardDashboardDesc": "Track your registered issues through engineering evaluation, university hackathons, and Gram Sabha verification.",
+    "actionCardDashboardDesc": "Local Issues & Solutions",
     "actionCardDashboardButton": "View Dashboard",
     "statIssuesResolved": "Issues Resolved",
     "statCollegesEngaged": "Universities Connected",
@@ -76,7 +76,7 @@
       "education": "School and Anganwadi Infrastructure",
       "agriculture": "Irrigation and Agricultural Technology"
     },
-    "problemTitle": "Problem Title / Summary",
+    "problemTitle": "Problem Summary",
     "problemTitlePlaceholder": "e.g., Broken Handpump in Kanke Village",
     "problemDescription": "Detailed Description",
     "problemDescriptionPlaceholder": "Describe the issue in detail, when it began, and how many households are affected...",
@@ -84,7 +84,7 @@
     "voiceNoteHelp": "Speak in English, Hindi, or Santhali. The system will transcribe your speech and extract key information.",
     "startRecording": "Press to Record Voice",
     "stopRecording": "Stop Recording",
-    "mediaUpload": "Attach Photos / Evidence",
+    "mediaUpload": "Attach Photos and Evidence",
     "uploadHint": "Upload photos of damaged infrastructure or site",
     "locationLabel": "GPS Tagged Location",
     "detectLocation": "Detect My Location",
@@ -148,7 +148,7 @@
       "COSMETIC_GRIEVANCE": "Minor Issue (Water leakage, paint, loose bolt)",
       "CRITICAL_DEFECT": "Critical Breakdown (No water output, inverter blown)"
     },
-    "voiceAudit": "Record Oral Testimony / Audit Feedback",
+    "voiceAudit": "Record Oral Testimony and Audit Feedback",
     "submitFeedback": "Submit Verification Vote"
   },
   "samvaad": {
@@ -173,11 +173,11 @@
     "unlockedStatus": "Day 46 of 45 (Unlocked)",
     "lockedStatus": "Day 15 of 45 (Locked)",
     "coreQuestion": "Is clean, potable water flowing continuously from the handpump?",
-    "yesButton": "YES / WORKING",
+    "yesButton": "YES, WORKING",
     "yesDesc": "Water is clean, tested, and fully satisfactory",
     "partialButton": "PARTIALLY WORKING",
     "partialDesc": "Partially solved with minor defect or lower pressure",
-    "noButton": "NO / BROKEN",
+    "noButton": "NO, BROKEN",
     "noDesc": "Unit failed or water remains contaminated",
     "resetDemo": "Reset Simulation for Demo"
   },

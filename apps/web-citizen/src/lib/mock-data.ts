@@ -36,6 +36,7 @@ export interface OpenChallenge {
   domain: string;
   priority: string;
   summary: string;
+  shortTag: string;
   statePoolINR: number;
   csrMatching?: string;
   aiMatch: number;
@@ -53,6 +54,7 @@ export const openChallenges: OpenChallenge[] = [
     domain: "Water & Public Health",
     priority: "Drinking water safety",
     summary: "Community wells across Palamu blocks report fluoride above 1.5 mg/L with isolated arsenic traces. Needs a low-cost field-testable filtration pilot for 20 hamlets.",
+    shortTag: "Fluoride water filtration needed for 20 hamlets",
     statePoolINR: 350000,
     csrMatching: "Tata Steel",
     aiMatch: 94,
@@ -68,6 +70,7 @@ export const openChallenges: OpenChallenge[] = [
     domain: "Agri & Forest Produce",
     priority: "Post-harvest losses",
     summary: "Lac, tamarind and minor forest produce spoil within 48 hours in Khunti heat. Needs a 5MT solar cold room with pay-per-use metering for FPO clusters.",
+    shortTag: "5MT solar cold room needed for forest produce",
     statePoolINR: 420000,
     aiMatch: 88,
     status: "OPEN_FOR_BIDS",
@@ -82,6 +85,7 @@ export const openChallenges: OpenChallenge[] = [
     domain: "Sanitation & Circular Economy",
     priority: "School waste management",
     summary: "Peri-urban schools around Chaibasa generate mixed bio-waste with no reliable power. Needs a non-electric aerated composter sized for 500-student campuses.",
+    shortTag: "Non-electric aerated composter for school campuses",
     statePoolINR: 210000,
     aiMatch: 79,
     status: "OPEN_FOR_BIDS",

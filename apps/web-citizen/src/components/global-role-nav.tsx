@@ -15,8 +15,10 @@ import {
   Archive,
   LogIn,
   UserPlus,
+  MessageSquare,
 } from 'lucide-react';
 import { useCitizen } from '@/context/CitizenContext';
+import LanguageSwitcher from '@/components/language-switcher';
 
 interface RoleNavPill {
   label: string;
@@ -44,6 +46,11 @@ const ROLE_PILLS: RoleNavPill[] = [
     label: '🏛️ Govt DHTE',
     href: '/government/dashboard',
     icon: Landmark,
+  },
+  {
+    label: '🗣️ Samvaad',
+    href: '/samvaad',
+    icon: MessageSquare,
   },
   {
     label: '🏆 Hackathon',
@@ -146,11 +153,14 @@ export default function GlobalRoleNav() {
             })}
           </nav>
 
-          {/* Quick Action Links: Login & Register */}
+          {/* Quick Action Links: Language Switcher, Login & Register */}
           <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Prominent Language Switcher */}
+            <LanguageSwitcher />
+
             <Link
               href="/"
-              className={`inline-flex items-center space-x-1.5 px-3 py-1.5 min-h-[38px] rounded-xl text-xs font-bold transition-all active:scale-95 ${
+              className={`hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 min-h-[38px] rounded-xl text-xs font-bold transition-all active:scale-95 ${
                 pathname === '/'
                   ? 'bg-white text-blue-900 font-black shadow-sm'
                   : 'bg-blue-800/70 hover:bg-blue-800 text-white border border-blue-700/60'
@@ -162,7 +172,7 @@ export default function GlobalRoleNav() {
 
             <Link
               href="/register"
-              className={`inline-flex items-center space-x-1.5 px-3 py-1.5 min-h-[38px] rounded-xl text-xs font-bold transition-all active:scale-95 ${
+              className={`hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 min-h-[38px] rounded-xl text-xs font-bold transition-all active:scale-95 ${
                 pathname === '/register'
                   ? 'bg-white text-blue-900 font-black shadow-sm'
                   : 'bg-sky-500 hover:bg-sky-400 text-white shadow-sm'
@@ -187,7 +197,37 @@ export default function GlobalRoleNav() {
 
       {/* Mobile Portal Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-blue-900 bg-[#0F172A] px-4 pt-3 pb-5 space-y-1.5 shadow-xl">
+        <div className="lg:hidden border-t border-blue-900 bg-[#0F172A] px-4 pt-3 pb-5 space-y-3 shadow-xl">
+          <div className="flex items-center justify-between pb-2 border-b border-blue-900/60">
+            <span className="text-xs text-blue-200 font-medium">भाषा / Language:</span>
+            <LanguageSwitcher />
+          </div>
+          <div className="flex sm:hidden items-center space-x-2 pt-1">
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex-1 inline-flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                pathname === '/'
+                  ? 'bg-white text-blue-900 font-black shadow-sm'
+                  : 'bg-blue-800/70 text-white border border-blue-700/60'
+              }`}
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>{navLabels.login}</span>
+            </Link>
+            <Link
+              href="/register"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex-1 inline-flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                pathname === '/register'
+                  ? 'bg-white text-blue-900 font-black shadow-sm'
+                  : 'bg-sky-500 text-white shadow-sm'
+              }`}
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>{navLabels.register}</span>
+            </Link>
+          </div>
           <div className="text-[10px] font-bold uppercase tracking-wider text-blue-300 px-3 pb-1">
             Stakeholder Portals
           </div>

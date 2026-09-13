@@ -40,13 +40,12 @@ export default function Navbar() {
   const getAppTitle = () => {
     if (language === 'hi') return 'जागृत';
     if (language === 'sat') return 'ᱡᱟᱜᱽᱨᱤᱛ';
-    return 'JAGRIT — Jharkhand Academic & Grassroots Resolution for Innovation and Transformation';
+    return 'JAGRIT';
   };
 
   const getAppSubtitle = () => {
-    if (language === 'hi') return 'झारखण्ड जन-समस्या नवाचार एवं समाधान पोर्टल';
-    if (language === 'sat') return 'ᱡᱷᱟᱨᱠᱷᱚᱸᱰ ᱟᱹᱛᱩ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱥᱚᱞᱦᱮ ᱯᱳᱨᱴᱟᱞ';
-    return 'Jharkhand Societal Innovation Portal';
+    if (language === 'hi') return 'झारखंड एकेडेमिया इंडस्ट्री गेटवे फॉर रिसर्च, इनोवेशन एंड ट्रांसफॉर्मेशन ऑफ सोसाइटी';
+    return 'Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society';
   };
 
   const getDeptBadge = () => {

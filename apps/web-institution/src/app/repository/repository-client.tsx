@@ -14,8 +14,8 @@ export default function RepositoryClient() {
   return (
     <div className="space-y-4">
       <div className="rounded-xl border bg-white p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#4F46E5]">ADR-009 · Screen 10 · rnd_failure_repository</p>
-        <h1 className="mt-1 flex items-center gap-2 text-2xl font-bold"><Archive className="h-6 w-6 text-[#044728]" />R&D Failure Knowledge Base</h1>
+        <p className="text-xs font-semibold uppercase tracking-wide text-[#2563EB]">ADR-009 · Screen 10 · rnd_failure_repository</p>
+        <h1 className="mt-1 flex items-center gap-2 text-2xl font-bold"><Archive className="h-6 w-6 text-[#1E3A8A]" />R&D Failure Knowledge Base</h1>
         <p className="mt-1 text-sm text-slate-600">{ALL_FAILURE_CASES.length} archives · {minor} minor (repo) · {major} major (Pan-India) across Jharkhand HEIs.</p>
         <label className="mt-3 flex items-center gap-2 rounded-lg border px-3 py-2">
           <Search className="h-4 w-4 text-slate-400" />
