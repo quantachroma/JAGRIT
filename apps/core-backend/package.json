@@ -4,7 +4,8 @@
 	"private": true,
 	"scripts": {
 		"start": "ts-node src/main.ts",
-		"dev": "nodemon --watch src src/main.ts"
+		"dev": "nodemon --watch src src/main.ts",
+		"build": "tsc"
 	},
 	"dependencies": {
 		"cors": "^2.8.5",

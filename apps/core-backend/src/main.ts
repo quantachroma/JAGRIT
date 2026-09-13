@@ -12,10 +12,12 @@ export const app = express();
 const port = Number(process.env.PORT || 5000);
 
 app.use(express.json());
-app.use(cors({
+const corsOptions = {
 	origin: ['http://localhost:3000', 'http://localhost:3001'],
 	credentials: true,
-}));
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.get('/health', async (_request: Request, response: Response) => {
 	try {
@@ -112,6 +114,56 @@ app.get('/api/v1/test-all', async (_request: Request, response: Response) => {
 	} finally {
 		client.release();
 	}
+});
+
+app.post('/api/v1/test/advance-clock', async (request: Request, response: Response, next) => {
+	try {
+		const body = request.body as Record<string, unknown>;
+		const targetId = String(body.project_id || body.projectId || body.challenge_id || body.challengeId || '').trim();
+		const rawDays = body.days_to_advance ?? body.daysToAdvance;
+		const daysToAdvance = rawDays == null || rawDays === '' ? 46 : Number(rawDays);
+
+		if (!targetId || !Number.isFinite(daysToAdvance) || daysToAdvance <= 0) {
+			response.status(400).json({ success: false, error: { message: 'A project/challenge ID and positive days_to_advance are required.' } });
+			return;
+		}
+
+		const result = await pool.query(
+			`UPDATE public.projects
+			 SET maturation_ends_at = NOW() - INTERVAL '1 day',
+				 field_deployment_date = NOW() - ($2 * INTERVAL '1 day')
+			 WHERE id::text = $1 OR challenge_id::text = $1
+			 RETURNING id;`,
+			[targetId, daysToAdvance],
+		);
+
+		if (result.rowCount === 0) {
+			response.status(404).json({ success: false, error: { message: 'No project found for the supplied project/challenge ID.' } });
+			return;
+		}
+
+		response.json({
+			success: true,
+			message: 'Time Machine activated! Project maturation buffer ended. 14-day citizen feedback quorum is now OPEN for voting.',
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+
+app.use((_request: Request, response: Response) => {
+	response.status(404).json({
+		success: false,
+		error: { message: 'Route not found.' },
+	});
+});
+
+app.use((error: unknown, _request: Request, response: Response, _next: express.NextFunction) => {
+	const message = error instanceof Error ? error.message : 'Internal Server Error';
+	response.status(500).json({
+		success: false,
+		error: { message },
+	});
 });
 
 if (require.main === module) {
