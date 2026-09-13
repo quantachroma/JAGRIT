@@ -9,54 +9,62 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Design System Colors:
-        // Primary Civic Blue (#1D4ED8 / #2563EB)
+        // Modern White and Shades of Blue Design System:
+        // Pure White: #FFFFFF
+        // Slate/Ice Blue: #F8FAFC, #EFF6FF
+        // Sky Blue: #0284C7, #38BDF8
+        // Royal Blue: #2563EB
+        // Deep Navy: #1E3A8A, #0F172A
         primary: {
-          DEFAULT: '#1D4ED8',
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
+          DEFAULT: '#2563EB',
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#3B82F6',
+          600: '#2563EB',
+          700: '#1D4ED8',
+          800: '#1E40AF',
+          900: '#1E3A8A',
+          950: '#0F172A',
         },
-        // Fresh Jharkhand Emerald Green (#16A34A) for success badges/actions
-        emerald: {
-          DEFAULT: '#16A34A',
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
-          950: '#052e16',
+        navy: {
+          DEFAULT: '#1E3A8A',
+          50: '#F0F4F8',
+          100: '#D9E2EC',
+          200: '#BCCCDC',
+          300: '#9FB3C8',
+          400: '#829AB1',
+          500: '#627D98',
+          600: '#486581',
+          700: '#334E68',
+          800: '#1E3A8A',
+          900: '#172554',
+          950: '#0F172A',
         },
-        // Warm Saffron/Amber accents (#D97706) for alerts
-        accent: {
-          DEFAULT: '#D97706',
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
+        sky: {
+          DEFAULT: '#0284C7',
+          50: '#F0F9FF',
+          100: '#E0F2FE',
+          200: '#BAE6FD',
+          300: '#7DD3FC',
+          400: '#38BDF8',
+          500: '#0EA5E9',
+          600: '#0284C7',
+          700: '#0369A1',
+          800: '#075985',
+          900: '#0C4A6E',
         },
-        // Slate Gray borders & Neutral surfaces
+        ice: {
+          DEFAULT: '#F8FAFC',
+          50: '#FFFFFF',
+          100: '#F8FAFC',
+          200: '#EFF6FF',
+          300: '#E2E8F0',
+        },
         border: '#E2E8F0',
-        background: '#FFFFFF',
+        background: '#F8FAFC',
         foreground: '#0F172A',
       },
     },

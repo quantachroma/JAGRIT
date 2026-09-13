@@ -51,7 +51,7 @@ export default function AuthPage() {
 
         {user.isAuthenticated ? (
           <div className="text-center space-y-4 py-4">
-            <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
+            <CheckCircle2 className="w-10 h-10 text-blue-600 mx-auto" />
             <div className="text-sm">
               <p className="font-bold text-slate-900">{user.name}</p>
               <p className="text-xs text-slate-500">{user.phone}</p>

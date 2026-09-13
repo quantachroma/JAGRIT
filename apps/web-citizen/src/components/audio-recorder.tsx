@@ -382,8 +382,8 @@ export default function AudioRecorder({
         </div>
 
         {isRecording && (
-          <div className="flex items-center space-x-2 bg-red-50 text-red-600 px-2.5 py-1 rounded-full border border-red-200 text-xs font-mono font-bold animate-pulse">
-            <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />
+          <div className="flex items-center space-x-2 bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full border border-blue-200 text-xs font-mono font-bold animate-pulse">
+            <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
             <span>REC {formatTime(recordingDuration)}</span>
           </div>
         )}
@@ -412,8 +412,8 @@ export default function AudioRecorder({
         )}
 
         {audioUrl && !isRecording && (
-          <div className="absolute top-2 right-2 bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-mono px-2 py-0.5 rounded backdrop-blur flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+          <div className="absolute top-2 right-2 bg-blue-950/80 border border-blue-500/50 text-blue-300 text-[10px] font-mono px-2 py-0.5 rounded backdrop-blur flex items-center gap-1">
+            <CheckCircle2 className="w-3 h-3 text-blue-400" />
             <span>WAV {formatTime(recordingDuration || 4)} captured</span>
           </div>
         )}
@@ -428,7 +428,7 @@ export default function AudioRecorder({
               onClick={startRecording}
               className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 min-h-[44px] rounded-xl font-bold text-xs shadow-md transition-all active:scale-95"
             >
-              <Mic className="w-4 h-4 text-amber-300" />
+              <Mic className="w-4 h-4 text-sky-300" />
               <span>
                 {audioUrl
                   ? lang === 'hi'
@@ -447,7 +447,7 @@ export default function AudioRecorder({
             <button
               type="button"
               onClick={stopRecording}
-              className="inline-flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 min-h-[44px] rounded-xl font-bold text-xs shadow-lg transition-all animate-bounce"
+              className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 min-h-[44px] rounded-xl font-bold text-xs shadow-lg transition-all animate-bounce"
             >
               <Square className="w-4 h-4 fill-white" />
               <span>
@@ -488,7 +488,7 @@ export default function AudioRecorder({
           <button
             type="button"
             onClick={resetRecording}
-            className="inline-flex items-center space-x-1 text-slate-500 hover:text-red-600 text-xs font-medium px-2 py-1 transition-colors min-h-[40px]"
+            className="inline-flex items-center space-x-1 text-slate-500 hover:text-blue-600 text-xs font-medium px-2 py-1 transition-colors min-h-[40px]"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>{lang === 'hi' ? 'हटाएं' : lang === 'sat' ? 'ᱜᱤᱰᱤ ᱢᱮ' : 'Discard'}</span>

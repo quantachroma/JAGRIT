@@ -20,6 +20,7 @@ import {
   ArrowLeft,
   RotateCcw,
   Play,
+  Pause,
   ExternalLink,
   Bot,
 } from 'lucide-react';
@@ -30,6 +31,7 @@ interface ChatMessage {
   text?: string;
   type: 'text' | 'image' | 'voice' | 'location' | 'ticket';
   mediaUrl?: string;
+  audioUrl?: string;
   voiceDuration?: string;
   locationDetails?: { name: string; lat: number; lon: number };
   ticketData?: {
@@ -47,6 +49,12 @@ interface ChatMessage {
 export default function WhatsAppSimulatorPage() {
   const { language, t } = useCitizen();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const fallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
 
   const getBotGreeting = React.useCallback((): string => {
     if (language === 'hi') {
@@ -55,13 +63,16 @@ export default function WhatsAppSimulatorPage() {
     if (language === 'sat') {
       return 'ᱡᱚᱦᱟᱨ! ᱡᱟᱜᱽᱨᱤᱛ ᱥᱮᱵᱟ ᱵᱳᱴ ᱨᱮ ᱥᱟᱹᱜᱩᱱ ᱫᱟᱨᱟᱢ᱾\n\nᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱨᱮᱱᱟᱜ ᱪᱤᱛᱟᱹᱨ ᱥᱮ ᱟᱲᱟᱝ ᱨᱮᱠᱚᱨᱰ ᱠᱟᱛᱮ ᱵᱷᱮᱡᱟᱭ ᱢᱮ ᱟᱨᱵᱟᱝ ᱟᱢᱟᱜ ᱴᱷᱟᱶ ᱞᱟᱹᱭ ᱢᱮ᱾';
     }
-    return 'Johar! Welcome to the JAGRIT Civic Service Bot (Government of Jharkhand).\n\nPlease send a photo of the civic defect, a voice note describing the issue, or share your live GPS location.';
+    return 'Johar! Welcome to the JAGRIT — Jharkhand Academic & Grassroots Resolution for Innovation and Transformation Civic Service Bot (Government of Jharkhand).\n\nPlease send a photo of the civic defect, a voice note describing the issue, or share your live GPS location.';
   }, [language]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [isRecordingVoice, setIsRecordingVoice] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
 
   // Initialize messages whenever language changes
   useEffect(() => {
@@ -136,21 +147,20 @@ export default function WhatsAppSimulatorPage() {
     }, 1200);
   };
 
-  // Action 2: User Sends Voice Note
-  const handleSendVoiceNote = () => {
-    const time = getCurrentTime();
-    const botResponseText =
-      language === 'hi'
-        ? 'ध्वनि संदेश प्राप्त हुआ!\n\nवाक पहचान प्रणाली द्वारा अनुवाद:\n"कांके टोले में चापाकल की पाइप में जंग लगने से दूषित पानी निकल रहा है।"\n\nकृपया अपना स्थान साझा करें ताकि आधिकारिक टिकट बनाया जा सके।'
-        : language === 'sat'
-        ? 'ᱟᱲᱟᱝ ᱧᱟᱢ ᱮᱱᱟ!\n\nᱟᱲᱟᱝ ᱯᱟᱹᱨᱠᱷᱟᱹᱣ ᱛᱮ ᱚᱞ ᱮᱱᱟ:\n"ᱠᱟᱸᱠᱮ ᱟᱹᱛᱩ ᱨᱮ ᱪᱟᱯᱟᱠᱚᱞ ᱯᱟᱭᱤᱯ ᱵᱟᱹᱲᱤᱡ ᱛᱮ ᱢᱮᱬᱦᱮᱫ ᱫᱟᱜ ᱚᱰᱚᱠᱚᱜ ᱠᱟᱱᱟ᱾"\n\nᱴᱤᱠᱮᱴ ᱵᱮᱱᱟᱣ ᱞᱟᱹᱜᱤᱫ ᱫᱟᱭᱟ ᱠᱟᱛᱮ ᱟᱢᱟᱜ ᱴᱷᱟᱶ ᱵᱷᱮᱡᱟᱭ ᱢᱮ᱾'
-        : 'Voice note received!\n\nAutomated Speech Recognition transcription:\n"Broken handpump casing with reddish iron water for three months."\n\nPlease share your location to generate a registered ticket.';
+  const getVoiceResponse = () => language === 'hi'
+    ? "आपकी आवाज़ दर्ज कर ली गई है: 'चापाकल से लाल पानी निकल रहा है'। टिकट #JAG-4102 जनरेट हो गया है।"
+    : language === 'sat'
+    ? "Aapka voice note darj ho gaya: 'Chapekal khon laal daah oḍok kan-a'। Ticket #JAG-4102 tayar ho gaya."
+    : "Voice note received: 'Red sediment from borewell pump'. Ticket #JAG-4102 generated.";
 
+  const insertVoiceMessage = (audioUrl?: string, duration = recordingSeconds) => {
+    const time = getCurrentTime();
     const userMsg: ChatMessage = {
       id: `usr-${Date.now()}`,
       sender: 'user',
       type: 'voice',
-      voiceDuration: '0:14',
+      voiceDuration: `0:${String(Math.max(1, duration)).padStart(2, '0')}`,
+      audioUrl,
       time,
       isRead: true,
     };
@@ -165,12 +175,95 @@ export default function WhatsAppSimulatorPage() {
         id: `bot-${Date.now()}`,
         sender: 'bot',
         type: 'text',
-        text: botResponseText,
+        text: getVoiceResponse(),
         time: getCurrentTime(),
       };
       setMessages((prev) => [...prev, botResponse]);
     }, 1200);
   };
+
+  const stopVoiceRecording = () => {
+    if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+    fallbackTimerRef.current = null;
+    recordingTimerRef.current = null;
+    setIsRecordingVoice(false);
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+      return;
+    }
+    mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+    mediaStreamRef.current = null;
+    insertVoiceMessage(undefined);
+  };
+
+  const startVoiceRecording = async () => {
+    if (isRecordingVoice) {
+      stopVoiceRecording();
+      return;
+    }
+    setRecordingSeconds(0);
+    setIsRecordingVoice(true);
+    audioChunksRef.current = [];
+    let stream: MediaStream | null = null;
+    try {
+      if (navigator.mediaDevices?.getUserMedia) stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      stream = null;
+    }
+
+    recordingTimerRef.current = setInterval(() => {
+      setRecordingSeconds((current) => {
+        if (current >= 120) {
+          stopVoiceRecording();
+          return current;
+        }
+        return current + 1;
+      });
+    }, 1000);
+
+    if (stream && typeof MediaRecorder !== 'undefined') {
+      mediaStreamRef.current = stream;
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      recorder.ondataavailable = (event) => {
+        if (event.data.size) audioChunksRef.current.push(event.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+        mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = null;
+        mediaRecorderRef.current = null;
+        insertVoiceMessage(url);
+      };
+      recorder.start();
+    } else {
+      fallbackTimerRef.current = setTimeout(stopVoiceRecording, 5000);
+    }
+  };
+
+  const toggleVoicePlayback = (message: ChatMessage) => {
+    if (!message.audioUrl) return;
+    if (playingVoiceId === message.id) {
+      audioPlayerRef.current?.pause();
+      setPlayingVoiceId(null);
+      return;
+    }
+    audioPlayerRef.current?.pause();
+    const player = new Audio(message.audioUrl);
+    audioPlayerRef.current = player;
+    player.onended = () => setPlayingVoiceId(null);
+    player.play().catch(() => setPlayingVoiceId(null));
+    setPlayingVoiceId(message.id);
+  };
+
+  useEffect(() => () => {
+    if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+    if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+    mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
+    audioPlayerRef.current?.pause();
+  }, []);
 
   // Action 3: User Shares Live Location & Receives Ticket
   const handleShareLocation = () => {
@@ -292,7 +385,7 @@ export default function WhatsAppSimulatorPage() {
   const getHeaderTitle = () => {
     if (language === 'hi') return 'व्हाट्सएप सेवा बॉट';
     if (language === 'sat') return 'ᱣᱟᱴᱥᱟᱯ ᱥᱮᱵᱟ ᱵᱳᱴ';
-    return 'JAGRIT Seva Bot';
+    return 'JAGRIT — Jharkhand Academic & Grassroots Resolution for Innovation and Transformation Seva Bot';
   };
 
   const getHeaderSubtitle = () => {
@@ -306,8 +399,8 @@ export default function WhatsAppSimulatorPage() {
       {/* Page Title & Controls */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            <Bot className="w-3.5 h-3.5 text-[#16A34A]" />
+          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-blue-800 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+            <Bot className="w-3.5 h-3.5 text-blue-600" />
             <span>{t('common', 'whatsappSim', 'WhatsApp Seva Bot')}</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
@@ -335,13 +428,13 @@ export default function WhatsAppSimulatorPage() {
       {/* WhatsApp Frame Mockup */}
       <div className="bg-[#ECE5DD] rounded-3xl overflow-hidden shadow-xl border-4 border-slate-800 max-w-lg mx-auto flex flex-col h-[680px]">
         {/* WhatsApp Header */}
-        <div className="bg-[#075E54] text-white px-4 py-3 flex items-center justify-between shadow-sm z-10 select-none">
+        <div className="bg-blue-900 text-white px-4 py-3 flex items-center justify-between shadow-sm z-10 select-none">
           <div className="flex items-center space-x-3">
             <Link href="/" className="text-white hover:opacity-80 md:hidden">
               <ArrowLeft className="w-5 h-5" />
             </Link>
 
-            <div className="w-10 h-10 rounded-full bg-emerald-800 border-2 border-amber-300 flex items-center justify-center font-black text-amber-300 text-lg">
+            <div className="w-10 h-10 rounded-full bg-blue-800 border-2 border-sky-300 flex items-center justify-center font-black text-sky-300 text-lg">
               J
             </div>
 
@@ -350,7 +443,7 @@ export default function WhatsAppSimulatorPage() {
                 <h3 className="font-bold text-sm">{getHeaderTitle()}</h3>
                 <span className="text-[#25D366] text-xs font-bold">✓</span>
               </div>
-              <p className="text-[11px] text-emerald-100">{getHeaderSubtitle()}</p>
+              <p className="text-[11px] text-blue-100">{getHeaderSubtitle()}</p>
             </div>
           </div>
 
@@ -364,7 +457,7 @@ export default function WhatsAppSimulatorPage() {
         {/* Chat Messages Body */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3 relative">
           <div className="relative z-10 mx-auto max-w-xs bg-[#FFEECD] text-[#54656F] text-[10px] text-center p-2 rounded-lg shadow-xs border border-[#FFE0A3] flex items-center justify-center space-x-1.5">
-            <Shield className="w-3.5 h-3.5 text-amber-700 flex-shrink-0" />
+            <Shield className="w-3.5 h-3.5 text-sky-700 flex-shrink-0" />
             <span>{t('whatsapp', 'encryptedBanner', 'Messages and calls are end-to-end encrypted.')}</span>
           </div>
 
@@ -384,23 +477,23 @@ export default function WhatsAppSimulatorPage() {
                   }`}
                 >
                   {m.type === 'image' && m.mediaUrl && (
-                    <div className="rounded-xl overflow-hidden border border-emerald-300/60 mb-1">
+                    <div className="rounded-xl overflow-hidden border border-blue-300/60 mb-1">
                       <img src={m.mediaUrl} alt="Uploaded site evidence" className="w-full h-36 object-cover" />
                     </div>
                   )}
 
                   {m.type === 'voice' && (
-                    <div className="flex items-center space-x-3 bg-emerald-100/70 p-2.5 rounded-xl border border-emerald-200">
-                      <div className="w-8 h-8 rounded-full bg-[#075E54] text-white flex items-center justify-center">
-                        <Play className="w-4 h-4 fill-white ml-0.5" />
-                      </div>
+                    <div className="flex items-center space-x-3 bg-blue-50 p-2.5 rounded-xl border border-blue-200">
+                      <button type="button" onClick={() => toggleVoicePlayback(m)} disabled={!m.audioUrl} className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center disabled:opacity-50" aria-label={playingVoiceId === m.id ? 'Pause voice note' : 'Play voice note'}>
+                        {playingVoiceId === m.id ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white ml-0.5" />}
+                      </button>
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center space-x-0.5 h-4">
                           {[4, 10, 16, 8, 14, 20, 12, 6, 18, 14, 8, 12, 16, 6].map((h, i) => (
                             <span
                               key={i}
                               style={{ height: `${h}px` }}
-                              className="w-1 bg-[#075E54] rounded-full inline-block"
+                              className={`w-1 bg-blue-600 rounded-full inline-block ${playingVoiceId === m.id ? 'animate-pulse' : ''}`}
                             />
                           ))}
                         </div>
@@ -409,7 +502,7 @@ export default function WhatsAppSimulatorPage() {
                           <span>{language === 'hi' ? 'आवाज़ रिकॉर्डिंग' : language === 'sat' ? 'ᱟᱲᱟᱝ' : 'Voice Note'}</span>
                         </div>
                       </div>
-                      <Mic className="w-4 h-4 text-[#075E54]" />
+                      <span className="text-[9px] font-semibold text-blue-700">{m.audioUrl ? t('whatsapp', 'listen', 'Listen') : t('whatsapp', 'recording', 'Recording...')}</span>
                     </div>
                   )}
 
@@ -417,7 +510,7 @@ export default function WhatsAppSimulatorPage() {
                     <div className="bg-white rounded-xl overflow-hidden border border-slate-300 shadow-xs space-y-1.5 p-2">
                       <div className="bg-slate-900 h-24 rounded-lg flex items-center justify-center relative overflow-hidden">
                         <div className="text-center space-y-1">
-                          <MapPin className="w-6 h-6 text-red-500 mx-auto animate-bounce" />
+                          <MapPin className="w-6 h-6 text-blue-500 mx-auto animate-bounce" />
                           <span className="text-[10px] text-slate-300 font-mono">
                             {m.locationDetails.lat}° N, {m.locationDetails.lon}° E
                           </span>
@@ -425,7 +518,7 @@ export default function WhatsAppSimulatorPage() {
                       </div>
                       <div>
                         <span className="font-bold text-slate-900 text-xs flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-[#075E54]" />
+                          <MapPin className="w-3 h-3 text-blue-700" />
                           <span>{m.locationDetails.name}</span>
                         </span>
                       </div>
@@ -433,7 +526,7 @@ export default function WhatsAppSimulatorPage() {
                   )}
 
                   {m.type === 'ticket' && m.ticketData && (
-                    <div className="bg-white rounded-xl p-3 border-2 border-emerald-600 space-y-2 text-xs">
+                    <div className="bg-white rounded-xl p-3 border-2 border-blue-600 space-y-2 text-xs">
                       <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
                         <span className="font-bold text-slate-900 flex items-center gap-1">
                           <Sparkles className="w-3.5 h-3.5 text-blue-600" />
@@ -501,17 +594,17 @@ export default function WhatsAppSimulatorPage() {
           {isTyping && (
             <div className="relative z-10 flex justify-start animate-in fade-in duration-150">
               <div className="bg-white rounded-2xl rounded-tl-none px-4 py-2 text-xs shadow-xs border border-slate-200 flex items-center space-x-1.5">
-                <span className="text-[11px] text-[#075E54] font-medium">
+                <span className="text-[11px] text-blue-700 font-medium">
                   {language === 'hi' ? 'टाइप किया जा रहा है' : language === 'sat' ? 'ᱚᱞᱚᱜ ᱠᱟᱱᱟ' : 'Typing'}
                 </span>
                 <div className="flex space-x-1">
-                  <span className="w-1.5 h-1.5 bg-[#075E54] rounded-full animate-bounce" />
+                  <span className="w-1.5 h-1.5 bg-blue-700 rounded-full animate-bounce" />
                   <span
-                    className="w-1.5 h-1.5 bg-[#075E54] rounded-full animate-bounce"
+                    className="w-1.5 h-1.5 bg-blue-700 rounded-full animate-bounce"
                     style={{ animationDelay: '0.15s' }}
                   />
                   <span
-                    className="w-1.5 h-1.5 bg-[#075E54] rounded-full animate-bounce"
+                    className="w-1.5 h-1.5 bg-blue-700 rounded-full animate-bounce"
                     style={{ animationDelay: '0.3s' }}
                   />
                 </div>
@@ -529,29 +622,29 @@ export default function WhatsAppSimulatorPage() {
               type="button"
               onClick={handleSendPhoto}
               disabled={isTyping}
-              className="flex items-center justify-center space-x-1 bg-white hover:bg-emerald-50 text-slate-800 border border-slate-300 rounded-xl min-h-[48px] py-2 px-1 text-xs font-bold shadow-xs transition-all disabled:opacity-50 active:scale-95"
+              className="flex items-center justify-center space-x-1 bg-white hover:bg-blue-50 text-slate-800 border border-slate-300 rounded-xl min-h-[48px] py-2 px-1 text-xs font-bold shadow-xs transition-all disabled:opacity-50 active:scale-95"
             >
-              <Camera className="w-4 h-4 text-[#075E54]" />
+              <Camera className="w-4 h-4 text-blue-700" />
               <span className="truncate">{t('whatsapp', 'sendPhoto', 'Photo')}</span>
             </button>
 
             <button
               type="button"
-              onClick={handleSendVoiceNote}
+              onClick={startVoiceRecording}
               disabled={isTyping}
-              className="flex items-center justify-center space-x-1 bg-white hover:bg-amber-50 text-slate-800 border border-slate-300 rounded-xl min-h-[48px] py-2 px-1 text-xs font-bold shadow-xs transition-all disabled:opacity-50 active:scale-95"
+              className={`flex items-center justify-center space-x-1 ${isRecordingVoice ? 'bg-blue-600 text-white border-blue-700 animate-pulse' : 'bg-white hover:bg-blue-50 text-slate-800 border-slate-300'} rounded-xl min-h-[48px] py-2 px-1 text-xs font-bold shadow-xs transition-all disabled:opacity-50 active:scale-95`}
             >
-              <Mic className="w-4 h-4 text-amber-600" />
-              <span className="truncate">{t('whatsapp', 'sendVoice', 'Voice')}</span>
+              <Mic className={`w-4 h-4 ${isRecordingVoice ? 'text-white' : 'text-blue-600'}`} />
+              <span className="truncate">{isRecordingVoice ? `${t('whatsapp', 'tapToStop', 'Tap to Stop')} 00:${String(recordingSeconds).padStart(2, '0')}` : t('whatsapp', 'sendVoice', 'Voice')}</span>
             </button>
 
             <button
               type="button"
               onClick={handleShareLocation}
               disabled={isTyping}
-              className="flex items-center justify-center space-x-1 bg-white hover:bg-red-50 text-slate-800 border border-slate-300 rounded-xl min-h-[48px] py-2 px-1 text-xs font-bold shadow-xs transition-all disabled:opacity-50 active:scale-95"
+              className="flex items-center justify-center space-x-1 bg-white hover:bg-blue-50 text-slate-800 border border-slate-300 rounded-xl min-h-[48px] py-2 px-1 text-xs font-bold shadow-xs transition-all disabled:opacity-50 active:scale-95"
             >
-              <MapPin className="w-4 h-4 text-red-500" />
+              <MapPin className="w-4 h-4 text-blue-500" />
               <span className="truncate">{t('whatsapp', 'sendLocation', 'Location')}</span>
             </button>
           </div>
@@ -580,15 +673,15 @@ export default function WhatsAppSimulatorPage() {
           {inputText.trim() ? (
             <button
               type="submit"
-              className="w-11 h-11 min-h-[48px] min-w-[48px] rounded-full bg-[#00A884] text-white flex items-center justify-center shadow-md active:scale-95"
+              className="w-11 h-11 min-h-[48px] min-w-[48px] rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md active:scale-95"
             >
               <Send className="w-4 h-4 fill-white ml-0.5" />
             </button>
           ) : (
             <button
               type="button"
-              onClick={handleSendVoiceNote}
-              className="w-11 h-11 min-h-[48px] min-w-[48px] rounded-full bg-[#00A884] text-white flex items-center justify-center shadow-md active:scale-95"
+              onClick={startVoiceRecording}
+              className={`w-11 h-11 min-h-[48px] min-w-[48px] rounded-full ${isRecordingVoice ? 'bg-blue-600 animate-pulse' : 'bg-blue-600'} text-white flex items-center justify-center shadow-md active:scale-95`}
             >
               <Mic className="w-4 h-4 text-white" />
             </button>

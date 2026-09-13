@@ -40,7 +40,7 @@ export default function Navbar() {
   const getAppTitle = () => {
     if (language === 'hi') return 'जागृत';
     if (language === 'sat') return 'ᱡᱟᱜᱽᱨᱤᱛ';
-    return 'JAGRIT';
+    return 'JAGRIT — Jharkhand Academic & Grassroots Resolution for Innovation and Transformation';
   };
 
   const getAppSubtitle = () => {
@@ -81,7 +81,7 @@ export default function Navbar() {
             </span>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <span className="text-amber-300 font-semibold text-[11px] sm:text-xs">
+            <span className="text-sky-300 font-semibold text-[11px] sm:text-xs">
               {getGreeting()}
             </span>
             <div className="flex items-center text-slate-300 text-[10px] sm:text-[11px] gap-1 bg-slate-800/80 px-2.5 py-0.5 rounded-md border border-slate-700">
@@ -170,7 +170,7 @@ export default function Navbar() {
               href="/report"
               className="hidden sm:inline-flex items-center space-x-2 bg-blue-700 hover:bg-blue-800 text-white px-4 sm:px-5 py-2.5 min-h-[48px] rounded-xl text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all active:scale-95 border border-blue-800"
             >
-              <AlertCircle className="w-4 h-4 text-amber-300" />
+              <AlertCircle className="w-4 h-4 text-sky-300" />
               <span>{t('common', 'report', 'Report a Problem')}</span>
             </Link>
 
