@@ -9,7 +9,29 @@ export const challengesRouter = Router();
 
 challengesRouter.post('/submit', async (request, response) => {
 	try {
-		const submission = request.body as ChallengeSubmission;
+		const body = request.body as Record<string, unknown>;
+		const lat = Number(body.lat);
+		const lon = Number(body.lon);
+		const title = String(body.title || '').trim();
+		const description = String(body.description || '').trim();
+		const district = String(body.district || 'JHK').trim();
+		const block = body.block == null || body.block === '' ? null : String(body.block);
+		const panchayat = body.panchayat == null || body.panchayat === '' ? null : String(body.panchayat);
+
+		if (!title || !description || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+			response.status(400).json({ error: 'title, description, lat, and lon are required.' });
+			return;
+		}
+
+		const submission: ChallengeSubmission = {
+			title,
+			description,
+			lat,
+			lon,
+			district,
+			block,
+			panchayat,
+		};
 		const result = await createOrDeduplicateChallenge(submission);
 		response.status(result.is_duplicate ? 200 : 201).json(result);
 	} catch (error) {
@@ -40,7 +62,7 @@ challengesRouter.post('/:id/upvote', async (request, response) => {
 			 SET upvotes_count = upvotes_count + 1
 			 WHERE id = $1
 			 RETURNING id, ticket_number, upvotes_count;`,
-			[request.params.id],
+			[String(request.params.id)],
 		);
 
 		if (result.rowCount === 0) {

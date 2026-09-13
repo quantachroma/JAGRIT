@@ -4,19 +4,14 @@ import { evaluateBids, placeBid } from './hackathon.service';
 export const hackathonRouter = Router();
 
 hackathonRouter.post('/bid', async (request, response) => {
-	const {
-		challenge_id: challengeId,
-		university_name: universityName,
-		budget,
-		faculty_id: facultyId,
-	} = request.body as {
-		challenge_id?: string;
-		university_name?: string;
-		budget?: number;
-		faculty_id?: string;
-	};
+	const body = request.body as Record<string, unknown>;
+	const challengeId = String(body.challenge_id || body.challengeId || '').trim();
+	const universityName = String(body.university_name || body.universityName || '').trim();
+	const facultyValue = body.faculty_id || body.facultyId;
+	const facultyId = facultyValue == null || facultyValue === '' ? null : String(facultyValue);
+	const budget = Number(body.budget);
 
-	if (!challengeId || !universityName || typeof budget !== 'number' || !facultyId) {
+	if (!challengeId || !universityName || !Number.isFinite(budget)) {
 		response.status(400).json({ error: 'challenge_id, university_name, budget, and faculty_id are required.' });
 		return;
 	}
@@ -32,7 +27,7 @@ hackathonRouter.post('/bid', async (request, response) => {
 
 hackathonRouter.post('/:challengeId/evaluate-bids', async (request, response) => {
 	try {
-		const result = await evaluateBids(request.params.challengeId);
+		const result = await evaluateBids(String(request.params.challengeId));
 		response.json(result);
 	} catch (error) {
 		console.error('Bid evaluation failed:', error);

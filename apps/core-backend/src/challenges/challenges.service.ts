@@ -5,9 +5,9 @@ export interface ChallengeSubmission {
 	description: string;
 	lat: number;
 	lon: number;
-	district?: string;
-	block?: string;
-	panchayat?: string;
+	district: string;
+	block: string | null;
+	panchayat?: string | null;
 }
 
 interface NearbyChallenge {

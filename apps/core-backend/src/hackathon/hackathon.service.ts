@@ -4,7 +4,7 @@ export async function placeBid(
 	challengeId: string,
 	universityName: string,
 	budget: number,
-	facultyId: string,
+	facultyId: string | null,
 ) {
 	const result = await query(
 		`INSERT INTO public.projects

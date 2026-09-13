@@ -19,17 +19,13 @@ evaluatorRouter.get('/queue', async (_request, response) => {
 });
 
 evaluatorRouter.post('/triage-action', async (request, response) => {
-	const {
-		ticket_id: ticketId,
-		action,
-		allocated_pool: allocatedPool,
-	} = request.body as {
-		ticket_id?: string;
-		action?: 'APPROVE_HEI' | 'REROUTE_CIVIC';
-		allocated_pool?: number;
-	};
+	const body = request.body as Record<string, unknown>;
+	const ticketId = String(body.ticket_id || body.ticketId || '').trim();
+	const action = String(body.action || '').trim();
+	const allocatedPool = body.allocated_pool ?? body.allocatedPool;
+	const poolAmount = allocatedPool == null || allocatedPool === '' ? 0 : Number(allocatedPool);
 
-	if (!ticketId || !['APPROVE_HEI', 'REROUTE_CIVIC'].includes(action || '')) {
+	if (!ticketId || !['APPROVE_HEI', 'REROUTE_CIVIC'].includes(action) || !Number.isFinite(poolAmount)) {
 		response.status(400).json({ error: 'Invalid ticket_id or action.' });
 		return;
 	}
@@ -39,7 +35,7 @@ evaluatorRouter.post('/triage-action', async (request, response) => {
 			? await query(
 					`UPDATE public.challenges
 					 SET status = 'ROUTED_CIVIC'
-					 WHERE id = $1
+					 WHERE id::text = $1 OR ticket_number = $1
 					 RETURNING id, ticket_number, status;`,
 					[ticketId],
 				)
@@ -47,9 +43,9 @@ evaluatorRouter.post('/triage-action', async (request, response) => {
 					`UPDATE public.challenges
 					 SET status = 'OPEN_FOR_BIDS', allocated_pool_inr = $2,
 						 bidding_deadline = NOW() + INTERVAL '10 days'
-					 WHERE id = $1
+					 WHERE id::text = $1 OR ticket_number = $1
 					 RETURNING id, ticket_number, status, allocated_pool_inr, bidding_deadline;`,
-					[ticketId, allocatedPool || 0],
+					[ticketId, poolAmount],
 				);
 
 		if (result.rowCount === 0) {
