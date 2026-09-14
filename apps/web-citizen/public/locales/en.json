@@ -8,6 +8,7 @@
     "home": "Home",
     "report": "Report a Problem",
     "dashboard": "My Grievances",
+    "progress": "Progress",
     "samvaad": "Jan Samvaad",
     "timeMachine": "Time Machine",
     "whatsappSim": "WhatsApp Seva Bot",
@@ -194,5 +195,25 @@
     "photoReceived": "Photo received!\n\nComputer Vision Analysis completed:\n• Identified: Iron Effluent and Pipe Degradation\n\nPlease share your live location so we can cross-reference nearby records.",
     "voiceReceived": "Voice note received!\n\nAutomated Speech Recognition transcription:\n\"Broken handpump casing with reddish iron water for three months.\"\n\nPlease share your location to generate a registered ticket.",
     "ticketIssued": "Ticket JAG-4102 has been successfully registered."
+  },
+  "progress": {
+    "title": "Problem Progress Tracking Dashboard",
+    "subtitle": "End-to-End Implementation Progress Tracker & Civic Audit",
+    "viewProgress": "View Progress Dashboard",
+    "backToDashboard": "Back to Dashboard",
+    "masterTicket": "Master Ticket",
+    "domain": "Domain",
+    "location": "Location",
+    "assignedInstitution": "Assigned University Partner",
+    "principalInvestigator": "Principal Investigator",
+    "studentScholars": "Student Engineering Leads",
+    "csrSponsor": "Industry CSR Co-Sponsor",
+    "totalBudget": "Total Approved Budget",
+    "lifecycleStepper": "5-Stage Full Lifecycle Stepper",
+    "escrowLedger": "Tranche-Based Escrow Financial Health Ledger",
+    "auditVault": "Compliance & Tribal Governance Audit Vault",
+    "maturationBuffer": "45-Day Unassisted Maturation Buffer",
+    "quorumStatus": "Real-Time Civic Quorum Status",
+    "academicCredits": "NEP 2020 Academic Credit & Impact Settlement"
   }
 }

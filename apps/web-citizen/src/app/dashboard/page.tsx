@@ -662,13 +662,27 @@ export default function CitizenDashboardPage() {
                     )}
 
                     {/* Bottom Action Row */}
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
                       <div className="text-[11px] text-slate-400 flex items-center gap-1 truncate">
                         <MapPin className="w-3 h-3 flex-shrink-0" />
                         <span className="truncate">{getLocalizedLocation(item.location)}</span>
                       </div>
 
                       <div className="flex items-center space-x-2">
+                        {/* View Progress Dashboard Button */}
+                        <Link
+                          href="/progress/JAG-PLM-0082"
+                          className="inline-flex items-center space-x-1 px-3 py-2 min-h-[48px] rounded-xl text-xs font-bold text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100/80 border border-blue-200 transition-all active:scale-95 shadow-2xs"
+                        >
+                          <span>
+                            {language === 'hi'
+                              ? 'प्रगति देखें'
+                              : language === 'sat'
+                              ? 'ᱞᱟᱦᱟᱱᱛᱤ ᱧᱮᱞ'
+                              : 'View Progress'}
+                          </span>
+                        </Link>
+
                         {/* Optimistic Upvote Button (>= 48px touch target) */}
                         <button
                           type="button"
