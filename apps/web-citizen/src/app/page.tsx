@@ -193,6 +193,19 @@ export default function EntryPage() {
                 >
                   🏛️ Govt
                 </Link>
+                <Link
+                  href="/progress"
+                  className="col-span-2 p-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-center transition-colors font-bold flex items-center justify-center gap-1.5 shadow-2xs"
+                >
+                  <span>📊</span>
+                  <span>
+                    {language === 'hi'
+                      ? 'राज्यव्यापी प्रगति एवं समाधान ट्रैकर'
+                      : language === 'sat'
+                      ? 'ᱯᱚᱱᱚᱛ ᱞᱟᱦᱟᱱᱛᱤ ᱟᱨ ᱥᱚᱞᱦᱮ ᱴᱨᱮᱠᱟᱨ'
+                      : 'Statewide Progress & Resolution Tracker'}
+                  </span>
+                </Link>
               </div>
             </div>
           </div>

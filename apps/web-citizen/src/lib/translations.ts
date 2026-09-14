@@ -43,6 +43,7 @@ export interface NavTranslations {
   hackathon: string;
   rndFailures: string;
   feedback: string;
+  progress: string;
 }
 
 export interface FeedbackTranslations {
@@ -61,20 +62,89 @@ export interface FeedbackTranslations {
 
 export interface TranslationDictionary {
   stateHeader: string;
+  heading: string;
+  subheading: string;
+  reportBtn: string;
+  resolvedTitle: string;
+  resolvedCount: string;
+  resolvedSub: string;
+  resolvedDesc: string;
+  activeTitle: string;
+  activeCount: string;
+  activeSub: string;
+  activeDesc: string;
+  escrowTitle: string;
+  escrowAmt: string;
+  escrowSub: string;
+  escrowDesc: string;
+  problemsTitle: string;
+  problemsSub: string;
+  cardsFeed: string;
+  radarMap: string;
+  rangeLabel: string;
+  searchPlaceholder: string;
+  allCategories: string;
+  timeline: string;
+  aiMatch: string;
+  grant: string;
+  heiPartner: string;
+  openBids: string;
+  fieldTesting: string;
+  aiAssistant: string;
   signOut: string;
+
+  // Extensions for site-wide purity and component compatibility
   gridBadge: string;
+  aiCopilotBtn: string;
+  daysLeft: string;
+  aiFit: string;
+  upvoteBtn: string;
+  upvotedBtn: string;
   dashboard: DashboardTranslations;
   nav: NavTranslations;
   feedback: FeedbackTranslations;
-  aiAssistant: string;
-  aiCopilotBtn: string;
 }
 
 export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
   en: {
-    stateHeader: "State Societal Innovation Portal",
+    stateHeader: "STATE SOCIETAL INNOVATION PORTAL",
+    heading: "Local Issues & Solutions",
+    subheading: "Grassroots Problems Connected to Academic Research & Tranche Grants.",
+    reportBtn: "+ Report New Issue",
+    resolvedTitle: "VERIFIED QUORUM",
+    resolvedCount: "412",
+    resolvedSub: "Issues Resolved",
+    resolvedDesc: "Verified on Ground",
+    activeTitle: "UNIVERSITY R&D",
+    activeCount: "184",
+    activeSub: "Active Solutions",
+    activeDesc: "In University Labs",
+    escrowTitle: "ESCROW LEDGER",
+    escrowAmt: "₹1.8 Cr",
+    escrowSub: "Funds Allocated",
+    escrowDesc: "Milestone Grants",
+    problemsTitle: "Problems in Your Area",
+    problemsSub: "Vote to prioritize your village issues",
+    cardsFeed: "Cards Feed",
+    radarMap: "500m Radar Map",
+    rangeLabel: "Range:",
+    searchPlaceholder: "Search tickets or villages...",
+    allCategories: "All Categories",
+    timeline: "TIMELINE",
+    aiMatch: "AI MATCH",
+    grant: "GRANT",
+    heiPartner: "HEI Partner:",
+    openBids: "Open for University Bids",
+    fieldTesting: "Field Testing and Durability Pilot",
+    aiAssistant: "AI Assistant",
     signOut: "Sign Out",
+
     gridBadge: "Jharkhand State Innovation Grid",
+    aiCopilotBtn: "AI Assistant",
+    daysLeft: "Days Left",
+    aiFit: "AI Fit:",
+    upvoteBtn: "Upvote",
+    upvotedBtn: "Upvoted",
     dashboard: {
       title: "Local Issues & Solutions",
       subtitle: "Grassroots Problems Connected to Academic Research & Tranche Grants.",
@@ -111,12 +181,13 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       citizen: "Citizen",
       whatsapp: "WhatsApp Bot",
       university: "University",
-      industry: "Industry/CSR",
+      industry: "Industry / CSR",
       govt: "Govt DHTE",
       samvaad: "Samvaad",
       hackathon: "Hackathon",
       rndFailures: "R&D Failures",
-      feedback: "📝 Citizen Feedback"
+      feedback: "Citizen Feedback",
+      progress: "Progress Tracker"
     },
     feedback: {
       reviewBadge: "45-Day Post-Implementation Review",
@@ -130,17 +201,50 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       addIssueDesc: "Submitting here routes directly back to the assigned university R&D team for an iterative repair sprint.",
       issueInputPlaceholder: "Describe the lingering defect or new problem in detail...",
       submitFeedback: "Submit Quorum Vote & Feedback"
-    },
-    aiAssistant: "AI Assistant",
-    aiCopilotBtn: "AI Assistant"
+    }
   },
   hi: {
-    stateHeader: "राज्य सामाजिक नवाचार पोर्टल",
+    stateHeader: "राजकीय सामाजिक नवाचार पोर्टल",
+    heading: "जनसमस्याएं एवं समाधान",
+    subheading: "शैक्षणिक अनुसंधान और अनुदान से जुड़ी जमीनी समस्याएं।",
+    reportBtn: "+ नई समस्या दर्ज करें",
+    resolvedTitle: "सत्यापित कोरम",
+    resolvedCount: "४१२",
+    resolvedSub: "हल हुई समस्याएं",
+    resolvedDesc: "जमीन पर सत्यापित",
+    activeTitle: "विश्वविद्यालय अनुसंधान",
+    activeCount: "१८४",
+    activeSub: "सक्रिय समाधान",
+    activeDesc: "विश्वविद्यालय प्रयोगशाला में",
+    escrowTitle: "एस्क्रो खाता",
+    escrowAmt: "₹१.८ करोड़",
+    escrowSub: "आवंटित राशि",
+    escrowDesc: "माइलस्टोन अनुदान",
+    problemsTitle: "आपके क्षेत्र की समस्याएं",
+    problemsSub: "अपनी गांव की समस्याओं को प्राथमिकता देने के लिए वोट करें",
+    cardsFeed: "कार्ड फीड",
+    radarMap: "५०० मीटर रडार मैप",
+    rangeLabel: "दायरा:",
+    searchPlaceholder: "टिकट नंबर या गांव खोजें...",
+    allCategories: "सभी श्रेणियां",
+    timeline: "समय-सीमा",
+    aiMatch: "एआई मिलान",
+    grant: "अनुदान",
+    heiPartner: "विश्वविद्यालय भागीदार:",
+    openBids: "विश्वविद्यालय प्रस्ताव के लिए खुला",
+    fieldTesting: "क्षेत्र परीक्षण और स्थायित्व पायलट",
+    aiAssistant: "एआई सहायक",
     signOut: "साइन आउट",
+
     gridBadge: "झारखंड राज्य नवाचार ग्रिड",
+    aiCopilotBtn: "एआई सहायक",
+    daysLeft: "दिन शेष",
+    aiFit: "एआई मिलान:",
+    upvoteBtn: "वोट दें",
+    upvotedBtn: "वोट दिया",
     dashboard: {
       title: "जनसमस्याएं एवं समाधान",
-      subtitle: "विश्वविद्यालयी अनुसंधान और अनुदान से जुड़े जमीनी मुद्दे।",
+      subtitle: "शैक्षणिक अनुसंधान और अनुदान से जुड़ी जमीनी समस्याएं।",
       reportBtn: "+ नई समस्या दर्ज करें",
       verifiedQuorum: "सत्यापित कोरम",
       resolvedCount: "४१२",
@@ -149,19 +253,19 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       universityRnd: "विश्वविद्यालय अनुसंधान",
       activeCount: "१८४",
       activeLabel: "सक्रिय समाधान",
-      activeSub: "विश्वविद्यालय लैब में",
+      activeSub: "विश्वविद्यालय प्रयोगशाला में",
       escrowLedger: "एस्क्रो खाता",
       fundsAmount: "₹१.८ करोड़",
       fundsLabel: "आवंटित राशि",
-      fundsSub: "चरणबद्ध अनुदान",
+      fundsSub: "माइलस्टोन अनुदान",
       problemsNearTitle: "आपके क्षेत्र की समस्याएं",
-      problemsNearSubtitle: "अपने गांव की समस्याओं को प्राथमिकता देने के लिए वोट करें",
-      cardsFeed: "कार्ड सूची",
+      problemsNearSubtitle: "अपनी गांव की समस्याओं को प्राथमिकता देने के लिए वोट करें",
+      cardsFeed: "कार्ड फीड",
       radarMap: "५०० मीटर रडार मैप",
-      range: "दूरी:",
+      range: "दायरा:",
       allCategories: "सभी श्रेणियां",
-      searchPlaceholder: "टिकट या गांव खोजें...",
-      timeline: "समय सीमा",
+      searchPlaceholder: "टिकट नंबर या गांव खोजें...",
+      timeline: "समय-सीमा",
       daysLeft: "दिन शेष",
       aiMatch: "एआई मिलान",
       aiFit: "एआई मिलान:",
@@ -174,12 +278,13 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       citizen: "नागरिक",
       whatsapp: "व्हाट्सएप बॉट",
       university: "विश्वविद्यालय",
-      industry: "उद्योग/सीएसआर",
-      govt: "सरकारी डैशबोर्ड",
+      industry: "उद्योग / सीएसआर",
+      govt: "सरकारी पोर्टल",
       samvaad: "संवाद",
       hackathon: "हैकाथॉन",
-      rndFailures: "आरएंडडी असफलताएं",
-      feedback: "📝 नागरिक प्रतिक्रिया"
+      rndFailures: "आरएंडडी विफलताएं",
+      feedback: "नागरिक प्रतिक्रिया",
+      progress: "प्रगति ट्रैकर"
     },
     feedback: {
       reviewBadge: "४५ दिवसीय कार्यान्वयन पश्चात समीक्षा",
@@ -193,43 +298,76 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       addIssueDesc: "यहाँ शिकायत दर्ज करने पर यह सीधे संबंधित विश्वविद्यालय टीम को पुनः सुधार के लिए प्रेषित होगी।",
       issueInputPlaceholder: "बचे हुए दोष या नई समस्या का विस्तार से वर्णन करें...",
       submitFeedback: "कोरम वोट एवं प्रतिक्रिया दर्ज करें"
-    },
-    aiAssistant: "एआई सहायक",
-    aiCopilotBtn: "एआई सहायक"
+    }
   },
   sat: {
-    stateHeader: "Rajya Samajik Nawa Etohor Portal",
-    signOut: "Oḍoklen",
+    stateHeader: "State Societal Innovation Portal",
+    heading: "Aatu Reah Samasya ar Hal",
+    subheading: "Grassroots Problems Connected to Academic Research",
+    reportBtn: "+ Nawa Samasya Olme",
+    resolvedTitle: "VERIFIED QUORUM",
+    resolvedCount: "412",
+    resolvedSub: "Hal Ena",
+    resolvedDesc: "Sari Ena",
+    activeTitle: "UNIVERSITY R&D",
+    activeCount: "184",
+    activeSub: "Chalu Menah-a",
+    activeDesc: "University Re",
+    escrowTitle: "ESCROW LEDGER",
+    escrowAmt: "₹1.8 Cr",
+    escrowSub: "Paisa Taka",
+    escrowDesc: "Milestone Grants",
+    problemsTitle: "Sur Reah Samasya",
+    problemsSub: "Vote emme",
+    cardsFeed: "Cards Feed",
+    radarMap: "500m Radar Map",
+    rangeLabel: "Range:",
+    searchPlaceholder: "Search tickets...",
+    allCategories: "Joto Lekan",
+    timeline: "TIMELINE",
+    aiMatch: "AI MATCH",
+    grant: "GRANT",
+    heiPartner: "HEI Partner:",
+    openBids: "Open for Bids",
+    fieldTesting: "Field Testing",
+    aiAssistant: "AI Goroic",
+    signOut: "Sign Out",
+
     gridBadge: "Jharkhand Rajya Nawa Bhabna Grid",
+    aiCopilotBtn: "AI Goroic",
+    daysLeft: "Maha Baki",
+    aiFit: "AI Milaw:",
+    upvoteBtn: "Vote Emme",
+    upvotedBtn: "Vote Ena",
     dashboard: {
       title: "Aatu Reah Samasya ar Hal",
-      subtitle: "University reah research ar sarkar madat te hal aakan samasya.",
+      subtitle: "Grassroots Problems Connected to Academic Research",
       reportBtn: "+ Nawa Samasya Olme",
-      verifiedQuorum: "SARI AAKAN QUORUM",
+      verifiedQuorum: "VERIFIED QUORUM",
       resolvedCount: "412",
       resolvedLabel: "Hal Ena",
-      resolvedSub: "Aatu Re Sari Ena",
-      universityRnd: "BIRDAUSUL R&D",
+      resolvedSub: "Sari Ena",
+      universityRnd: "UNIVERSITY R&D",
       activeCount: "184",
       activeLabel: "Chalu Menah-a",
-      activeSub: "University Lab Re",
-      escrowLedger: "SARKAR PAISA KHATA",
+      activeSub: "University Re",
+      escrowLedger: "ESCROW LEDGER",
       fundsAmount: "₹1.8 Cr",
       fundsLabel: "Paisa Taka",
-      fundsSub: "Sarkar Madat",
+      fundsSub: "Milestone Grants",
       problemsNearTitle: "Sur Reah Samasya",
-      problemsNearSubtitle: "Aapeah aatu samasya lahante idilaigi vote emme",
-      cardsFeed: "Sakom Suchi",
-      radarMap: "500m Radar Naksa",
-      range: "Sangiñ:",
+      problemsNearSubtitle: "Vote emme",
+      cardsFeed: "Cards Feed",
+      radarMap: "500m Radar Map",
+      range: "Range:",
       allCategories: "Joto Lekan",
-      searchPlaceholder: "Ticket se aatu panja me...",
-      timeline: "OKTO",
+      searchPlaceholder: "Search tickets...",
+      timeline: "TIMELINE",
       daysLeft: "Maha Baki",
-      aiMatch: "AI MILAW",
+      aiMatch: "AI MATCH",
       aiFit: "AI Milaw:",
-      grant: "MADAT",
-      heiPartner: "Birdausul Goroic:",
+      grant: "GRANT",
+      heiPartner: "HEI Partner:",
       upvoteBtn: "Vote Emme",
       upvotedBtn: "Vote Ena"
     },
@@ -242,7 +380,8 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       samvaad: "Galmarao",
       hackathon: "Hal Heprao",
       rndFailures: "Bidaw Bạṛij Khata",
-      feedback: "📝 Aatu Bichar"
+      feedback: "Aatu Bichar",
+      progress: "Lahanti Tracker"
     },
     feedback: {
       reviewBadge: "45-Maha Tayom Bichar",
@@ -256,8 +395,6 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       addIssueDesc: "Nonde ol lekhankhan dohorate Birdausul team thech banaw laigi senoh-a.",
       issueInputPlaceholder: "Baki menah bạṛij se nawa samasya bistar te olme...",
       submitFeedback: "Quorum Vote ar Bichar Darj Me"
-    },
-    aiAssistant: "AI Goroic",
-    aiCopilotBtn: "AI Goroic"
+    }
   }
 };

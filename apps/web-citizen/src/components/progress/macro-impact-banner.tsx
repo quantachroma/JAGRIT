@@ -221,3 +221,4 @@ export default function MacroImpactBanner({ language }: MacroImpactBannerProps) 
     </section>
   );
 }
+

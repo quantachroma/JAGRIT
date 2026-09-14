@@ -82,3 +82,4 @@ export interface DistrictResolutionItem {
   satisfactionQuorumScore: string;
   statusTag: { en: string; hi: string; sat: string };
 }
+

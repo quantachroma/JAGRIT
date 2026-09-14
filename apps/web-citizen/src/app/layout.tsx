@@ -18,6 +18,7 @@ import {
   Menu,
   X,
   CheckCircle2,
+  TrendingUp,
 } from 'lucide-react';
 import AIAssistantDrawer from '@/components/ai-assistant-drawer';
 
@@ -33,6 +34,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { label: t.nav.citizen, href: '/dashboard', icon: Users },
+    { label: t.nav.progress || 'Progress Tracker', href: '/dashboard/progress/JAG-4102', icon: TrendingUp },
     { label: t.nav.feedback || '45-Day Feedback', href: '/feedback', icon: CheckCircle2 },
     { label: t.nav.whatsapp, href: '/whatsapp-simulator', icon: MessageCircle },
     { label: t.nav.university, href: '/university/dashboard', icon: GraduationCap },

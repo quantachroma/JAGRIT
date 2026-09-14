@@ -835,3 +835,4 @@ export const DISTRICT_RESOLUTION_DATA: DistrictResolutionItem[] = [
     statusTag: { en: 'Urban & Peri-Urban Tech', hi: 'नगरीय एवं उपनगरीय तकनीक', sat: 'ᱵᱟᱡᱟᱨ ᱟᱨ ᱟᱹᱛᱩ ᱴᱮᱠᱱᱤᱠ' },
   },
 ];
+

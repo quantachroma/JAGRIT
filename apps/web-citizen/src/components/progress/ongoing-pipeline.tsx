@@ -303,16 +303,6 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
                     </span>
                   </div>
 
-                  <div className="flex items-start gap-2">
-                    <Activity className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                    <span className="font-medium text-slate-700">
-                      <strong className="text-slate-900 font-semibold">
-                        {language === 'hi' ? 'क्षेत्रीय टेलीमेट्री:' : language === 'sat' ? 'ᱴᱷᱟᱶ ᱦᱟᱞᱚᱛ:' : 'Field Health:'}{' '}
-                      </strong>
-                      {project.fieldHealth[language]}
-                    </span>
-                  </div>
-
                   {project.mentorOrCompliance && (
                     <div className="flex items-start gap-2">
                       <ShieldCheck className="w-3.5 h-3.5 text-blue-600 mt-0.5 flex-shrink-0" />
