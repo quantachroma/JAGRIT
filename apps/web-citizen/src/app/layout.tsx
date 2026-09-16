@@ -19,12 +19,19 @@ import {
   X,
   CheckCircle2,
   TrendingUp,
+  HeartHandshake,
 } from 'lucide-react';
 import AIAssistantDrawer from '@/components/ai-assistant-drawer';
+import { useCitizen } from '@/context/CitizenContext';
+
+type NavRole = 'CITIZEN' | 'STUDENT' | 'FACULTY_PI' | 'INDUSTRY_MENTOR' | 'EVALUATOR' | 'PRI_OFFICER' | 'ADMIN';
+const ROLE_ALIASES: Record<string, NavRole> = { UNIVERSITY: 'STUDENT', INDUSTRY: 'INDUSTRY_MENTOR', GOVERNMENT: 'EVALUATOR' };
+const FULL_VISIBILITY_ROLES: NavRole[] = ['EVALUATOR', 'PRI_OFFICER', 'ADMIN'];
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { language, setLanguage, t } = useLanguage();
+  const { user } = useCitizen();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isLandingPage = pathname === '/';
 
@@ -32,18 +39,20 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     return <main>{children}</main>;
   }
 
+  const role = user.role ? ROLE_ALIASES[user.role] || user.role as NavRole : null;
   const navItems = [
-    { label: t.nav.citizen, href: '/dashboard', icon: Users },
-    { label: t.nav.progress || 'Progress Tracker', href: '/dashboard/progress/JAG-4102', icon: TrendingUp },
-    { label: t.nav.feedback || '45-Day Feedback', href: '/feedback', icon: CheckCircle2 },
-    { label: t.nav.whatsapp, href: '/whatsapp-simulator', icon: MessageCircle },
-    { label: t.nav.university, href: '/university/dashboard', icon: GraduationCap },
-    { label: t.nav.industry, href: '/industry/dashboard', icon: Building2 },
-    { label: t.nav.govt, href: '/government/dashboard', icon: Landmark },
-    { label: t.nav.samvaad, href: '/samvaad', icon: MessageSquare },
-    { label: t.nav.hackathon, href: '/university/hackathon/annual', icon: Trophy },
-    { label: t.nav.rndFailures, href: '/repository', icon: Archive },
-  ];
+    { label: t.nav.citizen, href: '/dashboard', icon: Users, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.progress || 'Progress Tracker', href: '/dashboard/progress/JAG-4102', icon: TrendingUp, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.feedback || '45-Day Feedback', href: '/feedback', icon: CheckCircle2, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.whatsapp, href: '/whatsapp-simulator', icon: MessageCircle, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
+    { label: 'Pledge & Support', href: '/pledge-support', icon: HeartHandshake, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.university, href: '/university/dashboard', icon: GraduationCap, roles: ['STUDENT', 'FACULTY_PI', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.industry, href: '/industry/dashboard', icon: Building2, roles: ['INDUSTRY_MENTOR', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.govt, href: '/government/dashboard', icon: Landmark, roles: FULL_VISIBILITY_ROLES },
+    { label: t.nav.samvaad, href: '/samvaad', icon: MessageSquare, roles: ['CITIZEN', 'STUDENT', 'FACULTY_PI', 'INDUSTRY_MENTOR', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.hackathon, href: '/university/hackathon/annual', icon: Trophy, roles: ['STUDENT', 'FACULTY_PI', 'INDUSTRY_MENTOR', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.rndFailures, href: '/repository', icon: Archive, roles: ['STUDENT', 'FACULTY_PI', ...FULL_VISIBILITY_ROLES] },
+  ].filter((item) => role && item.roles.includes(role));
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">

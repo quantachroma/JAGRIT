@@ -11,6 +11,8 @@ export interface CitizenUser {
   phone?: string;
   name?: string;
   isAuthenticated: boolean;
+  role?: 'CITIZEN' | 'STUDENT' | 'FACULTY_PI' | 'INDUSTRY_MENTOR' | 'EVALUATOR' | 'PRI_OFFICER' | 'ADMIN' | 'UNIVERSITY' | 'INDUSTRY' | 'GOVERNMENT';
+  organization?: string;
 }
 
 export const DEFAULT_RANCHI_LOCATION: GeoLocation = {
@@ -62,6 +64,15 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
           // ignore corrupted storage
         }
       }
+      const activeSession = localStorage.getItem('jagrit_active_user');
+      if (activeSession) {
+        try {
+          const session = JSON.parse(activeSession);
+          setUser({ phone: session.email, name: session.name, isAuthenticated: true, role: session.role, organization: session.organization });
+        } catch {
+          // ignore corrupted session storage
+        }
+      }
     }
   }, []);
 
@@ -70,6 +81,7 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
       phone,
       name: name || 'Jharkhand Citizen',
       isAuthenticated: true,
+      role: 'CITIZEN',
     };
     setUser(newUser);
     if (typeof window !== 'undefined') {
@@ -82,6 +94,7 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
     setUser(emptyUser);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('jagrit_citizen_user');
+      localStorage.removeItem('jagrit_active_user');
     }
   };
 
