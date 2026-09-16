@@ -18,17 +18,71 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<AppLanguage>('en');
 
   useEffect(() => {
-    const stored = window.localStorage.getItem('jagrit_language') as AppLanguage | null;
-    if (stored && stored in TRANSLATIONS) {
-      setLanguageState(stored);
-      document.documentElement.lang = stored;
-    }
+    if (typeof window === 'undefined') return;
+
+    const syncLanguage = () => {
+      // 1. Prioritize explicit URL param (?lang= or ?language=)
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = (params.get('lang') || params.get('language')) as AppLanguage | null;
+      if (urlLang && urlLang in TRANSLATIONS) {
+        setLanguageState(urlLang);
+        window.localStorage.setItem('jagrit_language', urlLang);
+        document.documentElement.lang = urlLang;
+        return;
+      }
+
+      // 2. Fall back to localStorage
+      const stored = window.localStorage.getItem('jagrit_language') as AppLanguage | null;
+      if (stored && stored in TRANSLATIONS) {
+        setLanguageState(stored);
+        document.documentElement.lang = stored;
+      }
+    };
+
+    syncLanguage();
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'jagrit_language' && e.newValue && e.newValue in TRANSLATIONS) {
+        setLanguageState(e.newValue as AppLanguage);
+        document.documentElement.lang = e.newValue;
+      }
+    };
+
+    const handleCustomChange = (e: Event) => {
+      const detail = (e as CustomEvent<AppLanguage>).detail;
+      if (detail && detail in TRANSLATIONS) {
+        setLanguageState(detail);
+        document.documentElement.lang = detail;
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('jagrit:language-change', handleCustomChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('jagrit:language-change', handleCustomChange);
+    };
   }, []);
 
   const setLanguage = (next: AppLanguage) => {
     setLanguageState(next);
-    window.localStorage.setItem('jagrit_language', next);
-    document.documentElement.lang = next;
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('jagrit_language', next);
+      document.documentElement.lang = next;
+
+      // Update URL param dynamically without reloading
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', next);
+        window.history.replaceState({}, '', url.toString());
+      } catch {
+        // ignore if in unsupported environment
+      }
+
+      // Broadcast event
+      window.dispatchEvent(new CustomEvent('jagrit:language-change', { detail: next }));
+    }
   };
 
   const value = useMemo(

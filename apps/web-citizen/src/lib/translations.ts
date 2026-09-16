@@ -60,6 +60,40 @@ export interface FeedbackTranslations {
   submitFeedback: string;
 }
 
+export interface SsoTranslations {
+  back: string;
+  ssoTitle: string;
+  tabs: {
+    citizen: string;
+    university: string;
+    industry: string;
+    govt: string;
+  };
+  fieldLabels: {
+    citizen: string;
+    university: string;
+    industry: string;
+    govt: string;
+  };
+  placeholders: {
+    citizen: string;
+    university: string;
+    industry: string;
+    govt: string;
+  };
+  passwordLabel: string;
+  passwordPlaceholder: string;
+  signInBtn: string;
+  fastPassHeading: string;
+  fastPassRoles: {
+    citizen: string;
+    university: string;
+    industry: string;
+    govt: string;
+  };
+  trackerBtn: string;
+}
+
 export interface TranslationDictionary {
   stateHeader: string;
   heading: string;
@@ -103,6 +137,7 @@ export interface TranslationDictionary {
   dashboard: DashboardTranslations;
   nav: NavTranslations;
   feedback: FeedbackTranslations;
+  sso: SsoTranslations;
 }
 
 export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
@@ -201,6 +236,39 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       addIssueDesc: "Submitting here routes directly back to the assigned university R&D team for an iterative repair sprint.",
       issueInputPlaceholder: "Describe the lingering defect or new problem in detail...",
       submitFeedback: "Submit Quorum Vote & Feedback"
+    },
+    sso: {
+      back: "Back",
+      ssoTitle: "JAGRIT Single Sign-On",
+      tabs: {
+        citizen: "Citizen",
+        university: "University",
+        industry: "Industry",
+        govt: "Govt"
+      },
+      fieldLabels: {
+        citizen: "Phone / Voter ID / Aadhaar Virtual ID",
+        university: "Campus + Faculty Employee or Student ID",
+        industry: "Corporate CIN / Form CSR-1 Registration No.",
+        govt: "State Department + Official Govt Service Code"
+      },
+      placeholders: {
+        citizen: "+91 98765 43210",
+        university: "BIT Mesra · AISHE-U-0204",
+        industry: "CIN: L27100MH1907PLC000260",
+        govt: "JH-GOV-DHTE-001"
+      },
+      passwordLabel: "Security Password / Passcode",
+      passwordPlaceholder: "••••••••",
+      signInBtn: "Sign In to Portal ➔",
+      fastPassHeading: "⚡ Quick Demo Fast-Pass (1-Click Login):",
+      fastPassRoles: {
+        citizen: "👥 Citizen",
+        university: "🎓 University",
+        industry: "💼 Industry",
+        govt: "🏛️ Govt"
+      },
+      trackerBtn: "Statewide Progress & Resolution Tracker"
     }
   },
   hi: {
@@ -298,6 +366,39 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       addIssueDesc: "यहाँ शिकायत दर्ज करने पर यह सीधे संबंधित विश्वविद्यालय टीम को पुनः सुधार के लिए प्रेषित होगी।",
       issueInputPlaceholder: "बचे हुए दोष या नई समस्या का विस्तार से वर्णन करें...",
       submitFeedback: "कोरम वोट एवं प्रतिक्रिया दर्ज करें"
+    },
+    sso: {
+      back: "वापस",
+      ssoTitle: "जागृत सिंगल साइन-ऑन",
+      tabs: {
+        citizen: "नागरिक",
+        university: "विश्वविद्यालय",
+        industry: "उद्योग",
+        govt: "प्रशासन"
+      },
+      fieldLabels: {
+        citizen: "फोन / मतदाता पहचान पत्र / आधार वर्चुअल आईडी",
+        university: "परिसर + संकाय कर्मचारी अथवा छात्र आईडी",
+        industry: "कॉर्पोरेट सीआईएन / फॉर्म सीएसआर-1 पंजीकरण संख्या",
+        govt: "राज्य विभाग + आधिकारिक सरकारी सेवा कोड"
+      },
+      placeholders: {
+        citizen: "+91 98765 43210",
+        university: "बीआईटी मेसरा · AISHE-U-0204",
+        industry: "सीआईएन: L27100MH1907PLC000260",
+        govt: "JH-GOV-DHTE-001"
+      },
+      passwordLabel: "सुरक्षा पासवर्ड / पासकोड",
+      passwordPlaceholder: "••••••••",
+      signInBtn: "पोर्टल में साइन इन करें ➔",
+      fastPassHeading: "⚡ त्वरित डेमो फास्ट-पास (१-क्लिक लॉगिन):",
+      fastPassRoles: {
+        citizen: "👥 नागरिक",
+        university: "🎓 विश्वविद्यालय",
+        industry: "💼 उद्योग",
+        govt: "🏛️ प्रशासन"
+      },
+      trackerBtn: "राज्यव्यापी प्रगति एवं समाधान ट्रैकर"
     }
   },
   sat: {
@@ -395,6 +496,39 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       addIssueDesc: "Nonde ol lekhankhan dohorate Birdausul team thech banaw laigi senoh-a.",
       issueInputPlaceholder: "Baki menah bạṛij se nawa samasya bistar te olme...",
       submitFeedback: "Quorum Vote ar Bichar Darj Me"
+    },
+    sso: {
+      back: "ᱨᱩᱣᱟᱹᱲ",
+      ssoTitle: "ᱡᱟᱜᱽᱨᱤᱛ ᱢᱤᱫ ᱥᱟᱭᱤᱱ-ᱚᱱ",
+      tabs: {
+        citizen: "ᱨᱟᱹᱥᱤᱭᱟᱹ",
+        university: "ᱵᱤᱨᱫᱟᱹᱜᱟᱲ",
+        industry: "ᱠᱟᱹᱨᱜᱟᱲ",
+        govt: "ᱥᱚᱨᱠᱟᱨ"
+      },
+      fieldLabels: {
+        citizen: "ᱯᱷᱳᱱ / ᱵᱷᱳᱴᱟᱨ ᱠᱟᱨᱰ / ᱟᱫᱷᱟᱨ ᱵᱷᱟᱨᱪᱩᱣᱟᱞ ᱟᱭᱰᱤ",
+        university: "ᱠᱮᱢᱯᱟᱥ + ᱯᱨᱚᱯᱷᱮᱥᱟᱨ ᱠᱟᱹᱢᱤᱭᱟᱹ ᱥᱮ ᱯᱟᱹᱴᱷᱩᱣᱟᱹ ᱟᱭᱰᱤ",
+        industry: "ᱠᱚᱨᱯᱳᱨᱮᱴ CIN / ᱯᱷᱳᱨᱢ CSR-1 ᱨᱮᱡᱤᱥᱴᱨᱮᱥᱚᱱ ᱱᱚᱢᱵᱚᱨ",
+        govt: "ᱯᱚᱱᱚᱛ ᱵᱤᱵᱷᱟᱜᱽ + ᱥᱚᱨᱠᱟᱨᱤ ᱥᱮᱵᱟ ᱠᱳᱰ"
+      },
+      placeholders: {
+        citizen: "+91 98765 43210",
+        university: "BIT Mesra · AISHE-U-0204",
+        industry: "CIN: L27100MH1907PLC000260",
+        govt: "JH-GOV-DHTE-001"
+      },
+      passwordLabel: "ᱨᱩᱠᱷᱤᱭᱟᱹ ᱯᱟᱥᱣᱟᱨᱰ / ᱯᱟᱥᱠᱳᱰ",
+      passwordPlaceholder: "••••••••",
+      signInBtn: "ᱯᱳᱨᱴᱟᱞ ᱨᱮ ᱥᱟᱭᱤᱱ ᱤᱱ ᱢᱮ ➔",
+      fastPassHeading: "⚡ ᱞᱚᱜᱚᱱ ᱰᱮᱢᱳ ᱯᱷᱟᱥᱴ-ᱯᱟᱥ (᱑-ᱠᱞᱤᱠ ᱵᱚᱞᱚᱱ):",
+      fastPassRoles: {
+        citizen: "👥 ᱨᱟᱹᱥᱤᱭᱟᱹ",
+        university: "🎓 ᱵᱤᱨᱫᱟᱹᱜᱟᱲ",
+        industry: "💼 ᱠᱟᱹᱨᱜᱟᱲ",
+        govt: "🏛️ ᱥᱚᱨᱠᱟᱨ"
+      },
+      trackerBtn: "ᱯᱚᱱᱚᱛ ᱡᱟᱠᱟᱛ ᱞᱟᱦᱟᱱᱛᱤ ᱟᱨ ᱥᱚᱞᱦᱮ ᱴᱨᱮᱠᱟᱨ"
     }
   }
 };
