@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useCitizen } from '@/context/CitizenContext';
+import { useLanguage } from '@/context/LanguageContext';
 import {
   MessageSquare,
   Heart,
@@ -133,10 +134,184 @@ const INITIAL_THREADS: SamvaadThread[] = [
   },
 ];
 
-export default function SamvaadPage() {
-  const { language, currentLocation } = useCitizen();
+const INITIAL_THREADS_BY_LANG: Record<string, SamvaadThread[]> = {
+  en: INITIAL_THREADS,
+  hi: [
+    {
+      id: 'th-1',
+      author: 'डॉ. आनंद वर्मा',
+      role: 'RESEARCHER',
+      roleLabel: 'डॉ. आनंद वर्मा - बीआईटी मेसरा',
+      institution: 'बीआईटी मेसरा · जल एवं पर्यावरण इंजीनियरिंग',
+      location: 'पलामू, सतबरवा प्रखंड',
+      timeAgo: '२ घंटे पहले',
+      category: 'WATER',
+      title: 'पलामू ज़िला: ४५-दिवसीय सत्यापन चरण में सौर फ्लोराइड-मुक्त इकाई सक्रिय',
+      content:
+        'सतबरवा में भूजल के अत्यधिक फ्लोराइड संदूषण से निपटने हेतु बीआईटी मेसरा ने सौर ऊर्जा चालित फ्लोराइड निष्कासन इकाई स्थापित की है। कार्यकुशलता ८८% है। ग्राम सभा सदस्य नागरिक कोरम सत्यापन में भाग ले रहे हैं।',
+      tags: ['जलअनुसंधान', 'फ्लोराइडनिवारण', 'बीआईटीमेसरा'],
+      likesCount: 68,
+      isLiked: false,
+      attachmentCaption: 'पलामू सौर फ्लोराइड-मुक्त इकाई: ४५-दिवसीय स्थायित्व परीक्षण',
+      replies: [
+        {
+          id: 'c-1-1',
+          author: 'सोमरा उरांव',
+          role: 'CITIZEN',
+          roleLabel: 'नागरिक',
+          timeAgo: '१ घंटा पहले',
+          content: 'हमारे टोले में पीने के पानी की गुणवत्ता में उल्लेखनीय सुधार हुआ है।',
+        },
+      ],
+    },
+    {
+      id: 'th-2',
+      author: 'सुनील हेम्ब्रम',
+      role: 'STUDENT',
+      roleLabel: 'छात्र दल प्रमुख',
+      institution: 'एनआईटी जमशेदपुर · नवीकरणीय ऊर्जा',
+      location: 'पश्चिमी सिंहभूम, चाईबासा',
+      timeAgo: '५ घंटे पहले',
+      category: 'ENERGY',
+      title: 'चाईबासा: ग्रामीण प्राथमिक स्वास्थ्य केंद्र हेतु सोलर माइक्रोग्रिड वोल्टेज स्टेबलाइजर',
+      content:
+        'टोन्टो स्वास्थ्य केंद्र में शाम को बैटरी वोल्टेज १४०V तक गिर जाता था, जिससे टीकों के कोल्ड-चेन प्रशीतन को खतरा था। हमारी छात्र इंजीनियरिंग टीम ने सक्रिय बैटरी प्रबंधन प्रणाली स्थापित कर २२०V स्थिर किया।',
+      tags: ['ऊर्जा', 'स्वास्थ्यकेंद्रसौर', 'एनआईटीजमशेदपुर'],
+      likesCount: 82,
+      isLiked: true,
+      attachmentCaption: 'चाईबासा पीएचसी में स्थापित सक्रिय टेलीमेट्री नियंत्रक बोर्ड',
+      replies: [],
+    },
+    {
+      id: 'th-3',
+      author: 'रमेश मुंडा',
+      role: 'CITIZEN',
+      roleLabel: 'नागरिक',
+      location: 'रांची, कांके पंचायत',
+      timeAgo: '१ दिन पहले',
+      category: 'WATER',
+      title: 'कांके वार्ड ४: सोलर चापाकल हेतु सामुदायिक निगरानी समिति गठित',
+      content:
+        'वार्ड ४ में नया सौर संचालित डीप बोर पंप प्रतिदिन ४५ परिवारों को स्वच्छ जल उपलब्ध करा रहा है। सौर पैनलों की सुरक्षा हेतु ग्राम रखरखाव समिति बनाई गई है।',
+      tags: ['जलअनुसंधान', 'सोलरपंप', 'ग्रामसभा'],
+      likesCount: 46,
+      isLiked: false,
+      attachmentCaption: '४५ परिवारों को पेयजल प्रदान करता क्रियाशील सौर पंप',
+      replies: [],
+    },
+    {
+      id: 'th-4',
+      author: 'बिरसा मुंडा स्वयं सहायता समूह',
+      role: 'CITIZEN',
+      roleLabel: 'नागरिक',
+      location: 'खूंटी, मुरहू प्रखंड',
+      timeAgo: '३ घंटे पहले',
+      category: 'LIVELIHOODS',
+      title: 'खूंटी ज़िला: लाह की फसल में फफूंद से बचाव — सोलर टनल ड्रायर की आवश्यकता',
+      content:
+        'मानसून की भारी नमी के कारण हमारी कुसुमी और रंगीनी लाह की ३५% फसल खराब हो रही है। क्या हमारे २० महिला स्वयं सहायता समूहों के लिए एक पोर्टेबल सोलर डीह्यूमिडिफायर ड्रायर का परीक्षण किया जा सकता है?',
+      tags: ['आजीविका', 'कृषितकनीक', 'फसलबचाव'],
+      likesCount: 54,
+      isLiked: false,
+      attachmentCaption: 'मुरहू में कच्ची लाह की बर्बादी एवं भंडारण समस्या का आकलन',
+      replies: [],
+    },
+  ],
+  sat: [
+    {
+      id: 'th-1',
+      author: 'Dr. Anand Verma',
+      role: 'RESEARCHER',
+      roleLabel: 'Dr. Anand Verma - BIT Mesra',
+      institution: 'BIT Mesra · Daq ar Poribesh Eng.',
+      location: 'Palamu, Satbarwa Block',
+      timeAgo: '2 ᱴᱟᱲᱟᱝ ᱢᱟᱬᱟᱝ',
+      category: 'WATER',
+      title: 'Palamu District: Solar Defluoridation Unit 45-Maha Bidao Re Menah-a',
+      content:
+        'Satbarwa re daq re fluoride kom laigi BIT Mesra solar defluoridation unit lagao keda. 88% bes kaami choloh kana. Aatu hor baisi re vote em kana.',
+      tags: ['DaqKondron', 'FluorideKom', 'BITMesra'],
+      likesCount: 68,
+      isLiked: false,
+      attachmentCaption: 'Palamu Solar Defluoridation Unit: 45-Maha Bidao Audit',
+      replies: [
+        {
+          id: 'c-1-1',
+          author: 'Somra Oraon',
+          role: 'CITIZEN',
+          roleLabel: 'Aatu Hor',
+          timeAgo: '1 ᱴᱟᱲᱟᱝ ᱢᱟᱬᱟᱝ',
+          content: 'Ńu daq nahaq bes bujhao kana.',
+        },
+      ],
+    },
+    {
+      id: 'th-2',
+      author: 'Sunil Hembrom',
+      role: 'STUDENT',
+      roleLabel: 'Student Lead',
+      institution: 'NIT Jamshedpur · Renewable Energy',
+      location: 'West Singhbhum, Chaibasa',
+      timeAgo: '5 ᱴᱟᱲᱟᱝ ᱢᱟᱬᱟᱝ',
+      category: 'ENERGY',
+      title: 'Chaibasa: Solar Microgrid Voltage Stabilizer Rural PHC Laigi',
+      content:
+        'Tonto health centre re tikin tayom battery 140V dhabich komolen tahikana, vaccine baarijoh kan tahikana. NIT Jamshedpur team active BMS lagao keda 220V doho laigi.',
+      tags: ['Energy', 'HealthSolar', 'NITJamshedpur'],
+      likesCount: 82,
+      isLiked: true,
+      attachmentCaption: 'Chaibasa PHC re controller board lagao ena',
+      replies: [],
+    },
+    {
+      id: 'th-3',
+      author: 'Ramesh Munda',
+      role: 'CITIZEN',
+      roleLabel: 'Aatu Hor',
+      location: 'Ranchi, Kanke Panchayat',
+      timeAgo: '1 ᱢᱟᱦᱟᱸ ᱢᱟᱬᱟᱝ',
+      category: 'WATER',
+      title: 'Kanke Ward 4: Solar Handpump Laigi Gram Sabha Committee Benaw Ena',
+      content:
+        'Ward 4 re solar deep bore pump 45 oraq hor daq em kana. Solar panel joton laigi aatu hor baisi keda.',
+      tags: ['DaqKondron', 'SolarPump', 'GramSabha'],
+      likesCount: 46,
+      isLiked: false,
+      attachmentCaption: '45 oraq hor laigi solar pump chalu menah-a',
+      replies: [],
+    },
+    {
+      id: 'th-4',
+      author: 'Birsa Munda SHG',
+      role: 'CITIZEN',
+      roleLabel: 'Aatu Hor',
+      location: 'Khunti, Murhu Block',
+      timeAgo: '3 ᱴᱟᱲᱟᱝ ᱢᱟᱬᱟᱝ',
+      category: 'LIVELIHOODS',
+      title: 'Khunti District: Lac Produce Baarijoh Kana — Solar Dryer Darkar',
+      content:
+        'Japud re 35% lac baarijoh kana. 20 gogo dol laigi portable solar dehumidifier dryer pilote banaw daareyaleba?',
+      tags: ['AsulogHor', 'ChasHunar', 'PostHarvest'],
+      likesCount: 54,
+      isLiked: false,
+      attachmentCaption: 'Murhu re lac baarijoh katha nel ena',
+      replies: [],
+    },
+  ],
+};
 
-  const [threads, setThreads] = useState<SamvaadThread[]>(INITIAL_THREADS);
+export default function SamvaadPage() {
+  const { currentLocation } = useCitizen();
+  const { language, t } = useLanguage();
+
+  const [threads, setThreads] = useState<SamvaadThread[]>(() => INITIAL_THREADS);
+
+  // Sync sample threads when language changes
+  React.useEffect(() => {
+    const localized = INITIAL_THREADS_BY_LANG[language] || INITIAL_THREADS_BY_LANG.en;
+    setThreads(localized);
+  }, [language]);
+
   const [activeCategory, setActiveCategory] = useState<TopicCategory>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -199,7 +374,7 @@ export default function SamvaadPage() {
     );
 
     setReplyInputText((prev) => ({ ...prev, [threadId]: '' }));
-    showToast('Reply posted successfully!');
+    showToast(t.samvaad.toastReplySuccess);
   };
 
   // Share Action
@@ -220,7 +395,7 @@ export default function SamvaadPage() {
 
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(url);
-      showToast('Discussion thread link copied to clipboard!');
+      showToast(t.samvaad.toastLinkCopied);
     }
   };
 
@@ -237,10 +412,10 @@ export default function SamvaadPage() {
 
     const roleLabel =
       composerRole === 'RESEARCHER'
-        ? 'Dr. Anand Verma - BIT Mesra'
+        ? t.samvaad.roles.researcher
         : composerRole === 'STUDENT'
-        ? 'Student Lead'
-        : 'Citizen';
+        ? t.samvaad.roles.student
+        : t.samvaad.roles.citizen;
 
     const newThread: SamvaadThread = {
       id: `th-user-${Date.now()}`,
@@ -268,16 +443,16 @@ export default function SamvaadPage() {
 
     setThreads([newThread, ...threads]);
     setComposerText('');
-    showToast('Research discussion posted to Samvaad feed!');
+    showToast(t.samvaad.toastPostSuccess);
   };
 
   // Filter Categories: All Threads | Water Research | Agritech | Energy | Livelihoods
   const categoryFilters: { id: TopicCategory; label: string }[] = [
-    { id: 'ALL', label: 'All Threads' },
-    { id: 'WATER', label: 'Water Research' },
-    { id: 'AGRITECH', label: 'Agritech' },
-    { id: 'ENERGY', label: 'Energy' },
-    { id: 'LIVELIHOODS', label: 'Livelihoods' },
+    { id: 'ALL', label: t.samvaad.filterAll },
+    { id: 'WATER', label: t.samvaad.filterWater },
+    { id: 'AGRITECH', label: t.samvaad.filterAgritech },
+    { id: 'ENERGY', label: t.samvaad.filterEnergy },
+    { id: 'LIVELIHOODS', label: t.samvaad.filterLivelihoods },
   ];
 
   const filteredThreads = useMemo(() => {
@@ -339,13 +514,13 @@ export default function SamvaadPage() {
       <div className="space-y-1.5">
         <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
           <MessageSquare className="w-3.5 h-3.5" />
-          <span>🗣️ Samvaad · Community Microblogging Feed</span>
+          <span>{t.samvaad.badge}</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-blue-950 tracking-tight">
-          Samvaad
+          {t.samvaad.title}
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-          Open research and grassroots discussion forum connecting citizens, researchers, and student innovators across Jharkhand.
+          {t.samvaad.subtitle}
         </p>
       </div>
 
@@ -381,7 +556,7 @@ export default function SamvaadPage() {
               rows={3}
               value={composerText}
               onChange={(e) => setComposerText(e.target.value)}
-              placeholder="Start a research discussion or ask scientists..."
+              placeholder={t.samvaad.composerPlaceholder}
               className="w-full text-sm text-slate-900 border-none outline-none resize-none focus:ring-0 placeholder:text-slate-400 font-medium"
             />
           </div>
@@ -394,10 +569,10 @@ export default function SamvaadPage() {
               onChange={(e) => setComposerCategory(e.target.value as TopicCategory)}
               className="text-xs bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-3 py-1.5 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600"
             >
-              <option value="WATER">Water Research</option>
-              <option value="AGRITECH">Agritech</option>
-              <option value="ENERGY">Energy</option>
-              <option value="LIVELIHOODS">Livelihoods</option>
+              <option value="WATER">{t.samvaad.composerWater}</option>
+              <option value="AGRITECH">{t.samvaad.composerAgritech}</option>
+              <option value="ENERGY">{t.samvaad.composerEnergy}</option>
+              <option value="LIVELIHOODS">{t.samvaad.composerLivelihoods}</option>
             </select>
 
             <select
@@ -405,9 +580,9 @@ export default function SamvaadPage() {
               onChange={(e) => setComposerRole(e.target.value as AuthorRole)}
               className="text-xs bg-slate-50 border border-slate-200 text-slate-700 rounded-xl px-3 py-1.5 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600"
             >
-              <option value="RESEARCHER">Dr. Anand Verma - BIT Mesra</option>
-              <option value="STUDENT">Student Lead</option>
-              <option value="CITIZEN">Citizen</option>
+              <option value="RESEARCHER">{t.samvaad.roles.researcher}</option>
+              <option value="STUDENT">{t.samvaad.roles.student}</option>
+              <option value="CITIZEN">{t.samvaad.roles.citizen}</option>
             </select>
           </div>
 
@@ -417,7 +592,7 @@ export default function SamvaadPage() {
             disabled={!composerText.trim()}
             className="inline-flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold px-5 py-2 min-h-[40px] rounded-xl text-xs shadow-md shadow-blue-500/20 transition-all active:scale-95"
           >
-            <span>Post</span>
+            <span>{t.samvaad.postBtn}</span>
             <span>➔</span>
           </button>
         </div>
@@ -430,7 +605,7 @@ export default function SamvaadPage() {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search discussions, researchers, or topics..."
+          placeholder={t.samvaad.searchPlaceholder}
           className="w-full pl-9 pr-3 py-2.5 min-h-[42px] text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white shadow-2xs"
         />
       </div>
@@ -441,10 +616,10 @@ export default function SamvaadPage() {
           <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-2">
             <MessageCircle className="w-8 h-8 text-slate-400 mx-auto opacity-60" />
             <h3 className="text-sm font-bold text-slate-800">
-              No discussions in this category yet
+              {t.samvaad.emptyTitle}
             </h3>
             <p className="text-xs text-slate-500">
-              Be the first to post a research query or insight above!
+              {t.samvaad.emptySub}
             </p>
           </div>
         ) : (
@@ -534,7 +709,7 @@ export default function SamvaadPage() {
                           thread.isLiked ? 'fill-blue-600 text-blue-600' : 'text-slate-400'
                         }`}
                       />
-                      <span>Like ({thread.likesCount})</span>
+                      <span>{t.samvaad.like} ({thread.likesCount})</span>
                     </button>
 
                     {/* Reply Button */}
@@ -553,7 +728,7 @@ export default function SamvaadPage() {
                       }`}
                     >
                       <MessageSquare className="w-4 h-4 text-blue-700" />
-                      <span>Reply ({thread.replies.length})</span>
+                      <span>{t.samvaad.reply} ({thread.replies.length})</span>
                     </button>
 
                     {/* Share Button */}
@@ -563,7 +738,7 @@ export default function SamvaadPage() {
                       className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl hover:bg-slate-100 text-slate-600 transition-all active:scale-95"
                     >
                       <Repeat2 className="w-4 h-4 text-slate-500" />
-                      <span>Share</span>
+                      <span>{t.samvaad.share}</span>
                     </button>
                   </div>
                 </div>
@@ -574,7 +749,7 @@ export default function SamvaadPage() {
                     <div className="space-y-2 pl-2 sm:pl-4 border-l-2 border-blue-200">
                       {thread.replies.length === 0 ? (
                         <p className="text-xs text-slate-400 py-1">
-                          No replies yet. Start the conversation!
+                          {t.samvaad.noReplies}
                         </p>
                       ) : (
                         thread.replies.map((reply) => (
@@ -609,7 +784,7 @@ export default function SamvaadPage() {
                             [thread.id]: e.target.value,
                           }))
                         }
-                        placeholder="Write a research reply or inquiry..."
+                        placeholder={t.samvaad.replyPlaceholder}
                         className="flex-1 text-xs border border-slate-200 rounded-xl px-3.5 py-2.5 min-h-[42px] focus:outline-none focus:ring-2 focus:ring-blue-600 bg-slate-50"
                       />
                       <button

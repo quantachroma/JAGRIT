@@ -23,11 +23,27 @@ export default function EntryPage() {
   const { language, setLanguage, t } = useLanguage();
   const [showLogin, setShowLogin] = useState(false);
   const [role, setRole] = useState<'citizen' | 'university' | 'industry' | 'govt'>('citizen');
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [dpdpConsent, setDpdpConsent] = useState(false);
+  const [regName, setRegName] = useState('');
+  const [regPhone, setRegPhone] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [regOtp, setRegOtp] = useState('');
+  const [regError, setRegError] = useState('');
+  const [password, setPassword] = useState('');
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('login') === 'true' || params.get('auth') === 'sso') {
+      const roleParam = params.get('role');
+      if (roleParam) {
+        if (roleParam === 'government' || roleParam === 'govt') {
+          setRole('govt');
+        } else if (roleParam === 'citizen' || roleParam === 'university' || roleParam === 'industry') {
+          setRole(roleParam);
+        }
+      }
+      if (params.get('login') === 'true' || params.get('auth') === 'sso' || roleParam) {
         setShowLogin(true);
       }
     }
@@ -42,12 +58,29 @@ export default function EntryPage() {
     }
   };
 
+  const handleSelectRolePortal = (selectedRole: 'citizen' | 'university' | 'industry' | 'govt') => {
+    setRole(selectedRole);
+    setShowLogin(true);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('login', 'true');
+      url.searchParams.set('role', selectedRole);
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
+
   const handleCloseLogin = () => {
     setShowLogin(false);
+    setIsRegistering(false);
+    setOtpSent(false);
+    setRegOtp('');
+    setRegError('');
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
       url.searchParams.delete('login');
       url.searchParams.delete('auth');
+      url.searchParams.delete('role');
+      url.searchParams.delete('redirect');
       window.history.replaceState({}, '', url.toString());
     }
   };
@@ -140,9 +173,10 @@ export default function EntryPage() {
         },
       },
     },
+    // [AUDIT NOTICE: Santhali landing strings flagged for native review. Audit Reference: docs/SANTHALI_TRANSLATION_AUDIT.md]
     sat: {
-      greeting: 'ᱡᱚᱦᱟᱨ (Johar)',
-      sub: 'JAGRIT re sagun daram',
+      greeting: 'ᱡᱚᱦᱟᱨ (Johar)', // [AUDIT FLAG: Mixed Ol Chiki and Latin transliteration]
+      sub: 'JAGRIT re sagun daram', // [AUDIT FLAG: Mixed Latin English brand and transliterated Santhali]
       title: 'JAGRIT',
       titleDevanagari: 'ᱡᱟᱜᱽᱨᱤᱛ',
       subtitle: 'Jharkhand Academia Industry Gateway for Research, Innovation and Transformation',
@@ -171,7 +205,7 @@ export default function EntryPage() {
           label: 'ᱠᱟᱹᱨᱜᱟᱲ',
           tag: 'ᱠᱟᱹᱨᱜᱟᱲ ᱜᱚᱲᱚ',
           name: 'ᱠᱟᱹᱨᱜᱟᱲ ᱯᱳᱨᱴᱟᱞ',
-          desc: 'ᱟᱹᱛᱩ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱥᱚᱞᱦᱮ ᱞᱟᱹᱜᱤᱫ CSR ᱴᱟᱠᱟ ᱮᱢ ᱢᱮ ᱟᱨ ᱱᱟᱣᱟ ટેક્ᱱᱳᱞᱳᱡᱤ ᱦᱟᱛᱟᱣ ᱢᱮ᱾',
+          desc: 'ᱟᱹᱛᱩ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱥᱚᱞᱦᱮ ᱞᱟᱹᱜᱤᱫ CSR ᱴᱟᱠᱟ ᱮᱢ ᱢᱮ ᱟᱨ ᱱᱟᱣᱟ ᱴᱮᱠᱱᱳᱞᱳᱡᱤ ᱦᱟᱛᱟᱣ ᱢᱮ᱾',
           cta: 'ᱠᱟᱹᱨᱜᱟᱲ ᱰᱮᱥᱠ ᱡᱷᱤᱡ ᱢᱮ',
         },
         govt: {
@@ -226,9 +260,17 @@ export default function EntryPage() {
     },
   ];
 
-  const handleDirectRoleLogin = (roleKey: 'citizen' | 'university' | 'industry' | 'government') => {
+  const handleRoleLoginAndNavigate = (roleKey: 'citizen' | 'university' | 'industry' | 'government') => {
     const mockUser: MockUser = MOCK_ACCOUNTS[roleKey];
     saveActiveSession(mockUser);
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const redirectUrl = params.get('redirect');
+      if (redirectUrl && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
+        window.location.href = redirectUrl;
+        return;
+      }
+    }
     window.location.href = mockUser.targetDashboard;
   };
 
@@ -320,12 +362,12 @@ export default function EntryPage() {
                 </p>
               </div>
 
-              {/* PRIMARY ACTION BUTTONS: "Enter Portal" and "Report via WhatsApp" */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full max-w-md pt-1">
+              {/* PRIMARY ACTION BUTTONS: "Enter Portal", "Report via WhatsApp", and "Statewide Progress Tracker" */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full max-w-2xl pt-1">
                 {/* Enter Portal Button (High-Contrast Primary CTA) */}
                 <button
                   onClick={handleOpenLogin}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-extrabold px-8 py-3.5 min-h-[48px] rounded-2xl shadow-xl shadow-blue-950/50 text-sm sm:text-base border border-blue-400/40 transition-all transform hover:scale-105 active:scale-95 focus:outline-hidden focus:ring-2 focus:ring-blue-300"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-extrabold px-7 py-3.5 min-h-[48px] rounded-2xl shadow-xl shadow-blue-950/50 text-sm sm:text-base border border-blue-400/40 transition-all transform hover:scale-105 active:scale-95 focus:outline-hidden focus:ring-2 focus:ring-blue-300"
                 >
                   <span>{curr.enterPortal}</span>
                   <ArrowRight className="w-4 h-4 text-white" />
@@ -334,10 +376,19 @@ export default function EntryPage() {
                 {/* Report via WhatsApp Button (High-Contrast Civic WhatsApp CTA) */}
                 <Link
                   href="/whatsapp-simulator"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-extrabold px-7 py-3.5 min-h-[48px] rounded-2xl shadow-xl shadow-emerald-950/40 text-sm sm:text-base border border-emerald-400/40 transition-all transform hover:scale-105 active:scale-95 focus:outline-hidden focus:ring-2 focus:ring-emerald-300"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-extrabold px-6 py-3.5 min-h-[48px] rounded-2xl shadow-xl shadow-emerald-950/40 text-sm sm:text-base border border-emerald-400/40 transition-all transform hover:scale-105 active:scale-95 focus:outline-hidden focus:ring-2 focus:ring-emerald-300"
                 >
                   <MessageSquare className="w-4 h-4 text-white" />
                   <span>{curr.reportWhatsapp}</span>
+                </Link>
+
+                {/* Statewide Progress & Resolution Tracker (Standalone Public CTA) */}
+                <Link
+                  href="/progress"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-sky-600 to-indigo-700 hover:from-sky-500 hover:to-indigo-600 text-white font-extrabold px-6 py-3.5 min-h-[48px] rounded-2xl shadow-xl shadow-blue-950/40 text-sm sm:text-base border border-sky-400/40 transition-all transform hover:scale-105 active:scale-95 focus:outline-hidden focus:ring-2 focus:ring-sky-300"
+                >
+                  <span>📊</span>
+                  <span>{t.sso.trackerBtn}</span>
                 </Link>
               </div>
 
@@ -360,8 +411,17 @@ export default function EntryPage() {
                       return (
                         <div
                           key={card.id}
-                          className="bg-white hover:bg-blue-50/60 border-2 border-blue-200/90 hover:border-blue-500 rounded-2xl p-5 shadow-lg hover:shadow-2xl transition-all duration-200 flex flex-col justify-between group cursor-pointer"
-                          onClick={() => handleDirectRoleLogin(card.roleKey)}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Open SSO login for ${card.info.name}`}
+                          className="bg-white hover:bg-blue-50/60 border-2 border-blue-200/90 hover:border-blue-500 rounded-2xl p-5 shadow-lg hover:shadow-2xl transition-all duration-200 flex flex-col justify-between group cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                          onClick={() => handleSelectRolePortal(card.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              handleSelectRolePortal(card.id);
+                            }
+                          }}
                         >
                           <div className="space-y-3">
                             {/* Card Header: Icon & Category Tag */}
@@ -386,7 +446,7 @@ export default function EntryPage() {
                             </div>
                           </div>
 
-                          {/* Direct Fast-Pass Action Button */}
+                          {/* Action Button: Opens SSO preselecting role */}
                           <div className="pt-4 border-t border-slate-100 mt-4 flex items-center justify-between text-xs font-bold text-blue-700 group-hover:text-blue-800">
                             <span>{card.info.cta}</span>
                             <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
@@ -399,126 +459,298 @@ export default function EntryPage() {
               </div>
             </div>
           ) : (
-            /* STEP 2: 4-ROLE CREDENTIAL LOGIN & FAST-PASS PANEL WITH FULL MULTILINGUAL FIDELITY */
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-blue-300 shadow-2xl text-left space-y-5 max-w-md mx-auto w-full backdrop-blur-md">
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={handleCloseLogin}
-                  className="text-xs text-slate-600 hover:text-blue-700 flex items-center gap-1 font-bold transition-colors py-1 px-2 rounded-lg hover:bg-slate-100"
-                >
-                  <ArrowLeft className="w-4 h-4" /> {t.sso.back}
-                </button>
-                <span className="text-xs font-black text-blue-950 uppercase tracking-wider">
-                  {t.sso.ssoTitle}
-                </span>
-              </div>
+            /* STEP 2: 4-ROLE CREDENTIAL LOGIN & DISTINCT DEMO FAST-PASS PANEL WITH FULL MULTILINGUAL FIDELITY */
+            <div className="w-full max-w-md mx-auto space-y-4 animate-in fade-in zoom-in-95 duration-200">
+              <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-blue-300 shadow-2xl text-left space-y-5 w-full backdrop-blur-md">
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={handleCloseLogin}
+                    className="text-xs text-slate-600 hover:text-blue-700 flex items-center gap-1 font-bold transition-colors py-1 px-2 rounded-lg hover:bg-slate-100"
+                  >
+                    <ArrowLeft className="w-4 h-4" /> {t.sso.back}
+                  </button>
+                  <span className="text-xs font-black text-blue-950 uppercase tracking-wider">
+                    {t.sso.ssoTitle}
+                  </span>
+                </div>
 
-              {/* 4 Role Tabs */}
-              <div className="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200">
-                {[
-                  { id: 'citizen' as const, label: t.sso.tabs.citizen, icon: Users },
-                  { id: 'university' as const, label: t.sso.tabs.university, icon: GraduationCap },
-                  { id: 'industry' as const, label: t.sso.tabs.industry, icon: Building2 },
-                  { id: 'govt' as const, label: t.sso.tabs.govt, icon: Landmark },
-                ].map((item) => {
-                  const Icon = item.icon;
-                  const isCurrentRole = role === item.id;
-                  return (
+                {/* 4 Role Tabs */}
+                <div className="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200">
+                  {[
+                    { id: 'citizen' as const, label: t.sso.tabs.citizen, icon: Users },
+                    { id: 'university' as const, label: t.sso.tabs.university, icon: GraduationCap },
+                    { id: 'industry' as const, label: t.sso.tabs.industry, icon: Building2 },
+                    { id: 'govt' as const, label: t.sso.tabs.govt, icon: Landmark },
+                  ].map((item) => {
+                    const Icon = item.icon;
+                    const isCurrentRole = role === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => {
+                          setRole(item.id);
+                          setIsRegistering(false);
+                        }}
+                        className={`py-2 px-1 rounded-lg text-[11px] font-extrabold flex flex-col items-center gap-1 transition-all ${
+                          isCurrentRole
+                            ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-400'
+                            : 'text-slate-700 hover:text-blue-700 hover:bg-slate-200/60'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span className="truncate">{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Dynamic Credential Inputs or Phone OTP Registration */}
+                {isRegistering && role === 'citizen' ? (
+                  <div className="space-y-3.5 pt-1">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                      <span className="text-xs font-black text-blue-900">
+                        📝 {t.sso.registerHere} (Phone OTP)
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsRegistering(false);
+                          setOtpSent(false);
+                          setRegOtp('');
+                          setRegError('');
+                        }}
+                        className="text-[11px] font-bold text-blue-700 hover:underline"
+                      >
+                        {t.sso.backToSignIn}
+                      </button>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 block mb-1">
+                        Full Name / पूरा नाम / ᱧᱩᱛᱩᱢ *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={regName}
+                        onChange={(e) => setRegName(e.target.value)}
+                        placeholder="e.g. Ramesh Mahto"
+                        className="w-full text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 outline-hidden font-medium text-slate-900 bg-slate-50/50"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 block mb-1">
+                        10-Digit Mobile Number / मोबाइल नंबर *
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="tel"
+                          pattern="[0-9]{10}"
+                          maxLength={10}
+                          required
+                          value={regPhone}
+                          onChange={(e) => setRegPhone(e.target.value.replace(/\D/g, ''))}
+                          placeholder="9876543210"
+                          className="flex-1 text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 outline-hidden font-medium text-slate-900 bg-slate-50/50"
+                        />
+                        <button
+                          type="button"
+                          disabled={regPhone.length !== 10}
+                          onClick={() => setOtpSent(true)}
+                          className="px-3 py-2 bg-blue-100 hover:bg-blue-200 disabled:opacity-50 text-blue-800 rounded-xl text-xs font-bold whitespace-nowrap transition-colors"
+                        >
+                          {otpSent ? 'Resend OTP' : 'Send OTP'}
+                        </button>
+                      </div>
+                      {otpSent && (
+                        <p className="text-[11px] text-emerald-700 mt-1 font-semibold flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                          <span>OTP sent to +91 {regPhone}. Demo code: <strong>123456</strong></span>
+                        </p>
+                      )}
+                    </div>
+
+                    {otpSent && (
+                      <div>
+                        <label className="text-xs font-bold text-slate-800 block mb-1">
+                          6-Digit OTP / ओटीपी कोड *
+                        </label>
+                        <input
+                          type="text"
+                          maxLength={6}
+                          required
+                          value={regOtp}
+                          onChange={(e) => setRegOtp(e.target.value.replace(/\D/g, ''))}
+                          placeholder="123456"
+                          className="w-full text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 outline-hidden font-mono tracking-widest text-slate-900 bg-slate-50/50"
+                        />
+                      </div>
+                    )}
+
+                    <label className="flex items-start gap-2 text-[11px] text-slate-700 select-none cursor-pointer pt-1">
+                      <input
+                        type="checkbox"
+                        checked={dpdpConsent}
+                        onChange={(e) => setDpdpConsent(e.target.checked)}
+                        className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 h-3.5 w-3.5"
+                        required
+                      />
+                      <span className="leading-tight">
+                        {t.sso.dpdpConsentLabel}
+                      </span>
+                    </label>
+
+                    {regError && (
+                      <p className="text-xs text-red-600 font-semibold">{regError}</p>
+                    )}
+
                     <button
-                      key={item.id}
-                      onClick={() => setRole(item.id)}
-                      className={`py-2 px-1 rounded-lg text-[11px] font-extrabold flex flex-col items-center gap-1 transition-all ${
-                        isCurrentRole
-                          ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-400'
-                          : 'text-slate-700 hover:text-blue-700 hover:bg-slate-200/60'
+                      type="button"
+                      disabled={!dpdpConsent || !otpSent || regOtp.length !== 6 || !regName}
+                      onClick={() => {
+                        if (regOtp !== '123456') {
+                          setRegError('Invalid OTP. Use demo OTP: 123456');
+                          return;
+                        }
+                        handleRoleLoginAndNavigate('citizen');
+                      }}
+                      className={`w-full font-black py-3 rounded-xl text-xs sm:text-sm shadow-md transition-all mt-2 flex items-center justify-center gap-1.5 focus:outline-hidden focus:ring-2 focus:ring-blue-400 ${
+                        dpdpConsent && otpSent && regOtp.length === 6 && regName
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white active:scale-98 cursor-pointer'
+                          : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span className="truncate">{item.label}</span>
+                      <span>Complete Citizen Registration ➔</span>
                     </button>
-                  );
-                })}
+                  </div>
+                ) : (
+                  <form
+                    className="space-y-3.5"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!dpdpConsent) return;
+                      const targetRole = role === 'govt' ? 'government' : role;
+                      handleRoleLoginAndNavigate(targetRole);
+                    }}
+                  >
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 block mb-1">
+                        {t.sso.fieldLabels[role]}
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder={t.sso.placeholders[role]}
+                        className="w-full text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-hidden font-medium text-slate-900 bg-slate-50/50"
+                      />
+
+                      {/* Format Hints under identity input */}
+                      {role === 'citizen' && (
+                        <div className="mt-1.5 p-2 rounded-lg bg-blue-50/70 border border-blue-100 text-[10.5px] text-slate-600 space-y-0.5">
+                          <p className="font-semibold text-blue-900">{t.sso.formatHints.phone}</p>
+                          <p className="font-semibold text-blue-900">{t.sso.formatHints.voterId}</p>
+                          <p className="font-semibold text-blue-900">{t.sso.formatHints.aadhaar}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-slate-800 block mb-1">
+                        {t.sso.passwordLabel}
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder={t.sso.passwordPlaceholder}
+                        className="w-full text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-hidden font-medium text-slate-900 bg-slate-50/50"
+                      />
+                    </div>
+
+                    {/* DPDP Act 2023 Required Consent Checkbox */}
+                    <label className="flex items-start gap-2 text-[11px] text-slate-700 select-none cursor-pointer pt-1">
+                      <input
+                        type="checkbox"
+                        checked={dpdpConsent}
+                        onChange={(e) => setDpdpConsent(e.target.checked)}
+                        className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 h-3.5 w-3.5"
+                        required
+                      />
+                      <span className="leading-tight">
+                        {t.sso.dpdpConsentLabel}
+                      </span>
+                    </label>
+
+                    <button
+                      type="submit"
+                      disabled={!dpdpConsent}
+                      className={`w-full font-black py-3 rounded-xl text-xs sm:text-sm shadow-md transition-all mt-2 flex items-center justify-center gap-1.5 focus:outline-hidden focus:ring-2 focus:ring-blue-400 ${
+                        dpdpConsent
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white active:scale-98 cursor-pointer'
+                          : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                      }`}
+                    >
+                      <span>{t.sso.signInBtn}</span>
+                    </button>
+
+                    {/* Citizen Registration Link */}
+                    {role === 'citizen' && (
+                      <div className="text-center pt-2">
+                        <span className="text-xs text-slate-600">{t.sso.newCitizenPrompt} </span>
+                        <button
+                          type="button"
+                          onClick={() => setIsRegistering(true)}
+                          className="text-xs font-bold text-blue-700 hover:underline hover:text-blue-900"
+                        >
+                          {t.sso.registerHere}
+                        </button>
+                      </div>
+                    )}
+                  </form>
+                )}
               </div>
 
-              {/* Dynamic Credential Inputs */}
-              <form
-                className="space-y-3.5"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const targetRole = role === 'govt' ? 'government' : role;
-                  handleDirectRoleLogin(targetRole);
-                }}
-              >
-                <div>
-                  <label className="text-xs font-bold text-slate-800 block mb-1">
-                    {t.sso.fieldLabels[role]}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder={t.sso.placeholders[role]}
-                    className="w-full text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-hidden font-medium text-slate-900 bg-slate-50/50"
-                  />
+              {/* SEPARATE VISUALLY DISTINCT DEMO MODE SECTION */}
+              <div className="p-4 rounded-2xl bg-amber-50/95 border-2 border-dashed border-amber-300 text-left w-full shadow-md">
+                <div className="flex items-center gap-1.5 mb-1 text-[11px] font-black uppercase tracking-wider text-amber-900">
+                  <span>{t.sso.demoModeBadge}</span>
                 </div>
-
-                <div>
-                  <label className="text-xs font-bold text-slate-800 block mb-1">
-                    {t.sso.passwordLabel}
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    defaultValue="••••••••"
-                    placeholder={t.sso.passwordPlaceholder}
-                    className="w-full text-xs px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-hidden font-medium text-slate-900 bg-slate-50/50"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl text-xs sm:text-sm shadow-md transition-all mt-2 flex items-center justify-center gap-1.5 focus:outline-hidden focus:ring-2 focus:ring-blue-400"
-                >
-                  <span>{t.sso.signInBtn}</span>
-                </button>
-              </form>
-
-              {/* 1-Click Fast-Pass for Evaluators & Judges */}
-              <div className="pt-3 border-t border-slate-200">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block mb-2">
-                  {t.sso.fastPassHeading}
-                </span>
-                <div className="grid grid-cols-2 gap-2 text-xs font-bold">
+                <p className="text-[11px] text-amber-800/90 font-medium mb-3">
+                  {t.sso.demoModeDesc}
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-bold">
                   <button
-                    onClick={() => handleDirectRoleLogin('citizen')}
-                    className="p-2 bg-slate-50 hover:bg-blue-50 text-blue-800 border border-slate-200 hover:border-blue-300 rounded-xl text-center transition-colors font-extrabold flex items-center justify-center gap-1"
+                    type="button"
+                    onClick={() => handleRoleLoginAndNavigate('citizen')}
+                    className="p-2 bg-white hover:bg-amber-100/70 text-blue-900 border border-amber-200 rounded-xl text-center transition-colors font-extrabold flex items-center justify-center gap-1 shadow-2xs hover:shadow-xs"
                   >
                     {t.sso.fastPassRoles.citizen}
                   </button>
                   <button
-                    onClick={() => handleDirectRoleLogin('university')}
-                    className="p-2 bg-slate-50 hover:bg-blue-50 text-blue-800 border border-slate-200 hover:border-blue-300 rounded-xl text-center transition-colors font-extrabold flex items-center justify-center gap-1"
+                    type="button"
+                    onClick={() => handleRoleLoginAndNavigate('university')}
+                    className="p-2 bg-white hover:bg-amber-100/70 text-blue-900 border border-amber-200 rounded-xl text-center transition-colors font-extrabold flex items-center justify-center gap-1 shadow-2xs hover:shadow-xs"
                   >
                     {t.sso.fastPassRoles.university}
                   </button>
                   <button
-                    onClick={() => handleDirectRoleLogin('industry')}
-                    className="p-2 bg-slate-50 hover:bg-blue-50 text-blue-800 border border-slate-200 hover:border-blue-300 rounded-xl text-center transition-colors font-extrabold flex items-center justify-center gap-1"
+                    type="button"
+                    onClick={() => handleRoleLoginAndNavigate('industry')}
+                    className="p-2 bg-white hover:bg-amber-100/70 text-blue-900 border border-amber-200 rounded-xl text-center transition-colors font-extrabold flex items-center justify-center gap-1 shadow-2xs hover:shadow-xs"
                   >
                     {t.sso.fastPassRoles.industry}
                   </button>
                   <button
-                    onClick={() => handleDirectRoleLogin('government')}
-                    className="p-2 bg-slate-50 hover:bg-blue-50 text-blue-800 border border-slate-200 hover:border-blue-300 rounded-xl text-center transition-colors font-extrabold flex items-center justify-center gap-1"
+                    type="button"
+                    onClick={() => handleRoleLoginAndNavigate('government')}
+                    className="p-2 bg-white hover:bg-amber-100/70 text-blue-900 border border-amber-200 rounded-xl text-center transition-colors font-extrabold flex items-center justify-center gap-1 shadow-2xs hover:shadow-xs"
                   >
                     {t.sso.fastPassRoles.govt}
                   </button>
-                  <Link
-                    href="/progress"
-                    className="col-span-2 p-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-center transition-colors font-extrabold flex items-center justify-center gap-1.5 shadow-2xs"
-                  >
-                    <span>📊</span>
-                    <span>{t.sso.trackerBtn}</span>
-                  </Link>
                 </div>
               </div>
             </div>

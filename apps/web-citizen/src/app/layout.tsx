@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './globals.css';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LanguageProvider, useLanguage } from '@/context/LanguageContext';
 import { CitizenProvider } from '@/context/CitizenContext';
 import {
@@ -23,20 +23,72 @@ import {
 } from 'lucide-react';
 import AIAssistantDrawer from '@/components/ai-assistant-drawer';
 import { useCitizen } from '@/context/CitizenContext';
+import { getActiveSession, clearActiveSession } from '@/lib/mock-auth';
 
 type NavRole = 'CITIZEN' | 'STUDENT' | 'FACULTY_PI' | 'INDUSTRY_MENTOR' | 'EVALUATOR' | 'PRI_OFFICER' | 'ADMIN';
 const ROLE_ALIASES: Record<string, NavRole> = { UNIVERSITY: 'STUDENT', INDUSTRY: 'INDUSTRY_MENTOR', GOVERNMENT: 'EVALUATOR' };
 const FULL_VISIBILITY_ROLES: NavRole[] = ['EVALUATOR', 'PRI_OFFICER', 'ADMIN'];
 
+const PROTECTED_ROUTES = [
+  '/dashboard',
+  '/pledge-support',
+  '/university',
+  '/industry',
+  '/government',
+  '/feedback',
+  '/report',
+  '/samvaad',
+  '/repository',
+  '/time-machine',
+];
+
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { language, setLanguage, t } = useLanguage();
-  const { user } = useCitizen();
+  const { user, logout } = useCitizen();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const isLandingPage = pathname === '/';
+
+  const isProtected = PROTECTED_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+
+  useEffect(() => {
+    if (!isProtected) {
+      setIsCheckingAuth(false);
+      return;
+    }
+
+    const session = getActiveSession();
+    const isAuth = Boolean(session || user.isAuthenticated);
+
+    if (!isAuth) {
+      let impliedRole = 'citizen';
+      if (pathname.startsWith('/university')) impliedRole = 'university';
+      else if (pathname.startsWith('/industry')) impliedRole = 'industry';
+      else if (pathname.startsWith('/government')) impliedRole = 'govt';
+
+      router.replace(`/?login=true&role=${impliedRole}&redirect=${encodeURIComponent(pathname)}`);
+    } else {
+      setIsCheckingAuth(false);
+    }
+  }, [pathname, isProtected, user.isAuthenticated, router]);
 
   if (isLandingPage) {
     return <main>{children}</main>;
+  }
+
+  if (isProtected && isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#051120] text-sky-100 p-4">
+        <div className="w-10 h-10 border-3 border-blue-400 border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-xs font-black uppercase tracking-wider text-amber-200">
+          Verifying JAGRIT Single Sign-On session...
+        </p>
+      </div>
+    );
   }
 
   const role = user.role ? ROLE_ALIASES[user.role] || user.role as NavRole : null;
@@ -45,7 +97,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     { label: t.nav.progress || 'Progress Tracker', href: '/dashboard/progress/JAG-4102', icon: TrendingUp, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.feedback || '45-Day Feedback', href: '/feedback', icon: CheckCircle2, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.whatsapp, href: '/whatsapp-simulator', icon: MessageCircle, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
-    { label: 'Pledge & Support', href: '/pledge-support', icon: HeartHandshake, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.pledgeSupport || 'Pledge & Support', href: '/pledge-support', icon: HeartHandshake, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.university, href: '/university/dashboard', icon: GraduationCap, roles: ['STUDENT', 'FACULTY_PI', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.industry, href: '/industry/dashboard', icon: Building2, roles: ['INDUSTRY_MENTOR', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.govt, href: '/government/dashboard', icon: Landmark, roles: FULL_VISIBILITY_ROLES },
@@ -185,9 +237,17 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               ))}
             </div>
 
-            <Link href="/" className="text-xs font-bold text-slate-600 hover:text-blue-600 px-2 py-1 rounded-lg transition-colors">
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                clearActiveSession();
+                window.location.href = '/?login=true';
+              }}
+              className="text-xs font-bold text-slate-600 hover:text-blue-600 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+            >
               {t.signOut}
-            </Link>
+            </button>
           </div>
         </header>
 

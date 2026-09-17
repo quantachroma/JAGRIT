@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCitizen } from '@/context/CitizenContext';
+import { useLanguage } from '@/context/LanguageContext';
 import MacroImpactBanner from '@/components/progress/macro-impact-banner';
 import OngoingPipeline from '@/components/progress/ongoing-pipeline';
 import UniversityLeaderboard from '@/components/progress/university-leaderboard';
@@ -21,6 +22,7 @@ import {
 
 export default function StatewideProgressPage() {
   const { language } = useCitizen();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'all' | 'pipeline' | 'universities' | 'districts'>('all');
 
   const scrollToSection = (id: string, tab: 'all' | 'pipeline' | 'universities' | 'districts') => {
@@ -29,29 +31,6 @@ export default function StatewideProgressPage() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  };
-
-  const navLabels = {
-    all: {
-      en: 'Overview & Impact',
-      hi: 'समग्र प्रभाव व सांख्यिकी',
-      sat: 'ᱢᱩᱬᱩᱛ ᱞᱟᱦᱟᱱᱛᱤ ᱧᱮᱞ',
-    },
-    pipeline: {
-      en: 'Live Ongoing Pipeline',
-      hi: 'सक्रिय परियोजना पाइपलाइन',
-      sat: 'ᱪᱟᱞᱟᱜ ᱠᱟᱱ ᱠᱟᱹᱢᱤᱦᱚᱨᱟ',
-    },
-    universities: {
-      en: 'University Resolution Leaderboard',
-      hi: 'विश्वविद्यालय समाधान लीडरबोर्ड',
-      sat: 'ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱥᱚᱞᱦᱮ ᱨᱮᱸᱠ',
-    },
-    districts: {
-      en: 'District Spread Breakdown',
-      hi: 'ज़िलावार भौगोलिक विश्लेषण',
-      sat: 'ᱡᱤᱞᱟᱹ ᱴᱚᱴᱷᱟ ᱦᱟᱹᱴᱤᱧ',
-    },
   };
 
   return (
@@ -69,7 +48,7 @@ export default function StatewideProgressPage() {
             }`}
           >
             <TrendingUp className="w-3.5 h-3.5" />
-            <span>{navLabels.all[language]}</span>
+            <span>{t.progressTracker.navOverview}</span>
           </button>
 
           <button
@@ -82,7 +61,7 @@ export default function StatewideProgressPage() {
             }`}
           >
             <Activity className="w-3.5 h-3.5" />
-            <span>{navLabels.pipeline[language]}</span>
+            <span>{t.progressTracker.navPipeline}</span>
           </button>
 
           <button
@@ -95,7 +74,7 @@ export default function StatewideProgressPage() {
             }`}
           >
             <Trophy className="w-3.5 h-3.5" />
-            <span>{navLabels.universities[language]}</span>
+            <span>{t.progressTracker.navUniversities}</span>
           </button>
 
           <button
@@ -108,7 +87,7 @@ export default function StatewideProgressPage() {
             }`}
           >
             <MapPin className="w-3.5 h-3.5" />
-            <span>{navLabels.districts[language]}</span>
+            <span>{t.progressTracker.navDistricts}</span>
           </button>
         </div>
 
@@ -118,13 +97,7 @@ export default function StatewideProgressPage() {
           className="hidden md:inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-all flex-shrink-0"
         >
           <AlertCircle className="w-3.5 h-3.5 text-blue-700" />
-          <span>
-            {language === 'hi'
-              ? 'नई समस्या दर्ज करें'
-              : language === 'sat'
-              ? 'ᱱᱟᱣᱟ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱚᱞ ᱢᱮ'
-              : 'Report New Issue'}
-          </span>
+          <span>{t.progressTracker.reportIssueBtn}</span>
         </Link>
       </div>
 
@@ -153,27 +126,13 @@ export default function StatewideProgressPage() {
         <div className="space-y-2 text-center md:text-left">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-900/60 text-sky-200 text-xs font-bold border border-blue-400/30">
             <ShieldCheck className="w-3.5 h-3.5 text-sky-300" />
-            <span>
-              {language === 'hi'
-                ? 'नागरिक सशक्तिकरण एवं सहभागिता'
-                : language === 'sat'
-                ? 'ᱦᱚᱲ ᱫᱟᱲᱮ ᱟᱨ ᱥᱮᱞᱮᱫ'
-                : 'Citizen Participation & Empowerment'}
-            </span>
+            <span>{t.progressTracker.calloutBadge}</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-            {language === 'hi'
-              ? 'क्या आपके गाँव में कोई गंभीर तकनीकी समस्या है?'
-              : language === 'sat'
-              ? 'ᱪᱮᱫ ᱟᱢᱟᱜ ᱟᱹᱛᱩ ᱨᱮ ᱡᱟᱦᱟᱸᱱ ᱴᱮᱠᱱᱤᱠᱟᱞ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱢᱮᱱᱟᱜ-ᱟ?'
-              : 'Have a civic engineering challenge in your village?'}
+            {t.progressTracker.calloutTitle}
           </h3>
           <p className="text-xs sm:text-sm text-blue-100 max-w-2xl font-normal leading-relaxed">
-            {language === 'hi'
-              ? 'जल, विद्युत, कृषि अथवा स्वास्थ्य संबंधी समस्याओं को सीधे राज्य के ४२ उच्च शिक्षण संस्थानों के संज्ञान में लाएं।'
-              : language === 'sat'
-              ? 'ᱫᱟᱜ, ᱵᱤᱡᱽᱞᱤ, ᱪᱟᱥ ᱟᱨ ᱦᱚᱲᱢᱚ ᱥᱟᱶᱟᱨ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱨᱟᱡᱽ ᱨᱮᱱᱟᱜ ᱔᱒ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱠᱚ ᱥᱟᱢᱟᱝ ᱨᱮ ᱥᱚᱫᱚᱨ ᱢᱮ᱾'
-              : 'Submit drinking water, electricity, agriculture, or sanitation challenges directly to 42 university research labs.'}
+            {t.progressTracker.calloutDesc}
           </p>
         </div>
 
@@ -182,13 +141,7 @@ export default function StatewideProgressPage() {
             href="/report"
             className="inline-flex items-center gap-2 px-5 py-3 min-h-[48px] rounded-xl bg-white hover:bg-slate-100 text-blue-900 text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95"
           >
-            <span>
-              {language === 'hi'
-                ? 'समस्या दर्ज करें'
-                : language === 'sat'
-                ? 'ᱮᱴᱠᱮᱴᱚᱬᱮ ᱚᱞ ᱢᱮ'
-                : 'Report a Problem'}
-            </span>
+            <span>{t.progressTracker.reportProblemBtn}</span>
             <ArrowRight className="w-4 h-4 text-blue-700" />
           </Link>
 
@@ -197,13 +150,7 @@ export default function StatewideProgressPage() {
             className="inline-flex items-center gap-2 px-5 py-3 min-h-[48px] rounded-xl bg-blue-900/80 hover:bg-blue-900 text-white text-xs sm:text-sm font-bold border border-blue-400/40 transition-all active:scale-95"
           >
             <MessageSquare className="w-4 h-4 text-sky-300" />
-            <span>
-              {language === 'hi'
-                ? 'जन संवाद में भाग लें'
-                : language === 'sat'
-                ? 'ᱦᱚᱲ ᱨᱚᱯᱚᱲ ᱨᱮ ᱥᱮᱞᱮᱫᱚᱜ ᱢᱮ'
-                : 'Join Jan Samvaad'}
-            </span>
+            <span>{t.progressTracker.joinSamvaadBtn}</span>
           </Link>
         </div>
       </div>

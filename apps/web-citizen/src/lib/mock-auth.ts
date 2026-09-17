@@ -72,6 +72,8 @@ export function saveActiveSession(user: MockUser): void {
         badge: user.badge,
       })
     );
+    // Sync session to cookie so Next.js Edge Middleware and SSR can verify session
+    document.cookie = `jagrit_session=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=86400; SameSite=Lax`;
   }
 }
 
@@ -79,7 +81,18 @@ export function getActiveSession(): MockUser | null {
   if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem('jagrit_active_user');
-    return raw ? JSON.parse(raw) : null;
+    if (raw) return JSON.parse(raw);
+
+    // Fallback check on session cookie
+    const cookies = document.cookie.split(';');
+    for (const c of cookies) {
+      const trimmed = c.trim();
+      if (trimmed.startsWith('jagrit_session=')) {
+        const val = trimmed.substring('jagrit_session='.length);
+        if (val) return JSON.parse(decodeURIComponent(val));
+      }
+    }
+    return null;
   } catch {
     return null;
   }
@@ -89,5 +102,6 @@ export function clearActiveSession(): void {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('jagrit_active_user');
     localStorage.removeItem('jagrit_citizen_user');
+    document.cookie = 'jagrit_session=; path=/; max-age=0; SameSite=Lax';
   }
 }

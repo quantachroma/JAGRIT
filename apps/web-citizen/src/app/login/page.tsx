@@ -9,8 +9,16 @@ function LoginRedirectContent() {
 
   useEffect(() => {
     const lang = searchParams.get('lang');
-    const targetUrl = lang ? `/?login=true&lang=${encodeURIComponent(lang)}` : '/?login=true';
-    router.replace(targetUrl);
+    const role = searchParams.get('role');
+    const redirect = searchParams.get('redirect');
+
+    const params = new URLSearchParams();
+    params.set('login', 'true');
+    if (lang) params.set('lang', lang);
+    if (role) params.set('role', role);
+    if (redirect) params.set('redirect', redirect);
+
+    router.replace(`/?${params.toString()}`);
   }, [router, searchParams]);
 
   return (

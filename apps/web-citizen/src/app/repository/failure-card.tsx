@@ -1,10 +1,12 @@
 "use client";
 import { useState } from "react";
-import { Archive, Award, FlaskConical, MapPin, Download, Terminal, Copy, Check, X, FileText, CheckCircle2 } from "lucide-react";
+import { Archive, Award, FlaskConical, MapPin, Terminal, Copy, Check, X, FileText, CheckCircle2 } from "lucide-react";
 import type { FailureCase } from "@/lib/failures";
 import { formatINR } from "@/lib/mock-data";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function FailureCard({ c }: { c: FailureCase }) {
+  const { t } = useLanguage();
   const major = c.severity === "MAJOR";
   const [showCloneModal, setShowCloneModal] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -100,12 +102,12 @@ Status: Archived for Annual Hackathon Re-engineering
 
       <div className="mt-2.5 flex flex-wrap items-center gap-2">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-[#1E3A8A] text-white px-3 py-1 text-[11px] font-bold shadow-xs">
-          🎯 Selected for Annual Hackathon
+          {t.repository.selectedHackathonBadge}
         </span>
         {major && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-[11px] font-bold text-[#1E3A8A] shadow-xs">
             <Award className="h-3.5 w-3.5 text-[#2563EB]" />
-            Promoted to Pan-India National Hackathon Statement
+            {t.repository.promotedPanIndiaBadge}
           </span>
         )}
       </div>
@@ -117,7 +119,7 @@ Status: Archived for Annual Hackathon Re-engineering
       </p>
 
       <div className="mt-3.5 rounded-lg border-l-4 border-sky-500 bg-sky-50/60 p-3">
-        <p className="text-xs font-bold text-sky-950">What Was Attempted</p>
+        <p className="text-xs font-bold text-sky-950">{t.repository.whatAttemptedLabel}</p>
         <p className="mt-1 text-xs text-slate-800">{c.attempted}</p>
         <ul className="mt-1.5 list-disc pl-4 text-[11px] text-slate-700 space-y-0.5">
           {c.specs.map((s) => <li key={s}>{s}</li>)}
@@ -125,7 +127,7 @@ Status: Archived for Annual Hackathon Re-engineering
       </div>
 
       <div className="mt-2.5 rounded-lg border-l-4 border-[#2563EB] bg-[#EFF6FF] p-3">
-        <p className="text-xs font-bold text-[#1E3A8A]">Root Cause of Failure</p>
+        <p className="text-xs font-bold text-[#1E3A8A]">{t.repository.rootCauseLabel}</p>
         <p className="mt-1 text-xs text-slate-800">{c.rootCause}</p>
         <ul className="mt-1.5 list-disc pl-4 text-[11px] text-slate-700 space-y-0.5">
           {c.failureModes.map((s) => <li key={s}>{s}</li>)}
@@ -133,7 +135,7 @@ Status: Archived for Annual Hackathon Re-engineering
       </div>
 
       <div className="mt-2.5 rounded-lg border-l-4 border-[#1E3A8A] bg-blue-50/60 p-3">
-        <p className="text-xs font-bold text-[#1E3A8A]">Key Recommendations for Future Teams</p>
+        <p className="text-xs font-bold text-[#1E3A8A]">{t.repository.lessonsLabel}</p>
         <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-slate-800">
           {c.recommendations.map((s) => <li key={s}>{s}</li>)}
         </ul>
@@ -150,7 +152,7 @@ Status: Archived for Annual Hackathon Re-engineering
             title="Download full architectural and metallurgical Detailed Project Report"
           >
             <FileText className="h-3.5 w-3.5 text-[#2563EB]" />
-            <span>📄 Download Past DPR Report (PDF)</span>
+            <span>{t.repository.downloadDprBtn}</span>
           </button>
 
           {/* Button 2: Clone Project Repository */}
@@ -161,7 +163,7 @@ Status: Archived for Annual Hackathon Re-engineering
             title="Clone Git repository containing hardware schematics and codebase"
           >
             <Terminal className="h-3.5 w-3.5 text-sky-200" />
-            <span>💻 Clone Project Repository</span>
+            <span>{t.repository.cloneRepoBtn}</span>
           </button>
         </div>
 
@@ -238,7 +240,7 @@ Status: Archived for Annual Hackathon Re-engineering
                 onClick={() => setShowCloneModal(false)}
                 className="w-full sm:w-auto rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2.5 text-xs font-semibold text-slate-700 transition-colors"
               >
-                Close
+                {t.repository.closeBtn}
               </button>
             </div>
 

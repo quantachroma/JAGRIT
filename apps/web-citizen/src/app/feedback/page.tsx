@@ -54,16 +54,16 @@ export default function CitizenFeedbackPortal() {
             </div>
           </div>
           <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl self-start">
-            Day 46 of 45 (Review Active)
+            {t.feedback.activeReviewDays}
           </span>
         </div>
 
         {submitted ? (
           <div className="p-6 bg-blue-50 border border-blue-200 rounded-xl text-center space-y-2">
             <CheckCircle2 className="w-10 h-10 text-blue-600 mx-auto" />
-            <h4 className="font-bold text-base text-blue-950">Bichar Darj Ena! / Feedback Recorded!</h4>
+            <h4 className="font-bold text-base text-blue-950">{t.feedback.recordedTitle}</h4>
             <p className="text-xs text-slate-600 max-w-md mx-auto">
-              Aapka feedback Gram Sabha quorum me shamil kar liya gaya hai. New defect ticket university team ko forward ho gaya hai.
+              {t.feedback.recordedDesc}
             </p>
           </div>
         ) : (
@@ -137,7 +137,7 @@ export default function CitizenFeedbackPortal() {
                     className="w-full text-xs p-3 rounded-lg border border-slate-300 focus:ring-1 focus:ring-blue-600 outline-none bg-white"
                   />
                   <span className="text-[10px] text-slate-400 block">
-                    ⚡ Submitting here automatically routes an iterative repair sprint ticket back to BIT Mesra.
+                    {t.feedback.routingNotice}
                   </span>
                 </div>
               )}

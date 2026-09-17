@@ -86,6 +86,7 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
     setUser(newUser);
     if (typeof window !== 'undefined') {
       localStorage.setItem('jagrit_citizen_user', JSON.stringify(newUser));
+      document.cookie = `jagrit_session=${encodeURIComponent(JSON.stringify(newUser))}; path=/; max-age=86400; SameSite=Lax`;
     }
   };
 
@@ -95,6 +96,7 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('jagrit_citizen_user');
       localStorage.removeItem('jagrit_active_user');
+      document.cookie = 'jagrit_session=; path=/; max-age=0; SameSite=Lax';
     }
   };
 

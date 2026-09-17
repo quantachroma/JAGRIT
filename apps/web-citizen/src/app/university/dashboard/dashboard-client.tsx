@@ -7,8 +7,8 @@ import type { OpenChallenge } from "@/lib/mock-data";
 import XaiSpiderChart from "@/components/xai-spider-chart";
 import ChallengeAcceptModal from "@/components/challenge-accept-modal";
 import { formatINR } from "@/lib/mock-data";
+import { useLanguage } from "@/context/LanguageContext";
 
-const FILTERS = ["All", "Water & Sanitation", "Agritech & Lac", "Renewable Energy", "Tribal Health"] as const;
 const DAYS_LEFT: Record<string, number> = { "JAG-4102": 4, "JAG-3891": 6, "JAG-4022": 8 };
 const CSR_POOL: Record<string, string> = { "JAG-4102": "Rs. 2,00,000 (Tata Steel)", "JAG-3891": "Rs. 1,50,000 (Hindalco)", "JAG-4022": "Rs. 80,000 (CSR pool)" };
 
@@ -35,6 +35,7 @@ const INITIAL_ACCEPTED_PROJECTS: AcceptedProject[] = [
 interface Props { challenges: OpenChallenge[]; summary: { openTickets: number; statePoolTotalINR: number; activeGrantsLabel: string }; }
 
 export default function DashboardClient({ challenges, summary }: Props) {
+  const { t } = useLanguage();
   const fmt = formatINR;
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<string>("All");
@@ -42,6 +43,14 @@ export default function DashboardClient({ challenges, summary }: Props) {
   const [acceptFor, setAcceptFor] = useState<OpenChallenge | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [acceptedProjects, setAcceptedProjects] = useState<AcceptedProject[]>(INITIAL_ACCEPTED_PROJECTS);
+
+  const filterOptions = useMemo(() => [
+    { key: "All", label: t.university.filterAll },
+    { key: "Water & Sanitation", label: t.university.filterWater },
+    { key: "Agritech & Lac", label: t.university.filterAgritech },
+    { key: "Renewable Energy", label: t.university.filterEnergy },
+    { key: "Tribal Health", label: t.university.filterHealth },
+  ], [t.university]);
 
   const handleAccepted = (s: ChallengeStatus, m: string) => {
     if (acceptFor) {
@@ -72,14 +81,14 @@ export default function DashboardClient({ challenges, summary }: Props) {
         <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-blue-100">
           <div>
             <h2 className="text-lg sm:text-xl font-black text-[#1E3A8A] flex items-center gap-2">
-              <span>🚀 My Accepted Projects / सक्रिय स्वीकृत परियोजनाएं (In Progress)</span>
+              <span>{t.university.acceptedProjectsTitle}</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Active university research sprint & tranche milestone governance
+              {t.university.acceptedProjectsSub}
             </p>
           </div>
           <span className="rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-xs font-bold text-blue-800">
-            {acceptedProjects.length} Active {acceptedProjects.length === 1 ? "Project" : "Projects"}
+            {acceptedProjects.length} {t.university.activeCountLabel}
           </span>
         </div>
 
@@ -108,7 +117,7 @@ export default function DashboardClient({ challenges, summary }: Props) {
 
                 <p className="text-xs text-slate-700 font-medium flex items-center gap-1.5">
                   <UserCheck className="h-3.5 w-3.5 text-blue-700" />
-                  <span>Faculty PI: <strong className="text-slate-900">{proj.facultyPI}</strong></span>
+                  <span>{t.university.facultyPiPrefix} <strong className="text-slate-900">{proj.facultyPI}</strong></span>
                 </p>
               </div>
 
@@ -117,7 +126,7 @@ export default function DashboardClient({ challenges, summary }: Props) {
                   href={proj.link}
                   className="inline-flex items-center gap-2 rounded-xl bg-[#1E3A8A] hover:bg-blue-900 text-white px-5 py-3 text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95"
                 >
-                  <span>Open Project Workspace</span>
+                  <span>{t.university.openWorkspaceBtn}</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -126,18 +135,18 @@ export default function DashboardClient({ challenges, summary }: Props) {
         </div>
       </section>
       <div className="rounded-xl border border-[#F1F5F9] bg-white p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#2563EB]">University Discovery Feed</p>
-        <h1 className="mt-1 text-2xl font-bold text-[#0F172A]">Open Jharkhand challenges</h1>
-        <p className="mt-1 text-sm text-slate-600">{summary.openTickets} open tickets · {fmt(summary.statePoolTotalINR)} combined state pool · {summary.activeGrantsLabel}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-[#2563EB]">{t.university.discoveryFeedTag}</p>
+        <h1 className="mt-1 text-2xl font-bold text-[#0F172A]">{t.university.discoveryFeedTitle}</h1>
+        <p className="mt-1 text-sm text-slate-600">{summary.openTickets} {t.university.openTicketsSuffix} · {fmt(summary.statePoolTotalINR)} {t.university.statePoolSuffix} · {summary.activeGrantsLabel}</p>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
           <label className="flex flex-1 items-center gap-2 rounded-lg border border-[#F1F5F9] px-3 py-2">
             <Search className="h-4 w-4 text-slate-400" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search tickets, districts, domains…" className="w-full bg-transparent text-sm outline-none" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.university.searchPlaceholder} className="w-full bg-transparent text-sm outline-none" />
           </label>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
-          {FILTERS.map((f) => (
-            <button key={f} onClick={() => setFilter(f)} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${filter === f ? "bg-[#0F172A] text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}>{f}</button>
+          {filterOptions.map((f) => (
+            <button key={f.key} onClick={() => setFilter(f.key)} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${filter === f.key ? "bg-[#0F172A] text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}>{f.label}</button>
           ))}
         </div>
       </div>
@@ -188,19 +197,19 @@ export default function DashboardClient({ challenges, summary }: Props) {
                 {/* Highlighted Vital Metrics: ⏱️ Days Left | 🧠 AI Fit | ₹ Grant */}
                 <div className="grid grid-cols-3 gap-2 pt-1">
                   <div className="rounded-xl bg-blue-50/70 border border-blue-100 p-2.5 text-center">
-                    <span className="block text-[10px] uppercase font-bold text-slate-500">Timeline</span>
+                    <span className="block text-[10px] uppercase font-bold text-slate-500">{t.university.timelineLabel}</span>
                     <span className="text-xs font-black text-blue-900 mt-0.5 block whitespace-nowrap">
-                      ⏱️ {daysLeft} Days Left
+                      ⏱️ {daysLeft} {t.university.daysLeftSuffix}
                     </span>
                   </div>
                   <div className="rounded-xl bg-blue-50/70 border border-blue-100 p-2.5 text-center">
-                    <span className="block text-[10px] uppercase font-bold text-slate-500">AI Match</span>
+                    <span className="block text-[10px] uppercase font-bold text-slate-500">{t.university.aiMatchLabel}</span>
                     <span className="text-xs font-black text-blue-900 mt-0.5 block whitespace-nowrap">
-                      🧠 AI Fit: {c.aiMatch}%
+                      🧠 {t.university.aiMatchLabel}: {c.aiMatch}%
                     </span>
                   </div>
                   <div className="rounded-xl bg-blue-50/70 border border-blue-100 p-2.5 text-center">
-                    <span className="block text-[10px] uppercase font-bold text-slate-500">Grant</span>
+                    <span className="block text-[10px] uppercase font-bold text-slate-500">{t.university.grantLabel}</span>
                     <span className="text-xs font-black text-blue-900 mt-0.5 block whitespace-nowrap">
                       {fmt(c.statePoolINR)}
                     </span>
@@ -214,7 +223,7 @@ export default function DashboardClient({ challenges, summary }: Props) {
                   onClick={() => setSelected(c)}
                   className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 text-xs font-bold shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
-                  <span>Review Challenge & Match Analysis</span>
+                  <span>{t.university.reviewBtn}</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
@@ -226,17 +235,17 @@ export default function DashboardClient({ challenges, summary }: Props) {
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/60 p-4 sm:items-center" role="dialog" aria-modal="true" aria-label="Match analysis">
           <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-slate-50 p-5">
             <div className="flex items-start justify-between gap-3">
-              <div><p className="text-xs font-semibold uppercase tracking-wide text-[#2563EB]">{selected.ticketId} · Match Analysis</p>
+              <div><p className="text-xs font-semibold uppercase tracking-wide text-[#2563EB]">{selected.ticketId} · {t.university.matchAnalysisModalTitle}</p>
               <h2 className="text-lg font-bold leading-snug">{selected.title}</h2></div>
               <button onClick={() => setSelected(null)} aria-label="Close detail" className="rounded-full bg-white p-1.5 hover:bg-slate-100"><X className="h-5 w-5" /></button>
             </div>
             <div className="mt-4"><XaiSpiderChart data={selected.xai} ticketId={selected.ticketId} /></div>
             <div className="mt-4 rounded-xl border border-sky-200 bg-sky-50 p-3 text-xs text-sky-900">
-              <p className="font-bold">Evaluator tip — enable Jury Presentation Mode in the top bar to score this team live (Feasibility 40 / Sustainability 30 / Cost 30).</p>
+              <p className="font-bold">{t.university.juryTip}</p>
             </div>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-              <button onClick={() => { setAcceptFor(selected); setSelected(null); }} className="flex-1 rounded-lg bg-[#1E3A8A] px-4 py-2.5 text-sm font-semibold text-white">Accept & Nominate Team</button>
-              <button onClick={() => setSelected(null)} className="rounded-lg border border-[#F1F5F9] bg-white px-4 py-2.5 text-sm font-semibold">Close</button>
+              <button onClick={() => { setAcceptFor(selected); setSelected(null); }} className="flex-1 rounded-lg bg-[#1E3A8A] px-4 py-2.5 text-sm font-semibold text-white">{t.university.acceptNominateBtn}</button>
+              <button onClick={() => setSelected(null)} className="rounded-lg border border-[#F1F5F9] bg-white px-4 py-2.5 text-sm font-semibold">{t.university.closeBtn}</button>
             </div>
           </div>
         </div>
