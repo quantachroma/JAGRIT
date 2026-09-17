@@ -13,7 +13,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from core.config import settings
 
-router = APIRouter(prefix="/api/v1/ai", tags=["Quorum NLP"])
+router = APIRouter(tags=["Quorum NLP"])
 
 
 class FeedbackParseRequest(BaseModel):

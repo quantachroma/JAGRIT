@@ -1,8 +1,15 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Optional
+from services.classifier_agent import SocietalProblemClassifier
 
-router = APIRouter(tags=["Zero-Shot Triage Classifier"])
+router = APIRouter(tags=["Zero-Shot Triage & Multi-Criteria Prioritizer"])
+classifier = SocietalProblemClassifier()
+
+class TriageRequest(BaseModel):
+    title: str
+    description: str
+    district: Optional[str] = "Ranchi"
 
 
 class PostmortemRequest(BaseModel):
@@ -21,13 +28,13 @@ class PostmortemResponse(BaseModel):
     escalate_to_national_hackathon: bool
 
 
-@router.post("/api/v1/ai/generate-postmortem", response_model=PostmortemResponse)
+@router.post("/generate-postmortem", response_model=PostmortemResponse)
 async def generate_postmortem(payload: PostmortemRequest):
-    """Synthesize project evidence into a searchable R&D failure post-mortem."""
+    """Synthesize failure evidence into a deterministic project postmortem."""
     evidence = " ".join(
         [payload.failure_notes, payload.test_logs, payload.dpr_summary]
     ).lower()
-    major_failure_keywords: List[str] = [
+    major_failure_keywords = [
         "catastrophic",
         "unsafe",
         "unusable",
@@ -36,72 +43,50 @@ async def generate_postmortem(payload: PostmortemRequest):
         "system failure",
     ]
     is_major_failure = any(keyword in evidence for keyword in major_failure_keywords)
-
     failure_type = "MAJOR_FAILURE" if is_major_failure else "MINOR_FAILURE"
-    root_cause = (
-        f"The project evidence indicates a {failure_type.lower().replace('_', ' ')}. "
-        f"Failure notes: {payload.failure_notes or 'No failure notes provided.'} "
-        f"Test evidence: {payload.test_logs or 'No test logs provided.'}"
-    )
-    attempted_solution = (
-        f"The team attempted the approach described in the DPR: "
-        f"{payload.dpr_summary or 'No DPR summary provided.'}"
-    )
-    lessons_learned = (
-        "Validate failure conditions with staged field tests, document measurable acceptance "
-        "criteria, and incorporate the observed evidence before the next deployment."
-    )
 
     return PostmortemResponse(
         project_id=payload.project_id,
         failure_type=failure_type,
-        root_cause_analysis=root_cause,
-        attempted_solution_summary=attempted_solution,
-        lessons_learned=lessons_learned,
+        root_cause_analysis=(
+            f"The project evidence indicates a {failure_type.lower().replace('_', ' ')}. "
+            f"Failure notes: {payload.failure_notes or 'No failure notes provided.'} "
+            f"Test evidence: {payload.test_logs or 'No test logs provided.'}"
+        ),
+        attempted_solution_summary=(
+            f"The team attempted the approach described in the DPR: "
+            f"{payload.dpr_summary or 'No DPR summary provided.'}"
+        ),
+        lessons_learned=(
+            "Validate failure conditions with staged field tests, document measurable "
+            "acceptance criteria, and incorporate observed evidence before redeployment."
+        ),
         escalate_to_national_hackathon=is_major_failure,
     )
 
-class TriageRequest(BaseModel):
-    title: str
-    description: str
-    district: Optional[str] = "Ranchi"
-
 @router.post("/triage-classify")
-@router.post("/api/v1/ai/triage-classify")
-async def classify_problem(payload: TriageRequest):
-    """
-    Zero-shot classifier separating Type A (Routine Civic) from Type B (Applied Innovation R&D).
-    """
-    text = (payload.title + " " + payload.description).lower()
-    
-    # Check for routine municipal tasks
-    civic_keywords = ["pothole", "sadak", "garbage", "kachra", "streetlight", "bulb", "naali"]
-    is_civic = any(k in text for k in civic_keywords)
+async def classify_and_prioritize(payload: TriageRequest):
+    combined_text = f"{payload.title} {payload.description}"
 
-    if is_civic:
-        return {
-            "category_type": "CIVIC_ROUTINE",
-            "confidence": 0.96,
-            "detected_domain": "Urban Local Body / Municipal Maintenance",
-            "action": "ROUTE_TO_ULB_JHARSEWA_API",
-            "explanation": "Standard municipal repair issue; does not require academic HEI R&D."
-        }
+    # 1. Deep Extraction (Async)
+    extracted = await classifier.extract_information(payload.title, payload.description, payload.district)
 
-    # Otherwise classified as Applied Research & Development
+    # 2. Multi-Criteria Prioritization
+    priority = classifier.calculate_priority(extracted, combined_text)
+
+    is_rnd = extracted.resolution_tier == "TIER_3_APPLIED_RND"
+
     return {
-        "category_type": "HEI_RESEARCH",
-        "confidence": 0.94,
-        "detected_domain": "Groundwater Contamination & Fluorosis Mitigation",
-        "action": "BROADCAST_TO_QUALIFIED_HEIS",
-        "suggested_budget_pool_inr": 350000.0,
-        "suggested_timeline_weeks": 16,
-        "recommended_institutions": [
-            "Birla Institute of Technology (BIT) Mesra - Environmental Chemistry Lab",
-            "Indian Institute of Technology (IIT ISM) Dhanbad - Water Resources",
-            "Birsa Agricultural University (BAU) - Rural Livelihoods"
-        ],
-        "explanation": "Complex chemical contamination detected; requires university lab prototyping and field validation."
+        "category_type": "HEI_RESEARCH" if is_rnd else "CIVIC_ROUTINE",
+        "detected_domain": "Water Sanitation & Toxic Metal Filtration" if "arsenic" in combined_text.lower() or "fluoride" in combined_text.lower() or "iron" in combined_text.lower() else "Rural Livelihoods & Agritech",
+        "resolution_tier": extracted.resolution_tier,
+        "suggested_action": "BROADCAST_TO_QUALIFIED_HEIS" if is_rnd else "ROUTE_TO_ULB_JHARSEWA_API",
+        "suggested_budget_pool_inr": 350000.0 if is_rnd else 0.0,
+        "extraction": extracted.model_dump(),
+        "prioritization": priority.model_dump()
     }
+
+
 class MatchRequest(BaseModel):
     challenge_id: str
     description: str
@@ -109,13 +94,11 @@ class MatchRequest(BaseModel):
     lat: Optional[float] = 23.8
     lon: Optional[float] = 84.2
 
+
 @router.post("/match-universities")
 @router.post("/api/v1/ai/match-universities")
 async def match_universities(payload: MatchRequest):
-    """
-    Task 4.2.1: Computes institutional capability match scores (5-axis spider chart data)
-    matching challenge requirements to Jharkhand universities.
-    """
+    """Return deterministic institutional matches for a challenge."""
     return {
         "challenge_id": payload.challenge_id,
         "matched_universities": [
@@ -128,14 +111,14 @@ async def match_universities(payload: MatchRequest):
                     "faculty_patents": 90,
                     "geographic_proximity": 85,
                     "track_record": 98,
-                    "student_pool": 92
+                    "student_pool": 92,
                 },
                 "explainability_reasons": [
                     "NABL Accredited Environmental Chemistry Lab (+35%)",
-                    "Dr. Verma holds 4 patents in Fluoride/Arsenic Adsorption (+30%)",
-                    "Palamu Regional Basin proximity <120 km (+15%)",
-                    "Track Record: 2 Successfully Deployed Water Projects (+14%)"
-                ]
+                    "Rural livelihood and agritech prototyping capability (+30%)",
+                    "Jharkhand field deployment proximity (+15%)",
+                    "Track record of successfully deployed projects (+14%)",
+                ],
             },
             {
                 "university_id": "nit-jsr-02",
@@ -146,12 +129,12 @@ async def match_universities(payload: MatchRequest):
                     "faculty_patents": 75,
                     "geographic_proximity": 70,
                     "track_record": 85,
-                    "student_pool": 90
+                    "student_pool": 90,
                 },
                 "explainability_reasons": [
-                    "Advanced Materials & Filtration Synthesis Lab (+30%)",
-                    "Mechanical fabrication facilities for rural pilot rigs (+25%)"
-                ]
-            }
-        ]
+                    "Advanced materials and fabrication facilities (+30%)",
+                    "Mechanical prototyping capacity for rural pilot rigs (+25%)",
+                ],
+            },
+        ],
     }
