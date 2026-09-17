@@ -44,15 +44,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def warm_up_engine():
     print("JAGRIT AI Engine warmed up and demo-ready on Port 8000")
-
-# --- Modular Routing ---
-app.include_router(asr_routes.router)
-app.include_router(vision_routes.router)
-app.include_router(triage_routes.router)
-app.include_router(deduplication_routes.router)
-app.include_router(quorum_nlp_routes.router)
-
-
+    
 @app.get("/health")
 async def health():
     """Health check endpoint used by verification scripts and orchestration."""
@@ -68,3 +60,13 @@ if __name__ == "__main__":
 
     uvicorn.run("main:app", host="0.0.0.0", port=settings.PORT, reload=True)
 
+# In apps/ai-service/main.py
+app.include_router(asr_routes.router, prefix="/api/v1/ai")
+app.include_router(vision_routes.router, prefix="/api/v1/ai")
+app.include_router(triage_routes.router, prefix="/api/v1/ai")
+app.include_router(deduplication_routes.router, prefix="/api/v1/ai")
+app.include_router(quorum_nlp_routes.router, prefix="/api/v1/ai")
+
+# Also keep root aliases for backward compatibility if you like:
+app.include_router(triage_routes.router)
+app.include_router(deduplication_routes.router)
