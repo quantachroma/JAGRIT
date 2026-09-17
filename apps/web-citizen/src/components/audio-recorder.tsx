@@ -83,14 +83,9 @@ export default function AudioRecorder({
   const animationFrameRef = useRef<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    setMounted(true);
-    return () => {
-      cleanupAudio();
-    };
-  }, []);
+  const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
 
-  const cleanupAudio = () => {
+  const cleanupAudio = React.useCallback(() => {
     if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     if (timerRef.current) clearInterval(timerRef.current);
     if (streamRef.current) {
@@ -99,10 +94,17 @@ export default function AudioRecorder({
     if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
       audioContextRef.current.close().catch(() => {});
     }
-    if (audioPlayer) {
-      audioPlayer.pause();
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => {
+      cleanupAudio();
+    };
+  }, [cleanupAudio]);
 
   // Draw real-time audio waveform onto HTML5 Canvas
   const startWaveformVisualizer = (stream: MediaStream | null) => {
@@ -225,6 +227,7 @@ export default function AudioRecorder({
       setTranscribedText('');
       if (audioPlayer) {
         audioPlayer.pause();
+        audioPlayerRef.current = null;
         setAudioPlayer(null);
         setIsPlaying(false);
       }
@@ -355,6 +358,7 @@ export default function AudioRecorder({
       const audio = new Audio(audioUrl);
       audio.onended = () => setIsPlaying(false);
       audio.onerror = () => setIsPlaying(false);
+      audioPlayerRef.current = audio;
       setAudioPlayer(audio);
       audio.play().catch((err) => console.error('Playback failed:', err));
       setIsPlaying(true);
@@ -379,6 +383,7 @@ export default function AudioRecorder({
     setTranscribedText('');
     if (audioPlayer) {
       audioPlayer.pause();
+      audioPlayerRef.current = null;
       setAudioPlayer(null);
     }
   };
