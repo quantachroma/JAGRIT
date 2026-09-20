@@ -1,101 +1,137 @@
----
-
-### File 3: `DECISION.md`
-
-Save this file as **`DECISION.md`** in your root directory. This document prevents debates, hallucinations, and refactoring by locking all architectural decisions upfront:
-
-```markdown
 # JAGRIT — Architectural Decision Records (ADR)
-> **Notice for Cline:** All technical decisions recorded here are final. Do not suggest or implement alternatives (e.g., do not switch PostGIS to MongoDB, do not use GraphQL instead of REST, do not change escrow percentages). Always align implementation with these records.
+> **Authority:** Department of Higher & Technical Education, Government of Jharkhand  
+> **Framework Mandates:** Smart Education (NEP 2020) | PRD v1.0.0-PROD | SIH-26043  
+> **Status:** APPROVED & LOCKED  
+> **Notice for All Agents & Engineers:** All technical architecture decisions recorded here are final. Do not introduce alternative architectural patterns (e.g., do not swap PostGIS with MongoDB, do not alter escrow milestone percentages, do not bypass the dual-lock quorum). All implementations must conform strictly to these records.
 
 ---
 
-## ADR-001: Monorepo Architecture & Directory Isolation
+## ADR-001: 3-Tier Decoupled Monorepo Architecture
 * **Status:** APPROVED
-* **Context:** A 4-person team using autonomous AI tools risks constant merge conflicts and package-lock collisions.
-* **Decision:** We use a pnpm-workspaces monorepo with 4 decoupled apps (`web-citizen`, `web-institution`, `core-backend`, `ai-service`) and 2 shared packages (`contracts`, `db-schema`). 
-* **Constraint:** No developer or AI session may modify a directory outside their assigned role without consensus.
+* **Context:** The JAGRIT platform coordinates citizens in remote tribal villages, university researchers, government evaluators, and administrative bodies. Coupling frontend, backend, and AI microservices in an ad-hoc structure creates deployment friction, package collisions, and high merge conflict risks.
+* **Decision:** We adopt a clean 3-tier decoupled monorepo architecture orchestrated via `pnpm-workspaces`:
+  1. **Tier 1 (Presentation & Ingestion):**
+     - Mobile: Offline-first Flutter client (`/mobile`) utilizing Hive/SQLite for low-connectivity rural field reporting.
+     - Web: Next.js 15 (App Router, Server Actions, Tailwind CSS, Shadcn UI, Radix primitives, Lucide icons) for Citizen Portal (`apps/web-citizen`), University Portal (`apps/web-institution`), and State Progress & Resolution Tracker.
+  2. **Tier 2 (Core Business Logic & Orchestration):**
+     - High-concurrency asynchronous backend service (`apps/core-backend`) interfacing with Supabase via PostgREST and WebSockets.
+  3. **Tier 3 (AI/ML & Vision Microservices):**
+     - Python FastAPI service (`apps/ai-service`) for multimodal processing (Whisper/Bhashini ASR, ViT defect detection, DeBERTa-v3 zero-shot triage, and SentenceTransformers 1536-dim vector embeddings).
+  4. **Shared Layer:**
+     - Shared TypeScript contracts (`packages/contracts`) and database schema DDL (`packages/db-schema`).
+* **Consequences:** Directory isolation is strictly enforced across members M1 through M6. Workspaces communicate via strongly typed contracts and well-defined REST/WebSocket APIs.
 
 ---
 
-## ADR-002: Geospatial & Semantic Deduplication Engine
+## ADR-002: Cloud Supabase as Single Source of Truth
 * **Status:** APPROVED
-* **Context:** Citizens submit redundant issues within close physical proximity.
-* **Decision:** PostGIS handles spatial proximity via a 500-meter spherical buffer (`ST_DWithin(location, ..., 500)`). Semantic text similarity uses OpenAI `text-embedding-3-large` 1536-dimensional vectors.
-* **Rule:** If a ticket is within 500m AND semantic cosine similarity is $\ge 0.85$, it is automatically merged into the master ticket and upvotes are incremented by 1. No new ticket is created.
+* **Context:** Local Docker daemon dependencies cause severe platform inconsistencies across developer environments (macOS, Windows WSL2, Linux) and prevent shared real-time telemetry during hackathon evaluation sprints.
+* **Decision:** A managed Cloud Supabase instance is the single source of truth for the entire ecosystem:
+  - **Database Engine:** PostgreSQL 16 with native extensions:
+    - `postgis` (v3.4+) for spatial calculations, geodesic buffers, and centroid clustering.
+    - `vector` (pgvector) for 1536-dimensional semantic similarity embeddings.
+    - `uuid-ossp` for deterministic UUIDv4 primary keys.
+  - **Connection Protocol:** All services connect to the central cloud instance via SSL-authenticated `DATABASE_URL`.
+  - **Policy:** Local Docker database containers are strictly decommissioned. All tables enforce Row Level Security (RLS).
 
 ---
 
-## ADR-003: Triage Classification (Civic Routine vs Applied R&D)
+## ADR-003: Composite Spatio-Temporal Deduplication ($D \ge 0.72$) & Incident Clustering
 * **Status:** APPROVED
-* **Context:** Higher Education Institutions (HEIs) must not receive routine municipal maintenance tasks (potholes, garbage, broken streetlights).
-* **Decision:** Zero-shot classification (DeBERTa-v3) categorizes incoming issues:
-  * **Type A (Civic Routine):** Dispatched via webhook to Urban Local Body / JharSewa APIs; closed on JAGRIT.
-  * **Type B (Applied R&D):** Routed to the HITL Evaluator Queue for university allocation.
+* **Context:** In civic incidents (water pump failures, arsenic contamination, agricultural spoilage), multiple citizens within the same hamlet report identical breakdowns using different phrasing or regional dialects (Hindi, Santhali, Mundari, Ho).
+* **Decision:** We implement a composite spatio-temporal deduplication engine:
+  - **Formulation:** A composite deduplication score $D$ is calculated as:
+    $$D = w_s \cdot S_{\text{dist}} + w_t \cdot T_{\text{recency}} + w_v \cdot V_{\text{cosine}}$$
+    Where:
+    - $S_{\text{dist}}$: Spatial proximity score using PostGIS spherical distance within a 500-meter radius buffer (`ST_DWithin(location, ..., 500)`).
+    - $T_{\text{recency}}$: Temporal decay function over a 30-day window.
+    - $V_{\text{cosine}}$: Semantic vector cosine similarity of embeddings generated by `text-embedding-3-large` or SentenceTransformers.
+  - **Threshold ($D \ge 0.72$):** If $D \ge 0.72$, the incoming submission is automatically clustered into an existing incident cluster record in `incident_clusters`. The cluster upvote counter increments by 1, citizen telemetry is appended, and duplicate ticket generation is suppressed.
+  - **Threshold ($D < 0.72$):** The submission is registered as a unique standalone challenge.
 
 ---
 
-## ADR-004: 10-Day Bidding Window & Dynamic Hackathon Switch
+## ADR-004: Dynamic Bidding & Accelerated 72h Upvoting with Anti-Speculation Safeguards
 * **Status:** APPROVED
-* **Context:** Need a deterministic mechanism to assign problems to universities.
-* **Decision:** Every R&D challenge remains in an `OPEN_FOR_BIDS` state for exactly 10 days.
-  * If **exactly 1 HEI** accepts: transitions to `DIRECT_RND` mode.
-  * If **$\ge 2$ HEIs** accept: transitions automatically to `DYNAMIC_HACKATHON` mode.
-  * If **0 HEIs** accept: budget increases by 20% and eligibility expands.
-
----
-
-## ADR-005: 3-Stage Dynamic Hackathon Structure
-* **Status:** APPROVED
-* **Context:** Competitions must yield actionable, vetted engineering solutions.
-* **Decision:** Multi-university challenges run a 3-round sprint:
-  * **Round 1 (Ideation):** 5-slide pitch deck (PDF) + 2-min video approach. Evaluators shortlist top 3–5.
-  * **Round 2 (Mentoring & Prototype):** Paired with Industry/CSR mentors. Upload bench-scale test data. Top 2 advance.
-  * **Round 3 (DPR & Physical Defense):** Detailed Project Report (DPR) with complete Bill of Materials (BOM). Physical presentation at Ranchi. Jury scores: Feasibility (40%), Sustainability (30%), Cost (30%).
-
----
-
-## ADR-006: Tranche-Based Escrow Release Structure (30% - 40% - 30%)
-* **Status:** APPROVED
-* **Context:** Protect government and CSR funds from abandonment or substandard work.
-* **Decision:** Funds disburse strictly across 3 milestones:
-  * **Tranche 1 (30%):** Disbursed upon proposal approval for component/lab procurement.
-  * **Tranche 2 (40%):** Disbursed only upon uploading a valid NABL bench test certificate.
-  * **Tranche 3 (30%):** Disbursed only upon physical installation AND Gram Sabha PESA Act NOC upload.
-
----
-
-## ADR-007: 45-Day Maturation Buffer & Quorum Formula
-* **Status:** APPROVED
-* **Context:** Solutions require real-world durability testing; a single citizen's vote should not determine project success or failure.
+* **Context:** Applied engineering challenges require rapid community validation, clear university allocation, and prevention of speculative bidding or challenge hoarding by institutions.
 * **Decision:**
-  * After deployment, an unassisted 45-day operational maturation buffer runs before voting opens.
-  * The 14-day voting window enforces an AI population-weighted quorum:
-    $$\text{Quorum}_{\min} = \max(15, \lceil k \cdot \sqrt{N} \rceil)$$
-  * NLP parses feedback into **Critical Defects** (triggers a 45-day iterative repair sprint for the same team) vs **Cosmetic Grievances** (ticket marked `RESOLVED`).
+  - **Bidding Window:** Open challenges enter an `OPEN_FOR_BIDS` state with a 10-day bidding window.
+  - **Accelerated 72h Upvoting:** High-priority community issues can trigger an accelerated 72-hour community upvoting boost. If an incident accumulates $\ge 100$ verified citizen upvotes within 72 hours, the state innovation matching grant automatically augments the funding pool by 25%.
+  - **Dynamic Hackathon Switch:**
+    - If **0 HEIs** bid: Eligibility automatically expands across neighboring districts with an increased budget pool.
+    - If **1 HEI** bids: Transitions to `DIRECT_RND` mode with direct allocation.
+    - If **$\ge 2$ HEIs** bid: Transitions automatically to `DYNAMIC_HACKATHON` mode (3-Stage Competition).
+  - **Anti-Speculation Safeguards:**
+    - Scope expansion controls prevent scope creep post-allocation.
+    - Any HEI that submits a speculative bid and subsequently withdraws or abandons the challenge incurs an automatic **5-point Honor Score (H-score) penalty**, reducing its algorithmic eligibility for future state innovation grants.
 
 ---
 
-## ADR-008: NEP 2020 Academic Credit Valuation
+## ADR-005: Milestone-Based Tranche Escrow (30% - 40% - 30%)
 * **Status:** APPROVED
-* **Context:** Translating engineering problem solving into university degree credits.
-* **Decision:** Standardized at **30 verified workhours = 1 Academic Credit** (NCrF norms). Upon project sign-off, system generates signed JSON payloads transferring 2–4 credits directly to students' APAAR / DigiLocker transcripts under *Community Engagement* or *Capstone Project*.
+* **Context:** Public and CSR funds under Section 135 / Schedule VII must be safeguarded against incomplete prototypes or abandoned deployments.
+* **Decision:** Escrow funds release strictly across three verifiable milestones:
+  - **Tranche 1 (30% - Kickoff & Procurement):** Disbursed upon formal project proposal & Detailed Project Report (DPR) approval. Funds are earmarked for raw materials, sensors, and bench fabrication components.
+  - **Tranche 2 (40% - Bench Validation & Lab Test):** Disbursed only upon uploading an accredited NABL Laboratory Safety & Calibration Certificate confirming prototype efficacy under laboratory conditions.
+  - **Tranche 3 (30% - Field Deployment & PESA Gram Sabha NOC):** Disbursed only upon physical village installation, execution of the local operator/Jal Sahiya handover SOP, and upload of a legally verified Gram Sabha No Objection Certificate (NOC) under the Panchayats (Extension to Scheduled Areas) Act (PESA).
 
 ---
 
-## ADR-009: R&D Failure Engine Bifurcation
+## ADR-006: Dual-Lock Quorum Verification
 * **Status:** APPROVED
-* **Context:** Preventing repeated failures while addressing chronic unsolved challenges.
+* **Context:** A deployed community solution must not be rubber-stamped by a single official nor hijacked by biased reviews. True societal durability requires decentralized, multi-stakeholder consensus.
+* **Decision:** Final project resolution requires unlocking two distinct verification keys:
+  - **Key 1 (Designated Community Trustees):** A registered project board consisting of 5 vetted local trustees (e.g., Mukhiya, Jal Sahiya, School Headmaster, SHG Leader, Tribal Elder). A minimum of **4 out of 5 Trustees** must cast an affirmative cryptographic vote (`AFFIRMATIVE`).
+  - **Key 2 (Citizen Public Quorum):** A minimum public quorum of local beneficiaries within the 500-meter geo-fence must participate:
+    $$\text{Quorum}_{\min} = \max\left(15, \lceil k \cdot \sqrt{N} \rceil\right)$$
+    A minimum of **$\ge 70\%$ affirmative votes** is required during the 14-day voting window.
+  - **Resolution:** Only when **Key 1 AND Key 2** are simultaneously satisfied is the challenge marked `RESOLVED` and final academic credits minted.
+
+---
+
+## ADR-007: Early Breakdown Alarm
+* **Status:** APPROVED
+* **Context:** Newly installed engineering systems (water filtration, solar cold storage, lac processing) frequently encounter infant mortality failures during initial field operation.
 * **Decision:**
-  * **Minor Failures:** Documented in the searchable `rnd_failure_repository` (original problem, attempted method, root cause of failure, and lessons learned).
-  * **Major Failures & Failed Govt Projects:** Automatically escalated to become problem statements for the bi-annual Pan-India National Hackathon.
+  - **Maturation Clock:** An unassisted 45-day operational maturation buffer begins immediately upon field deployment.
+  - **Early Breakdown Alarm (Days 1–44):** If between **3 and 5 verified citizen breakdown alerts** are registered within the 45-day maturation window:
+    1. The maturation countdown clock is **immediately paused**.
+    2. An automated **48-hour Inspection SLA** is dispatched to the lead university PI and student engineering team.
+    3. The university team is granted a **7-day repair sprint** to replace defective parts or remediate field issues.
+    4. Upon verified repair sign-off, the maturation clock is **reset back to Day 1**, restarting the full 45-day durability cycle.
 
-  ---
+---
 
-## ADR-010: Managed Cloud Database via Supabase (PostGIS + pgvector)
+## ADR-008: NEP 2020 Academic Credit Banking
 * **Status:** APPROVED
-* **Context:** Local Docker installations create platform incompatibility (Windows WSL2, virtualization) and prevent team database sharing during rapid sprints.
-* **Decision:** We use a centralized, free-tier Supabase PostgreSQL instance.
-  * Extensions `postgis` and `vector` are enabled directly in the Supabase console.
-  * All 4 roles connect to the identical cloud database via `DATABASE_URL`.
-  * Local Docker containers are strictly decommissioned.
+* **Context:** The National Education Policy (NEP 2020) and National Credit Framework (NCrF) mandate institutional recognition of real-world problem solving, experiential learning, and community engagement.
+* **Decision:**
+  - **Conversion Ratio:** Standardized at **30 verified engineering/field workhours = 1 Academic Credit**.
+  - **Earning Thresholds:** Students participating in verified challenges earn 2 to 4 credits (60–120 hours) categorized under *Community Engagement*, *Experiential Learning*, or *Capstone Project*.
+  - **Digital Deposit:** Upon project resolution, the core backend generates a cryptographically signed payload that is deposited directly into the student's **APAAR ID (Automated Permanent Academic Account Registry) / DigiLocker Academic Bank of Credits (ABC)**.
+
+---
+
+## ADR-009: 1-Click Solution Blueprint Cloning Engine
+* **Status:** APPROVED
+* **Context:** Once a university successfully engineers an affordable solution for arsenic contamination or cold storage in one block (e.g., Khunti), neighboring blocks (e.g., Gumla, Simdega) facing identical challenges should not reinvent the wheel.
+* **Decision:**
+  - Every successfully resolved project automatically generates an open-source, reproducible **Solution Blueprint** in `verified_blueprints`.
+  - The blueprint packages:
+    1. Complete Bill of Materials (BOM) with itemized vendor costs.
+    2. CAD schematics, circuit diagrams, and assembly blueprints.
+    3. Vernacular illustrated Standard Operating Procedures (SOPs) in Hindi and Santhali.
+    4. Calibrated sensor firmware and deployment instructions.
+  - **Cloning Metric:** Other institutions or local administrations can replicate the verified blueprint in a **14-day deployment cycle at $\ge 60\%$ lower cost** than original greenfield research.
+
+---
+
+## ADR-010: R&D Failure Knowledge Base & Pan-India National Hackathon Escalation
+* **Status:** APPROVED
+* **Context:** Engineering failures contain invaluable pedagogical and technical insights. Hiding failed projects leads to repeated mistakes, while intractable societal problems remain unsolved.
+* **Decision:**
+  - **Tier 1 (Searchable Failure Repository):** All failed, terminated, or non-viable R&D attempts must log a comprehensive post-mortem in `rnd_failure_repository`:
+    - Root-cause analysis (material fatigue, chemical clogging, bio-fouling, power instability).
+    - Attempted methodology and bench-test telemetry.
+    - Pedagogical lessons learned and negative result cataloging.
+  - **Tier 2 (National Hackathon Escalation):** If a chronic problem statement experiences two consecutive university project failures or is designated by DHTE as a high-complexity state roadblock, it is automatically escalated to the **Bi-Annual Pan-India National Hackathon** with an augmented state research endowment pool.
