@@ -7,26 +7,28 @@
 /**
  * System Stakeholder Personas & Roles
  */
-export type UserRole = 
-  | 'CITIZEN' 
-  | 'PRI_OFFICER' 
-  | 'STUDENT' 
-  | 'FACULTY_PI' 
-  | 'INDUSTRY_MENTOR' 
-  | 'EVALUATOR' 
-  | 'ADMIN' 
+export type UserRole =
+  | 'CITIZEN'
+  | 'PRI_OFFICER'
+  | 'STUDENT'
+  | 'FACULTY_PI'
+  | 'INDUSTRY_MENTOR'
+  | 'EVALUATOR'
+  | 'ADMIN'
   | 'TRUSTEE';
 
-// 5 Designated Community Trustees (Updated: No Jal Sahiya, Added Independent Gram Sabha Member)
-export type TrusteeRole = 
-  | 'SCHOOL_HEADMASTER' 
-  | 'PRI_WARD_MEMBER' 
-  | 'INDEPENDENT_GRAM_SABHA_MEMBER' 
-  | 'BENEFICIARY_SC_ST_1' 
+// 5 Designated Community Trustees
+export type TrusteeRole =
+  | 'SCHOOL_HEADMASTER'
+  | 'PRI_WARD_MEMBER'
+  | 'INDEPENDENT_GRAM_SABHA_MEMBER'
+  | 'BENEFICIARY_SC_ST_1'
   | 'BENEFICIARY_CITIZEN_2';
 
-// Challenge Statuses from PRD
-export type ChallengeStatus = 
+/**
+ * Challenge Statuses from PRD
+ */
+export type ChallengeStatus =
   | 'PENDING_HITL'
   | 'ROUTED_CIVIC'
   | 'OPEN_FOR_BIDS'
@@ -48,7 +50,9 @@ export interface GeoLocation {
 }
 
 /**
- * 1. ChallengePayload: Standardized Submission Payload (M1 / Citizen -> M4 / Core Backend)
+ * 1. ChallengePayload
+ * Standardized Submission Payload
+ * M1 / Citizen -> M4 / Core Backend
  */
 export interface ChallengePayload {
   title: string;
@@ -57,7 +61,12 @@ export interface ChallengePayload {
   mediaUrls: string[];
   location: GeoLocation;
   preferredLanguage: 'hi' | 'sat' | 'en';
-  submissionChannel?: 'APP' | 'WEB' | 'WHATSAPP' | 'INSTITUTIONAL_DOSSIER' | 'FIELD_SURVEY';
+  submissionChannel?:
+    | 'APP'
+    | 'WEB'
+    | 'WHATSAPP'
+    | 'INSTITUTIONAL_DOSSIER'
+    | 'FIELD_SURVEY';
   district?: string;
   block?: string;
   panchayat?: string;
@@ -69,7 +78,9 @@ export interface ChallengePayload {
 export type ChallengeSubmissionPayload = ChallengePayload;
 
 /**
- * 2. ClusterIncident: Composite Spatio-Temporal Cluster (ADR-003: D >= 0.72)
+ * 2. ClusterIncident
+ * Composite Spatio-Temporal Cluster
+ * ADR-003: D >= 0.72
  */
 export interface ClusterIncident {
   id: string;
@@ -77,7 +88,12 @@ export interface ClusterIncident {
   centroid: GeoLocation;
   radiusMeters: number;
   incidentCount: number;
-  status: 'ACTIVE' | 'MERGED' | 'IN_PROGRESS' | 'RESOLVED' | 'ARCHIVED';
+  status:
+    | 'ACTIVE'
+    | 'MERGED'
+    | 'IN_PROGRESS'
+    | 'RESOLVED'
+    | 'ARCHIVED';
   primaryDomain: string;
   district: string;
   block?: string;
@@ -87,16 +103,22 @@ export interface ClusterIncident {
 }
 
 /**
- * 3. TrusteeVote: Dual-Lock Quorum Key 1 (ADR-006: 4 of 5 Designated Community Trustees)
+ * 3. TrusteeVote
+ * Dual-Lock Quorum Key 1
+ * ADR-006: 4 of 5 Designated Community Trustees
  */
-export type TrusteeVoteStatus = 'PENDING' | 'AFFIRMATIVE' | 'REJECTED' | 'ABSTAIN';
+export type TrusteeVoteStatus =
+  | 'PENDING'
+  | 'AFFIRMATIVE'
+  | 'REJECTED'
+  | 'ABSTAIN';
 
 export interface TrusteeVote {
   id: string;
   projectId: string;
   trusteeUserId: string;
   trusteeName?: string;
-  designation: string; // Mukhiya, Jal Sahiya, School Headmaster, SHG Leader, Tribal Elder
+  designation: string;
   hasVoted: boolean;
   voteStatus: TrusteeVoteStatus;
   voteRemarks?: string;
@@ -105,15 +127,20 @@ export interface TrusteeVote {
 }
 
 /**
- * 4. EscrowTranche: Milestone-Based Escrow Release (ADR-005: 30% -> 40% -> 30%)
+ * 4. EscrowTranche
+ * Milestone-Based Escrow Release
+ * ADR-005: 30% -> 40% -> 30%
  */
 export type EscrowMilestoneNumber = 1 | 2 | 3;
-export type EscrowPercentage = 30 | 40 | 30;
-export type EscrowProofRequirement = 'PROPOSAL_APPROVAL' | 'NABL_CERTIFICATE' | 'PESA_GRAM_SABHA_NOC';
+
+export type EscrowProofRequirement =
+  | 'PROPOSAL_APPROVAL'
+  | 'NABL_CERTIFICATE'
+  | 'PESA_GRAM_SABHA_NOC';
 
 export interface EscrowTranche {
   milestoneNumber: EscrowMilestoneNumber;
-  percentage: EscrowPercentage;
+  percentage: 30 | 40;
   amountINR: number;
   isDisbursed: boolean;
   requiredProof: EscrowProofRequirement;
@@ -127,24 +154,36 @@ export interface EscrowTranche {
 export type EscrowMilestone = EscrowTranche;
 
 /**
- * 5. XAISpiderScores: Explainable AI Institutional Capability Radar (ADR-004 & M2)
+ * 5. XAISpiderScores
+ * Explainable AI Institutional Capability Radar
+ * ADR-004 & M2
  */
 export interface XAISpiderScores {
-  labCapability: number;       // 0 - 100
-  facultyPatents: number;      // 0 - 100
-  geographicProximity: number; // 0 - 100
-  trackRecord: number;         // 0 - 100
-  overallMatchScore: number;   // 0 - 100
-  facultyStrength?: number;    // 0 - 100
+  labCapability: number;
+  facultyPatents: number;
+  geographicProximity: number;
+  trackRecord: number;
+  overallMatchScore: number;
+  facultyStrength?: number;
 }
 
 /**
- * Backward compatibility alias for existing radar imports
+ * XAI Spider Chart Data
+ * Updated to 6-Axis matching v14.1.0-PROD
  */
-export type XAISpiderChartData = XAISpiderScores;
+export interface XAISpiderChartData {
+  domainExpertise: number;
+  facultyAvailability: number;
+  nablLab: number;
+  proximity: number;
+  campusCapacity: number;
+  trackRecord: number;
+  overallMatchScore: number;
+}
 
 /**
- * AI Analysis Result (M5 AI Service -> M4 Core Backend)
+ * AI Analysis Result
+ * M5 AI Service -> M4 Core Backend
  */
 export interface AIAnalysisResult {
   detectedDomain: string;
@@ -157,44 +196,35 @@ export interface AIAnalysisResult {
   suggestedTimelineWeeks: number;
 }
 
-// XAI Spider Chart Data (Updated to 6-Axis matching v14.1.0-PROD)
-export interface XAISpiderChartData {
-  domainExpertise: number;     // 25% (Combines labs, patents, faculty specialization)
-  facultyAvailability: number; // 20%
-  nablLab: number;             // 20%
-  proximity: number;           // 15%
-  campusCapacity: number;      // 10%
-  trackRecord: number;         // 10% (Includes H-Score penalty)
-  overallMatchScore: number;   // 0 - 100
-}
-
-// Escrow Milestone Schema (Role 3)
-export interface EscrowMilestone {
-  milestoneNumber: 1 | 2 | 3;
-  percentage: 30 | 40 | 30;
-  amountINR: number;
-  isDisbursed: boolean;
-  requiredProof: 'PROPOSAL_APPROVAL' | 'NABL_CERTIFICATE' | 'PESA_GRAM_SABHA_NOC';
-}
-
-// Quorum Feedback (Role 1 & 3)
+/**
+ * Quorum Feedback
+ * Role 1 & 3
+ */
 export interface QuorumFeedbackPayload {
   challengeId: string;
   projectId?: string;
   isCoreFunctionalPass: boolean;
-  complaintType: 'NONE' | 'COSMETIC_GRIEVANCE' | 'CRITICAL_DEFECT';
+  complaintType:
+    | 'NONE'
+    | 'COSMETIC_GRIEVANCE'
+    | 'CRITICAL_DEFECT';
   rawVoiceUrl?: string;
   transcribedFeedback?: string;
   voterLocation: GeoLocation;
 }
 
 /**
- * Early Breakdown Alert (ADR-007: Days 1–44 Alert System)
+ * Early Breakdown Alert
+ * ADR-007: Days 1–44 Alert System
  */
 export interface BreakdownAlertPayload {
   projectId: string;
   citizenId?: string;
-  alertType: 'TOTAL_HALT' | 'PARTIAL_BREAKDOWN' | 'WATER_QUALITY_DROP' | 'SAFETY_HAZARD';
+  alertType:
+    | 'TOTAL_HALT'
+    | 'PARTIAL_BREAKDOWN'
+    | 'WATER_QUALITY_DROP'
+    | 'SAFETY_HAZARD';
   description: string;
   mediaUrl?: string;
   voiceNoteUrl?: string;
@@ -202,7 +232,8 @@ export interface BreakdownAlertPayload {
 }
 
 /**
- * Verified Blueprint (ADR-009: 1-Click Solution Blueprint Cloning Engine)
+ * Verified Blueprint
+ * ADR-009: 1-Click Solution Blueprint Cloning Engine
  */
 export interface VerifiedBlueprint {
   id: string;
@@ -226,12 +257,13 @@ export interface VerifiedBlueprint {
 }
 
 /**
- * R&D Failure Repository Entry (ADR-010: Failure Knowledge Base)
+ * R&D Failure Repository Entry
+ * ADR-010: Failure Knowledge Base
  */
 export interface FailureRepositoryEntry {
   id: string;
   projectId: string;
-  failureClassification: 
+  failureClassification:
     | 'MATERIAL_FATIGUE'
     | 'CHEMICAL_CLOGGING'
     | 'BIO_FOULING'
@@ -247,7 +279,8 @@ export interface FailureRepositoryEntry {
 }
 
 /**
- * NEP 2020 Academic Credit Record (ADR-008: 30 hours = 1 Credit to APAAR / DigiLocker)
+ * NEP 2020 Academic Credit Record
+ * ADR-008: 30 hours = 1 Credit to APAAR / DigiLocker
  */
 export interface AcademicCreditRecord {
   studentUserId: string;
@@ -257,7 +290,10 @@ export interface AcademicCreditRecord {
   institutionName: string;
   verifiedWorkhours: number;
   academicCreditsEarned: number;
-  creditCategory: 'COMMUNITY_ENGAGEMENT' | 'EXPERIENTIAL_LEARNING' | 'CAPSTONE_PROJECT';
+  creditCategory:
+    | 'COMMUNITY_ENGAGEMENT'
+    | 'EXPERIENTIAL_LEARNING'
+    | 'CAPSTONE_PROJECT';
   signedPayloadSignature: string;
   depositedAt: string;
 }
