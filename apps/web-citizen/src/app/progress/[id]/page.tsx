@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useCitizen } from '@/context/CitizenContext';
-import { MOCK_PROGRESS_PROJECT } from '@/components/progress/mock-progress-data';
+import { MOCK_PROGRESS_PROJECT, getMockProjectData } from '@/components/progress/mock-progress-data';
 import ProgressHeader from '@/components/progress/progress-header';
 import LifecycleStepper from '@/components/progress/lifecycle-stepper';
 import EscrowLedger from '@/components/progress/escrow-ledger';
@@ -24,10 +24,7 @@ export default function ProblemProgressPage() {
 
   // Project data customized with ticketId from route param
   const projectData = useMemo(() => {
-    return {
-      ...MOCK_PROGRESS_PROJECT,
-      ticketId: ticketId || MOCK_PROGRESS_PROJECT.ticketId,
-    };
+    return getMockProjectData(ticketId);
   }, [ticketId]);
 
   return (

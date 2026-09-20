@@ -14,7 +14,6 @@ import {
   Sprout,
   Zap,
   HeartPulse,
-  Leaf,
   Layers,
   Timer,
   Microscope,
@@ -24,11 +23,10 @@ import {
   MapPin,
   ArrowRight,
   ShieldCheck,
-  CheckCircle2,
-  AlertCircle,
   IndianRupee,
   Activity,
   Filter,
+  AlertCircle,
 } from 'lucide-react';
 
 interface OngoingPipelineProps {
@@ -40,17 +38,17 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
   const [selectedStage, setSelectedStage] = useState<ChallengeStage>('all');
 
   const domainOptions: { key: ChallengeDomain; label: { en: string; hi: string; sat: string }; icon: any }[] = [
-    { key: 'all', label: { en: 'All Domains', hi: 'सभी कार्यक्षेत्र', sat: 'ᱡᱚᱛᱚ ᱠᱟᱹᱢᱤ ᱦᱟᱹᱴᱤᱧ' }, icon: Layers },
-    { key: 'water', label: { en: 'Water & Sanitation', hi: 'जल एवं स्वच्छता', sat: 'ᱫᱟᱜ ᱟᱨ ᱥᱟᱯᱷᱟ' }, icon: Droplets },
-    { key: 'agritech', label: { en: 'Agritech & Lac', hi: 'कृषि तकनीक एवं लाह', sat: 'ᱪᱟᱥ ᱴᱮᱠᱱᱤᱠ ᱟᱨ ᱞᱟᱦᱟ' }, icon: Sprout },
-    { key: 'energy', label: { en: 'Clean Energy', hi: 'स्वच्छ ऊर्जा', sat: 'ᱯᱷᱟᱨᱪᱟ ᱫᱟᱲᱮ' }, icon: Zap },
-    { key: 'healthcare', label: { en: 'Healthcare', hi: 'स्वास्थ्य सेवा', sat: 'ᱦᱚᱲᱢᱚ ᱥᱟᱶᱟᱨ' }, icon: HeartPulse },
+    { key: 'all', label: { en: 'All Domains', hi: 'सभी कार्यक्षेत्र', sat: 'ᱡᱚᱛᱚ ᱠᱟᱹᱢᱤ' }, icon: Layers },
+    { key: 'water', label: { en: '💧 Water', hi: '💧 जल', sat: '💧 ᱫᱟᱜ' }, icon: Droplets },
+    { key: 'agritech', label: { en: '🌾 Agritech', hi: '🌾 कृषि तकनीक', sat: '🌾 ᱪᱟᱥ' }, icon: Sprout },
+    { key: 'energy', label: { en: '⚡ Clean Energy', hi: '⚡ स्वच्छ ऊर्जा', sat: '⚡ ᱯᱷᱟᱨᱪᱟ ᱫᱟᱲᱮ' }, icon: Zap },
+    { key: 'healthcare', label: { en: '🏥 Healthcare', hi: '🏥 स्वास्थ्य सेवा', sat: '🏥 ᱦᱚᱲᱢᱚ ᱥᱟᱶᱟᱨ' }, icon: HeartPulse },
   ];
 
   const stageOptions: { key: ChallengeStage; label: { en: string; hi: string; sat: string }; icon: any }[] = [
     { key: 'all', label: { en: 'All Stages', hi: 'सभी चरण', sat: 'ᱡᱚᱛᱚ ᱦᱟᱹᱴᱤᱧ' }, icon: Filter },
     { key: 'bidding', label: { en: 'Bidding Window', hi: 'निविदा खिड़की', sat: 'ᱴᱮᱱᱰᱟᱨ ᱡᱷᱤᱡ' }, icon: Timer },
-    { key: 'prototyping', label: { en: 'Lab Prototyping', hi: 'प्रयोगशाला प्रोटोटाइप', sat: 'ᱞᱮᱵᱽ ᱵᱮᱱᱟᱣ' }, icon: Microscope },
+    { key: 'prototyping', label: { en: 'Lab Bench Testing', hi: 'प्रयोगशाला परीक्षण', sat: 'ᱞᱮᱵᱽ ᱵᱮᱱᱟᱣ' }, icon: Microscope },
     { key: 'deployment', label: { en: 'Field Deployment', hi: 'क्षेत्रीय स्थापना', sat: 'ᱴᱷᱟᱶ ᱨᱮ ᱵᱟᱹᱭᱥᱟᱹᱣ' }, icon: Tractor },
     { key: 'maturation', label: { en: '45-Day Maturation', hi: '४५ दिवसीय स्थिरीकरण', sat: '᱔᱕ ᱢᱟᱦᱟᱸ ᱯᱟᱹᱨᱠᱷᱟᱹᱣ' }, icon: Hourglass },
   ];
@@ -64,9 +62,9 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
   }, [selectedDomain, selectedStage]);
 
   const getSectionTitle = () => {
-    if (language === 'hi') return 'वर्तमान में क्या प्रगति है — लाइव परियोजना पाइपलाइन';
-    if (language === 'sat') return 'ᱱᱤᱛᱚᱜ ᱪᱮᱫ ᱠᱟᱹᱢᱤ ᱪᱟᱞᱟᱜ ᱠᱟᱱᱟ — ᱞᱟᱭᱤᱵᱽ ᱠᱟᱹᱢᱤᱦᱚᱨᱟ';
-    return 'Live Ongoing Challenges Pipeline';
+    if (language === 'hi') return 'अभी क्या चल रहा है — लाइव परियोजना पाइपलाइन';
+    if (language === 'sat') return 'ᱱᱤᱛᱚᱜ ᱪᱮᱫ ᱪᱟᱞᱟᱜ ᱠᱟᱱᱟ — ᱞᱟᱭᱤᱵᱽ ᱠᱟᱹᱢᱤᱦᱚᱨᱟ';
+    return '“Abhi Kya Chal Raha Hai” — Live In-Progress Pipeline';
   };
 
   const getSectionSubtitle = () => {
@@ -74,13 +72,13 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
       return 'विश्वविद्यालयों द्वारा हल की जा रही सक्रिय समस्याओं, चरण प्रगति, एस्क्रो वित्तीय स्थिति एवं टेलीमेट्री स्वास्थ्य का प्रत्यक्ष विवरण।';
     if (language === 'sat')
       return 'ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱠᱚ ᱦᱚᱛᱮᱛᱮ ᱥᱚᱞᱦᱮᱜ ᱠᱟᱱ ᱠᱟᱹᱢᱤ, ᱴᱟᱠᱟ ᱠᱷᱟᱛᱟ ᱟᱨ ᱴᱷᱟᱶ ᱦᱟᱞᱚᱛ ᱨᱮᱱᱟᱜ ᱵᱤᱵᱨᱚᱬ᱾';
-    return 'Real-time tracking of challenges advancing through bidding, university laboratory prototyping, field deployment, and 45-day unassisted maturation buffers.';
+    return 'Real-time tracking of active challenges in university labs and field trials across Jharkhand.';
   };
 
   const getInspectButtonText = () => {
-    if (language === 'hi') return 'पूर्ण प्रगति का निरीक्षण करें';
+    if (language === 'hi') return 'पूर्ण प्रगति देखें';
     if (language === 'sat') return 'ᱯᱩᱨᱟᱹ ᱞᱟᱦᱟᱱᱛᱤ ᱧᱮᱞ ᱢᱮ';
-    return 'Inspect Full Progress';
+    return 'View Full Progress';
   };
 
   const getNoResultsText = () => {
@@ -100,17 +98,17 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
       {/* Section Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200 mb-2">
-            <Activity className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#1D4ED8] text-xs font-black border border-blue-200 mb-2">
+            <Activity className="w-3.5 h-3.5 text-[#1D4ED8] animate-pulse" />
             <span>
               {language === 'hi'
                 ? 'सक्रिय शोध एवं क्षेत्रीय परियोजनाएं'
                 : language === 'sat'
                 ? 'ᱪᱟᱞᱟᱜ ᱠᱟᱱ ᱥᱟᱬᱮᱥ ᱟᱨ ᱴᱷᱟᱶ ᱠᱟᱹᱢᱤ'
-                : 'Active R&D & Field Projects'}
+                : 'Active Research & Field Deployments'}
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#0F172A] tracking-tight">
             {getSectionTitle()}
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
@@ -118,35 +116,32 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
           </p>
         </div>
 
-        <div className="text-xs font-bold text-slate-500 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs self-start md:self-auto">
+        <div className="text-xs font-bold text-slate-600 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-2xs self-start md:self-auto font-mono">
           {filteredProjects.length}{' '}
           {language === 'hi' ? 'सक्रिय परियोजनाएं प्रदर्शित' : language === 'sat' ? 'ᱪᱟᱞᱟᱜ ᱠᱟᱱ ᱠᱟᱹᱢᱤ ᱠᱚ' : 'Active Projects Displayed'}
         </div>
       </div>
 
-      {/* Filter Bars (Domains + Stages) */}
+      {/* Domain Filter Bar */}
       <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3.5">
-        {/* Domain Filter Row */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <span className="text-xs font-bold text-slate-600 sm:w-28 flex-shrink-0">
-            {language === 'hi' ? 'कार्यक्षेत्र:' : language === 'sat' ? 'ᱠᱟᱹᱢᱤ ᱦᱟᱹᱴᱤᱧ:' : 'Domain:'}
+            {language === 'hi' ? 'कार्यक्षेत्र:' : language === 'sat' ? 'ᱠᱟᱹᱢᱤ ᱦᱟᱹᱴᱤᱧ:' : 'Filter Bar:'}
           </span>
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-2">
             {domainOptions.map((opt) => {
-              const Icon = opt.icon;
               const isSelected = selectedDomain === opt.key;
               return (
                 <button
                   key={opt.key}
                   type="button"
                   onClick={() => setSelectedDomain(opt.key)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all active:scale-95 ${
+                  className={`inline-flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-xl text-xs sm:text-sm font-bold transition-all active:scale-95 ${
                     isSelected
-                      ? 'bg-blue-700 text-white shadow-sm ring-2 ring-blue-700/20'
+                      ? 'bg-[#1D4ED8] text-white shadow-md ring-2 ring-blue-700/20'
                       : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-slate-500'}`} />
                   <span>{opt.label[language]}</span>
                 </button>
               );
@@ -168,9 +163,9 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
                   key={opt.key}
                   type="button"
                   onClick={() => setSelectedStage(opt.key)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all active:scale-95 ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[38px] rounded-xl text-xs font-bold transition-all active:scale-95 ${
                     isSelected
-                      ? 'bg-emerald-700 text-white shadow-sm ring-2 ring-emerald-700/20'
+                      ? 'bg-[#044728] text-white shadow-xs ring-2 ring-emerald-700/20'
                       : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200'
                   }`}
                 >
@@ -183,7 +178,7 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
         </div>
       </div>
 
-      {/* Projects Grid */}
+      {/* Interactive Live Cards Grid */}
       {filteredProjects.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center space-y-3">
           <AlertCircle className="w-10 h-10 text-slate-400 mx-auto" />
@@ -194,7 +189,7 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
               setSelectedDomain('all');
               setSelectedStage('all');
             }}
-            className="px-4 py-2 min-h-[48px] rounded-xl bg-blue-50 text-blue-700 font-bold text-xs hover:bg-blue-100 border border-blue-200 transition-all"
+            className="px-4 py-2 min-h-[48px] rounded-xl bg-blue-50 text-[#1D4ED8] font-bold text-xs hover:bg-blue-100 border border-blue-200 transition-all"
           >
             {getResetFiltersText()}
           </button>
@@ -204,16 +199,16 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className="group bg-white rounded-2xl border-2 border-slate-200 hover:border-blue-500 transition-all shadow-sm hover:shadow-md p-5 sm:p-6 flex flex-col justify-between space-y-4"
+              className="group bg-white rounded-2xl border-2 border-slate-200 hover:border-[#1D4ED8] transition-all shadow-xs hover:shadow-md p-5 sm:p-6 flex flex-col justify-between space-y-4"
             >
               {/* Header: Ticket & Stage Badge */}
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs font-black tracking-wider uppercase px-2.5 py-1 rounded-lg bg-slate-900 text-white shadow-2xs font-mono">
+                    <span className="text-xs font-black tracking-wider uppercase px-2.5 py-1 rounded-lg bg-[#0F172A] text-white shadow-2xs font-mono">
                       #{project.ticketId}
                     </span>
-                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 capitalize">
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-blue-100 text-blue-900 capitalize">
                       {project.domainKey}
                     </span>
                   </div>
@@ -221,11 +216,11 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
                   <span
                     className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${
                       project.stageBadgeColor === 'emerald'
-                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+                        ? 'bg-emerald-50 text-[#044728] border border-emerald-300'
                         : project.stageBadgeColor === 'blue'
-                        ? 'bg-blue-50 text-blue-800 border border-blue-300'
+                        ? 'bg-blue-50 text-[#1D4ED8] border border-blue-300'
                         : project.stageBadgeColor === 'amber'
-                        ? 'bg-amber-50 text-amber-800 border border-amber-300'
+                        ? 'bg-amber-50 text-[#D97706] border border-amber-300'
                         : 'bg-purple-50 text-purple-800 border border-purple-300'
                     }`}
                   >
@@ -236,10 +231,10 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
 
                 {/* Title & Location */}
                 <div>
-                  <h3 className="text-base sm:text-lg font-black text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
+                  <h3 className="text-base sm:text-lg font-black text-[#0F172A] group-hover:text-[#1D4ED8] transition-colors leading-snug">
                     {project.title[language]}
                   </h3>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1 font-medium">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1 font-semibold">
                     <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                     <span>{project.location[language]}</span>
                   </div>
@@ -251,7 +246,7 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
                     <span className="font-bold text-slate-700">
                       {language === 'hi' ? 'चरण प्रगति' : language === 'sat' ? 'ᱠᱟᱹᱢᱤ ᱞᱟᱦᱟᱱᱛᱤ' : 'Stage Progress'}
                     </span>
-                    <span className="font-black text-blue-700 font-mono">
+                    <span className="font-black text-[#1D4ED8] font-mono">
                       {project.stageProgressPct}%
                     </span>
                   </div>
@@ -259,11 +254,11 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
                         project.stageBadgeColor === 'emerald'
-                          ? 'bg-emerald-600'
+                          ? 'bg-[#044728]'
                           : project.stageBadgeColor === 'blue'
-                          ? 'bg-blue-600'
+                          ? 'bg-[#1D4ED8]'
                           : project.stageBadgeColor === 'amber'
-                          ? 'bg-amber-600'
+                          ? 'bg-[#D97706]'
                           : 'bg-purple-600'
                       }`}
                       style={{ width: `${project.stageProgressPct}%` }}
@@ -279,9 +274,9 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
                 {/* Assigned Institution & Faculty */}
                 <div className="rounded-xl bg-slate-50 p-3 border border-slate-100 space-y-1.5">
                   <div className="flex items-start gap-2">
-                    <Building2 className="w-4 h-4 text-blue-700 mt-0.5 flex-shrink-0" />
+                    <Building2 className="w-4 h-4 text-[#1D4ED8] mt-0.5 flex-shrink-0" />
                     <div className="text-xs">
-                      <span className="font-bold text-slate-900 block">
+                      <span className="font-black text-[#0F172A] block">
                         {project.institution[language]}
                       </span>
                       <span className="text-slate-600 font-medium">
@@ -291,21 +286,31 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
                   </div>
                 </div>
 
-                {/* Escrow & Telemetry Indicators */}
+                {/* Escrow, Health Telemetry & Compliance Indicators */}
                 <div className="space-y-2 text-xs">
+                  {/* Escrow status */}
                   <div className="flex items-start gap-2">
-                    <IndianRupee className="w-3.5 h-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <IndianRupee className="w-3.5 h-3.5 text-[#D97706] mt-0.5 flex-shrink-0" />
                     <span className="font-medium text-slate-700">
-                      <strong className="text-slate-900 font-semibold">
-                        {language === 'hi' ? 'एस्क्रो स्थिति:' : language === 'sat' ? 'ᱮᱥᱠᱨᱳ ᱦᱟᱞᱚᱛ:' : 'Escrow:'}{' '}
+                      <strong className="text-slate-900 font-bold">
+                        {language === 'hi' ? 'एस्क्रो:' : language === 'sat' ? 'ᱮᱥᱠᱨᱳ:' : 'Escrow:'}{' '}
                       </strong>
                       {project.escrowStatus[language]}
                     </span>
                   </div>
 
+                  {/* Operational Health Telemetry */}
+                  <div className="flex items-start gap-2">
+                    <HeartPulse className="w-3.5 h-3.5 text-[#044728] mt-0.5 flex-shrink-0" />
+                    <span className="font-bold text-[#044728] bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      {project.fieldHealth[language]}
+                    </span>
+                  </div>
+
+                  {/* Mentor / Statutory Compliance */}
                   {project.mentorOrCompliance && (
                     <div className="flex items-start gap-2">
-                      <ShieldCheck className="w-3.5 h-3.5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#1D4ED8] mt-0.5 flex-shrink-0" />
                       <span className="text-[11px] text-slate-600 font-medium">
                         {project.mentorOrCompliance[language]}
                       </span>
@@ -314,14 +319,14 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
                 </div>
               </div>
 
-              {/* Action Button: Inspect Full Progress */}
+              {/* Action Button: View Full Progress */}
               <div className="pt-3 border-t border-slate-100">
                 <Link
                   href={project.inspectUrl}
-                  className="w-full inline-flex items-center justify-center space-x-2 px-4 py-3 min-h-[48px] rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow transition-all active:scale-[0.98] border border-blue-800"
+                  className="w-full inline-flex items-center justify-center space-x-2 px-4 py-3 min-h-[48px] rounded-xl bg-[#1D4ED8] hover:bg-blue-800 text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow transition-all active:scale-[0.98]"
                 >
                   <span>{getInspectButtonText()}</span>
-                  <ArrowRight className="w-4 h-4 text-sky-300" />
+                  <ArrowRight className="w-4 h-4 text-sky-200" />
                 </Link>
               </div>
             </div>

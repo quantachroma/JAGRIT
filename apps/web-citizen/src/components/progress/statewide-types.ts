@@ -58,6 +58,8 @@ export interface SolvedProblemItem {
   quorumScore: string;
   grantAmount: string;
   impactSnippet: { en: string; hi: string; sat: string };
+  blueprintId?: string;
+  bomAmount?: string;
 }
 
 export interface UniversityLeaderboardItem {

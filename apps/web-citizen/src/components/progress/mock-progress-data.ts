@@ -34,117 +34,117 @@ export const MOCK_PROGRESS_PROJECT: ProjectProgressData = {
   stages: [
     {
       id: 1,
-      titleEn: 'Proposal & Work Breakdown Structure',
-      titleHi: 'परियोजना प्रस्ताव एवं कार्य विभाजन संरचना (WBS)',
-      titleSat: 'ᱯᱨᱚᱯᱳᱡᱟᱞ ᱟᱨ ᱠᱟᱹᱢᱤ ᱦᱟᱹᱴᱤᱧ (WBS)',
-      subtitleEn: 'Approved 15 Jul 2026',
-      subtitleHi: 'स्वीकृत १५ जुलाई २०२६',
-      subtitleSat: '᱑᱕ ᱡᱩᱞᱟᱭ ᱒᱐᱒᱖ ᱨᱮ ᱥᱟᱹᱛ ᱮᱱᱟ',
+      titleEn: 'Submitted',
+      titleHi: 'नागरिक शिकायत दर्ज',
+      titleSat: 'ᱮᱴᱠᱮᱴᱚᱬᱮ ᱫᱟᱨᱡᱽ',
+      subtitleEn: 'Submitted 15 Jul 2026',
+      subtitleHi: 'दर्ज १५ जुलाई २०२६',
+      subtitleSat: '᱑᱕ ᱡᱩᱞᱟᱭ ᱒᱐᱒᱖ ᱨᱮ ᱫᱟᱨᱡᱽ',
       status: 'COMPLETED',
       completedDate: '15 Jul 2026',
       deliverablesEn: [
+        'Decentralized citizen report logged via WhatsApp & Portal #JAG-PLM-0082',
         'Detailed geological fluoride mapping of Lesliganj aquifer (8.2 mg/L baseline)',
-        'Comprehensive Work Breakdown Structure (WBS) with 3-tranche milestone triggers',
+        'Comprehensive Work Breakdown Structure (WBS) with 3-tranche milestone triggers'
+      ],
+      deliverablesHi: [
+        'व्हाट्सएप एवं पोर्टल द्वारा विकेंद्रीकृत नागरिक शिकायत दर्ज #JAG-PLM-0082',
+        'लेसलीगंज भूजल स्तर का फ्लोराइड मानचित्रण (८.२ मिलीग्राम/लीटर बेसलाइन)',
+        '३-किस्त मील के पत्थर ट्रिगर्स के साथ विस्तृत कार्य विभाजन संरचना (WBS)'
+      ],
+      deliverablesSat: [
+        'WhatsApp ᱟᱨ ᱯᱳᱨᱴᱟᱞ ᱛᱮ ᱦᱚᱲ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱫᱟᱨᱡᱽ #JAG-PLM-0082',
+        'ᱞᱮᱥᱞᱤᱜᱚᱸᱡᱽ ᱫᱟᱜ ᱨᱮ ᱘.᱒ mg/L ᱯᱷᱞᱳᱨᱟᱭᱤᱰ ᱢᱮᱯᱤᱝ',
+        '᱓-ᱠᱤᱥᱛᱤ ᱞᱮᱠᱟᱛᱮ ᱠᱟᱹᱢᱤ ᱦᱟᱹᱴᱤᱧ ᱯᱚᱨᱛᱚᱱ (WBS)'
+      ],
+      signOffAuthorityEn: 'Citizen Grievance Ingestion Node & Gram Panchayat Lesliganj',
+      signOffAuthorityHi: 'नागरिक शिकायत नोड एवं ग्राम पंचायत लेस्लीगंज',
+      signOffAuthoritySat: 'ᱦᱚᱲ ᱮᱴᱠᱮᱴᱚᱬᱮ ᱱᱳᱰ ᱟᱨ ᱟᱹᱛᱩ ᱯᱟᱸᱪᱟᱭᱚᱛ ᱞᱮᱥᱞᱤᱜᱚᱸᱡᱽ',
+      auditRef: 'AUD-SUB-PLM-01'
+    },
+    {
+      id: 2,
+      titleEn: 'AI Triaged',
+      titleHi: 'एआई छंटाई एवं सत्यापन',
+      titleSat: 'ᱮ.ᱟᱭᱤ ᱵᱟᱪᱷᱟᱣ ᱟᱨ ᱥᱟᱹᱨᱤ',
+      subtitleEn: 'Triaged 20 Jul 2026',
+      subtitleHi: 'सत्यापित २० जुलाई २०२६',
+      subtitleSat: '᱒᱐ ᱡᱩᱞᱟᱭ ᱒᱐᱒᱖ ᱨᱮ ᱥᱟᱹᱨᱤ',
+      status: 'COMPLETED',
+      completedDate: '20 Jul 2026',
+      deliverablesEn: [
+        'FastAPI SentenceTransformer similarity score 0.94 validated against DHTE registry',
+        'De-duplication clearance against existing PHE borewells in Palamu district',
         'State Higher & Technical Education technical committee sanction #DHTE-RND-2026-114'
       ],
       deliverablesHi: [
-        'लेसलीगंज भूजल स्तर का फ्लोराइड मानचित्रण (८.२ मिलीग्राम/लीटर बेसलाइन)',
-        '३-किस्त मील के पत्थर ट्रिगर्स के साथ विस्तृत कार्य विभाजन संरचना (WBS)',
+        'डीएचटीई रजिस्ट्री के विरुद्ध ०.९४ समानता स्कोर का एआई सत्यापन',
+        'पलामू ज़िले में पीएचई के मौजूदा बोरवेल के साथ दोहराव-रहित जांच पूर्ण',
         'उच्च एवं तकनीकी शिक्षा विभाग तकनीकी समिति स्वीकृति #DHTE-RND-2026-114'
       ],
       deliverablesSat: [
-        'ᱞᱮᱥᱞᱤᱜᱚᱸᱡᱽ ᱫᱟᱜ ᱨᱮ ᱘.᱒ mg/L ᱯᱷᱞᱳᱨᱟᱭᱤᱰ ᱢᱮᱯᱤᱝ',
-        '᱓-ᱠᱤᱥᱛᱤ ᱞᱮᱠᱟᱛᱮ ᱠᱟᱹᱢᱤ ᱦᱟᱹᱴᱤᱧ ᱯᱚᱨᱛᱚᱱ (WBS)',
+        'DHTE ᱨᱮᱡᱤᱥᱴᱨᱤ ᱨᱮ ᱐.᱙᱔ AI ᱥᱟᱹᱨᱤ ᱧᱮᱞ',
+        'ᱯᱟᱞᱟᱢᱩ ᱡᱤᱞᱟᱹ ᱨᱮ ᱵᱟᱨ ᱫᱷᱟᱣ ᱵᱟᱝ ᱦᱩᱭᱩᱜ ᱯᱟᱹᱨᱠᱷᱟᱹᱣ',
         'ᱪᱮᱛᱟᱱ ᱟᱨ ᱴᱮᱠᱱᱤᱠᱟᱞ ᱥᱮᱪᱮᱫ ᱵᱤᱵᱷᱟᱜᱽ ᱢᱟᱹᱱ #DHTE-RND-2026-114'
+      ],
+      signOffAuthorityEn: 'DHTE AI Triage Pipeline & State Nodal Officer',
+      signOffAuthorityHi: 'डीएचटीई एआई ट्राइएज पाइपलाइन एवं राज्य नोडल अधिकारी',
+      signOffAuthoritySat: 'DHTE AI ᱵᱟᱪᱷᱟᱣ ᱯᱟᱭᱤᱯᱞᱟᱭᱤᱱ ᱟᱨ ᱱᱳᱰᱟᱞ ᱚᱯᱷᱤᱥᱟᱨ',
+      auditRef: 'AI-TRIAGE-PLM-082'
+    },
+    {
+      id: 3,
+      titleEn: 'University Assigned',
+      titleHi: 'विश्वविद्यालय आवंटित',
+      titleSat: 'ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱪᱟᱞ',
+      subtitleEn: 'Assigned 05 Aug 2026',
+      subtitleHi: 'आवंटित ०५ अगस्त २०२६',
+      subtitleSat: '᱐᱕ ᱚᱜᱚᱥᱴ ᱒᱐᱒᱖ ᱨᱮ ᱪᱟᱞ',
+      status: 'COMPLETED',
+      completedDate: '05 Aug 2026',
+      deliverablesEn: [
+        'Awarded to BIT Mesra (Water Resilient Lab) under Stage 2 competitive bidding',
+        'Escrow Tranche 1 (30% / ₹1,05,000) disbursed to institutional PFMS account',
+        'NABL testing certificate #NABL-2026-WTR-992 benchmark clearance'
+      ],
+      deliverablesHi: [
+        'चरण २ प्रतिस्पर्धी निविदा के तहत बीआईटी मेसरा को कार्य सौंपा गया',
+        'संस्थागत पीएफएमएस खाते में प्रथम किस्त (३०% / ₹१,०५,०००) संवितरित',
+        'एनएबीएल परीक्षण प्रमाणपत्र #NABL-2026-WTR-992 बेंचमार्क स्वीकृति'
+      ],
+      deliverablesSat: [
+        'ᱵᱤ.ᱟᱭ.ᱴᱤ ᱢᱮᱥᱨᱟ ᱴᱮᱱᱰᱟᱨ ᱡᱤᱛᱠᱟᱹᱨ ᱠᱟᱛᱮ ᱠᱟᱹᱢᱤ ᱧᱟᱢ ᱠᱮᱫᱟ',
+        'ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱠᱷᱟᱛᱟ ᱨᱮ ᱯᱩᱭᱞᱩ ᱠᱤᱥᱛᱤ (᱓᱐% / ₹᱑,᱐᱕,᱐᱐᱐) ᱮᱢ ᱮᱱᱟ',
+        'NABL ᱴᱮᱥᱴ ᱥᱟᱹᱨᱤ ᱠᱟᱜᱚᱡᱽ #NABL-2026-WTR-992 ᱧᱟᱢ ᱮᱱᱟ'
       ],
       signOffAuthorityEn: 'DHTE Technical Review Board & BIT Mesra Dean R&D',
       signOffAuthorityHi: 'डीएचटीई तकनीकी समीक्षा बोर्ड एवं डीन (अनुसंधान), बीआईटी मेसरा',
       signOffAuthoritySat: 'ᱰᱤ.ᱮᱭᱤᱪ.ᱴᱤ.ᱤ ᱴᱮᱠᱱᱤᱠᱟᱞ ᱵᱳᱨᱰ ᱟᱨ ᱰᱤᱱ, ᱵᱤ.ᱟᱭᱤ.ᱴᱤ ᱢᱮᱥᱨᱟ',
-      auditRef: 'AUD-WBS-PLM-01'
-    },
-    {
-      id: 2,
-      titleEn: 'Lab Prototype & NABL Bench Testing',
-      titleHi: 'प्रयोगशाला प्रोटोटाइप एवं एनएबीएल बेंच परीक्षण',
-      titleSat: 'ᱞᱮᱵᱽ ᱯᱨᱳᱴᱳᱴᱟᱭᱤᱯ ᱟᱨ ᱮᱱ.ᱮ.ᱵᱤ.ᱮᱞ ᱴᱮᱥᱴ',
-      subtitleEn: 'Certified 05 Aug 2026',
-      subtitleHi: 'प्रमाणित ०५ अगस्त २०२६',
-      subtitleSat: '᱐᱕ ᱚᱜᱚᱥᱴ ᱒᱐᱒᱖ ᱨᱮ ᱥᱟᱹᱛ ᱮᱱᱟ',
-      status: 'COMPLETED',
-      completedDate: '05 Aug 2026',
-      deliverablesEn: [
-        'Solar DC pump integration with activated alumina packed-bed adsorption column',
-        '500 Litres/Hour continuous throughput flow rate stress testing',
-        'Certified NABL testing certificate #NABL-2026-WTR-992 (Fluoride reduced to 0.8 mg/L)'
-      ],
-      deliverablesHi: [
-        'सक्रिय एल्यूमिना सोखता कॉलम के साथ सौर डीसी पंप का एकीकरण',
-        '५०० लीटर प्रति घंटा निरंतर प्रवाह दर तनाव परीक्षण',
-        'प्रमाणित एनएबीएल परीक्षण प्रमाणपत्र #NABL-2026-WTR-992 (फ्लोराइड ०.८ मिलीग्राम/लीटर)'
-      ],
-      deliverablesSat: [
-        'ᱥᱮᱸᱜᱮᱞ ᱫᱟᱲᱮ ᱰᱤ.ᱥᱤ ᱯᱟᱢᱯ ᱥᱟᱶ ᱮᱞᱩᱢᱤᱱᱟ ᱯᱷᱤᱞᱴᱟᱨ ᱡᱚᱲᱟᱣ',
-        '᱕᱐᱐ ᱞᱤᱴᱟᱨ/ᱴᱟᱲᱟᱝ ᱫᱟᱜ ᱥᱟᱯᱷᱟ ᱫᱟᱲᱮ ᱵᱤᱰᱟᱹᱣ',
-        'ᱮᱱ.ᱮ.ᱵᱤ.ᱮᱞ ᱥᱟᱹᱨᱤ ᱠᱟᱜᱚᱡᱽ #NABL-2026-WTR-992 (ᱯᱷᱞᱳᱨᱟᱭᱤᱰ ᱐.᱘ mg/L)'
-      ],
-      signOffAuthorityEn: 'NABL Lead Quality Assessor (Certificate #NABL-2026-WTR-992)',
-      signOffAuthorityHi: 'एनएबीएल मुख्य गुणवत्ता परीक्षक (प्रमाणपत्र #NABL-2026-WTR-992)',
-      signOffAuthoritySat: 'ᱮᱱ.ᱮ.ᱵᱤ.ᱮᱞ ᱠᱩᱣᱟᱞᱤᱴᱤ ᱚᱰᱤᱴᱟᱨ (#NABL-2026-WTR-992)',
       auditRef: 'NABL-2026-WTR-992'
     },
     {
-      id: 3,
-      titleEn: 'Field Deployment & Tribal PESA NOC',
-      titleHi: 'क्षेत्रीय स्थापना एवं पेसा ग्राम सभा अनापत्ति प्रमाण पत्र',
-      titleSat: 'ᱟᱹᱛᱩ ᱨᱮ ᱵᱮᱥᱟᱣ ᱟᱨ ᱯᱮᱥᱟ (PESA) ᱵᱟᱹᱭᱥᱤ ᱢᱟᱹᱱ',
-      subtitleEn: 'Commissioned 12 Aug 2026',
-      subtitleHi: 'कमीशन किया गया १२ अगस्त २०२६',
-      subtitleSat: '᱑᱒ ᱚᱜᱚᱥᱴ ᱒᱐᱒᱖ ᱨᱮ ᱥᱟᱹᱛ ᱮᱱᱟ',
-      status: 'COMPLETED',
-      completedDate: '12 Aug 2026',
+      id: 4,
+      titleEn: 'Live Pilot',
+      titleHi: 'क्षेत्रीय लाइव पायलट',
+      titleSat: 'ᱴᱷᱟᱶ ᱞᱟᱭᱤᱵᱽ ᱯᱟᱭᱞᱚᱴ',
+      subtitleEn: 'Day 32 of 45 (In Progress)',
+      subtitleHi: 'दिन ३२ / ४५ (सक्रिय)',
+      subtitleSat: '᱓᱒ ᱢᱟᱦᱟᱸ / ᱔᱕ (ᱪᱟᱹᱞᱩ)',
+      status: 'IN_PROGRESS',
       deliverablesEn: [
-        'Rugged skid installed on Community Borewell #4 at Village Lesliganj, Palamu',
-        'PESA Act 1996 Gram Sabha statutory approval resolution #GS-PLM-44',
-        'O&M capacity training of 2 local Jal Sahiyas with 12 months spare parts locker'
+        'Rugged solar skid installed on Community Borewell #4 at Village Lesliganj, Palamu',
+        'Statutory PESA Section 4(d) Gram Sabha approval resolution #GS-PLM-44',
+        '45-Day unassisted maturation: 32 days uninterrupted flow with zero downtime'
       ],
       deliverablesHi: [
         'लेसलीगंज के सामुदायिक बोरवेल संख्या ४ पर सौर डिफ्लोराइडेशन स्किड स्थापित',
-        'पेसा अधिनियम १९९६ ग्राम सभा वैधानिक अनापत्ति प्रस्ताव #GS-PLM-44',
-        '२ स्थानीय जल सहियाओं का संचालन प्रशिक्षण एवं १२ माह के स्पेयर पार्ट्स लॉकर'
+        'पेसा अधिनियम १९९६ धारा ४(घ) ग्राम सभा वैधानिक अनापत्ति प्रस्ताव #GS-PLM-44',
+        '४५ दिवसीय स्वायत्त स्थिरीकरण: ३२ दिन अविरल प्रवाह एवं शून्य तकनीकी व्यवधान'
       ],
       deliverablesSat: [
         'ᱞᱮᱥᱞᱤᱜᱚᱸᱡᱽ ᱟᱹᱛᱩ ᱨᱮ ᱔ ᱟᱱᱟᱜ ᱪᱟᱯᱟᱠᱚᱞ ᱨᱮ ᱥᱮᱸᱜᱮᱞ ᱢᱮᱥᱤᱱ ᱵᱮᱥᱟᱣ',
-        'ᱯᱮᱥᱟ (PESA) ᱟᱹᱱ ᱑᱙᱙᱖ ᱞᱮᱠᱟᱛᱮ ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱢᱟᱹᱱ #GS-PLM-44',
-        '᱒ ᱡᱚᱞ ᱥᱚᱦᱤᱭᱟ ᱠᱟᱹᱢᱤ ᱥᱮᱪᱮᱫ ᱟᱨ ᱑᱒ ᱪᱟᱸᱫᱚ ᱨᱮᱱᱟᱜ ᱥᱯᱮᱭᱟᱨ ᱯᱟᱨᱴᱥ'
-      ],
-      signOffAuthorityEn: 'Panchayat Secretary Rajeshwar Mahto & Mukhiya Budhan Munda',
-      signOffAuthorityHi: 'पंचायत सचिव राजेश्वर महतो एवं मुखिया बुधन मुंडा',
-      signOffAuthoritySat: 'ᱯᱟᱸᱪᱟᱭᱚᱛ ᱥᱩᱛᱨᱮᱛ ᱨᱟᱡᱮᱥᱣᱚᱨ ᱢᱟᱦᱛᱳ ᱟᱨ ᱢᱩᱠᱷᱤᱭᱟᱹ ᱵᱩᱫᱷᱚᱱ ᱢᱩᱱᱰᱟ',
-      auditRef: 'GS-PLM-44'
-    },
-    {
-      id: 4,
-      titleEn: '45-Day Unassisted Maturation Buffer',
-      titleHi: '४५ दिवसीय स्वायत्त स्थिरीकरण एवं निगरानी अवधि',
-      titleSat: '᱔᱕ ᱢᱟᱦᱟᱸ ᱟᱡ ᱛᱮ ᱪᱟᱞᱟᱣ ᱵᱤᱰᱟᱹᱣ',
-      subtitleEn: 'Day 32 of 45 (In Progress)',
-      subtitleHi: 'दिन ३२ / ४५ (प्रगति पर)',
-      subtitleSat: '᱓᱒ ᱢᱟᱦᱟᱸ / ᱔᱕ (ᱪᱟᱞᱟᱜ ᱠᱟᱱᱟ)',
-      status: 'IN_PROGRESS',
-      deliverablesEn: [
-        'Zero intervention operation by university engineers to verify field resilience',
-        'Continuous telemetry tracking: 32 days uninterrupted flow, zero electrical trip',
-        'Decentralized citizen sentiment logging and weekly taste/turbidity audits'
-      ],
-      deliverablesHi: [
-        'जमीनी मजबूती सुनिश्चित करने हेतु विश्वविद्यालयी हस्तक्षेप रहित संचालन',
-        'निरंतर टेलीमेट्री ट्रैकिंग: ३२ दिन अविरल प्रवाह, शून्य विद्युत व्यवधान',
-        'विकेंद्रीकृत नागरिक प्रतिक्रिया एवं साप्ताहिक स्वाद व स्वच्छता परीक्षण'
-      ],
-      deliverablesSat: [
-        'ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱤᱧᱡᱤᱱᱤᱭᱟᱹᱨ ᱵᱮᱜᱚᱨ ᱟᱡ ᱛᱮ ᱥᱟᱯᱷᱟ ᱫᱟᱜ ᱮᱢ',
-        '᱓᱒ ᱢᱟᱦᱟᱸ ᱞᱮᱛᱟᱲ ᱪᱟᱹᱞᱩ, ᱪᱮᱫ ᱵᱤᱡᱞᱤ ᱵᱟᱹᱲᱤᱡ ᱦᱚᱸ ᱵᱟᱝ',
-        'ᱟᱹᱛᱩ ᱦᱚᱲ ᱠᱚᱣᱟᱜ ᱫᱤᱱᱟᱹᱢ ᱦᱤᱞᱳᱜ ᱫᱟᱜ ᱥᱤᱵᱤᱞ ᱟᱨ ᱵᱷᱳᱴ ᱞᱮᱠᱷᱟ'
+        'ᱯᱮᱥᱟ ᱟᱹᱱ ᱑᱙᱙᱖ ᱞᱮᱠᱟᱛᱮ ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱢᱟᱹᱱ #GS-PLM-44',
+        '᱔᱕ ᱢᱟᱦᱟᱸ ᱯᱟᱹᱨᱠᱷᱟᱹᱣ: ᱓᱒ ᱢᱟᱦᱟᱸ ᱞᱮᱛᱟᱲ ᱪᱟᱹᱞᱩ, ᱪᱮᱫ ᱵᱟᱹᱲᱤᱡ ᱵᱟᱝ'
       ],
       signOffAuthorityEn: 'Active Real-Time Monitoring by Village Water Committee (VWSC)',
       signOffAuthorityHi: 'ग्राम जल एवं स्वच्छता समिति (VWSC) द्वारा वास्तविक समय निगरानी',
@@ -153,9 +153,9 @@ export const MOCK_PROGRESS_PROJECT: ProjectProgressData = {
     },
     {
       id: 5,
-      titleEn: 'AI Citizen Quorum & Formal Closure',
-      titleHi: 'एआई नागरिक कोरम एवं औपचारिक समापन',
-      titleSat: 'ᱮ.ᱟᱭᱤ ᱟᱹᱛᱩ ᱠᱳᱨᱟᱢ ᱟᱨ ᱥᱚᱨᱠᱟᱨᱤ ᱢᱩᱪᱟᱹᱫ',
+      titleEn: 'Quorum Passed',
+      titleHi: 'ग्राम सभा कोरम उत्तीर्ण',
+      titleSat: 'ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱠᱳᱨᱟᱢ ᱯᱟᱥ',
       subtitleEn: 'Scheduled for Day 46',
       subtitleHi: '४६वें दिन निर्धारित',
       subtitleSat: '᱔᱖ ᱟᱱᱟᱜ ᱢᱟᱦᱟᱸ ᱨᱮ ᱛᱟᱺᱜᱤ',
@@ -458,4 +458,223 @@ export const MOCK_PROGRESS_PROJECT: ProjectProgressData = {
     ]
   }
 };
+
+export const ALL_MOCK_PROJECTS: Record<string, ProjectProgressData> = {
+  'JAG-PLM-0082': MOCK_PROGRESS_PROJECT,
+  'JAG-KHT-0014': {
+    ...MOCK_PROGRESS_PROJECT,
+    ticketId: 'JAG-KHT-0014',
+    titleEn: 'Solar Cold Storage for Tribal Lac & Silk',
+    titleHi: 'जनजातीय लाह एवं रेशम हेतु सौर शीत गृह',
+    titleSat: 'ᱞᱟᱦᱟ ᱟᱨ ᱥᱤᱞᱠ ᱞᱟᱹᱜᱤᱫ ᱵᱮᱲᱟ ᱫᱟᱲᱮ ᱨᱮᱭᱟᱲ ᱜᱩᱫᱟᱢ',
+    domainEn: 'Agritech & Forest Produce Preservation',
+    domainHi: 'कृषि तकनीक एवं वनोपज संरक्षण',
+    domainSat: 'ᱪᱟᱥ ᱴᱮᱠᱱᱤᱠ ᱟᱨ ᱵᱤᱨ ᱡᱤᱱᱤᱥ',
+    locationEn: '📍 Torpa Block, Khunti District',
+    locationHi: '📍 तोरपा प्रखंड, खूंटी ज़िला',
+    locationSat: '📍 ᱛᱳᱨᱯᱟ ᱯᱨᱚᱠᱷᱚᱸᱰ, ᱠᱷᱩᱸᱴᱤ ᱡᱤᱞᱟᱹ',
+    institutionEn: 'Birsa Agricultural University (BAU), Ranchi',
+    institutionHi: 'बिरसा कृषि विश्वविद्यालय (बीएयू), राँची',
+    institutionSat: 'ᱵᱤᱨᱥᱟ ᱪᱟᱥ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ (BAU), ᱨᱟᱺᱪᱤ',
+    facultyPi: 'Prof. S. Soren',
+    facultyDeptEn: 'Professor, Dept. of Post-Harvest Technology',
+    facultyDeptHi: 'प्रोफेसर, कटाई उपरांत प्रौद्योगिकी विभाग',
+    facultyDeptSat: 'ᱯᱨᱚᱯᱷᱮᱥᱚᱨ, ᱪᱟᱥ ᱛᱟᱭᱚᱢ ᱴᱮᱠᱱᱳᱞᱳᱡᱤ',
+    csrSponsorEn: 'Tata Steel CSR Division',
+    csrSponsorHi: 'टाटा स्टील सीएसआर प्रभाग',
+    csrSponsorSat: 'ᱴᱟᱴᱟ ᱥᱴᱤᱞ ᱥᱤ.ᱮᱥ.ᱟᱨ ᱦᱟᱹᱴᱤᱧ',
+    csrAmount: '₹1,50,000',
+    dhteGrantAmount: '₹2,00,000',
+    totalBudget: '₹3,50,000',
+    currentDay: 18,
+    totalMaturationDays: 30,
+    maturationPercentage: 60,
+    escrowTranches: [
+      {
+        trancheNumber: 1,
+        percentage: 30,
+        amount: '₹1,05,000',
+        milestoneTitleEn: 'Bench Design & Compressor Sourcing',
+        milestoneTitleHi: 'बेंच डिज़ाइन एवं कंप्रेसर खरीद',
+        milestoneTitleSat: 'ᱰᱤᱡᱟᱭᱤᱱ ᱟᱨ ᱠᱟᱹᱣᱰᱤ ᱪᱟᱞ',
+        status: 'DISBURSED',
+        disbursedDate: '08 Aug 2026',
+        verificationBadgeEn: 'Tranche 1 Disbursed (₹1,05,000 released)',
+        verificationBadgeHi: 'प्रथम चरण संवितरित (₹१,०५,००० विमुक्त)',
+        verificationBadgeSat: 'ᱯᱩᱭᱞᱩ ᱦᱟᱹᱴᱤᱧ ᱮᱢ ᱟᱠᱟᱱᱟ (₹᱑,᱐᱕,᱐᱐᱐)',
+        attachmentRef: 'TR1-BAU-KHT-01'
+      },
+      {
+        trancheNumber: 2,
+        percentage: 40,
+        amount: '₹1,40,000',
+        milestoneTitleEn: 'Thermal Gradient Bench Validation (2-4°C)',
+        milestoneTitleHi: 'तापीय प्रवणता बेंच सत्यापन (२-४°C)',
+        milestoneTitleSat: 'ᱞᱚᱞᱚ-ᱨᱮᱭᱟᱲ ᱯᱟᱹᱨᱠᱷᱟᱹᱣ (᱒-᱔°C)',
+        status: 'LOCKED',
+        verificationBadgeEn: 'Pending Hackathon Round 2 Jury Clearance',
+        verificationBadgeHi: 'हैकथॉन चरण २ जूरी अनुमोदन लंबित',
+        verificationBadgeSat: 'ᱦᱮᱠᱟᱛᱷᱚᱱ ᱫᱚᱥᱟᱨ ᱦᱟᱹᱴᱤᱧ ᱛᱟᱺᱜᱤ',
+        attachmentRef: 'TR2-BAU-PENDING'
+      },
+      {
+        trancheNumber: 3,
+        percentage: 30,
+        amount: '₹1,05,000',
+        milestoneTitleEn: 'Torpa Field Commissioning & Lac SHG Handover',
+        milestoneTitleHi: 'तोरपा क्षेत्रीय कमीशनिंग एवं लाह एसएचजी सुपुर्दगी',
+        milestoneTitleSat: 'ᱛᱳᱨᱯᱟ ᱴᱷᱟᱶ ᱨᱮ ᱪᱟᱞ',
+        status: 'LOCKED',
+        verificationBadgeEn: 'Gram Sabha Quorum & SHG Resolution Trigger',
+        verificationBadgeHi: 'ग्राम सभा कोरम एवं एसएचजी प्रस्ताव पर विमोच्य',
+        verificationBadgeSat: 'ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱠᱳᱨᱟᱢ ᱛᱟᱭᱚᱢ',
+        attachmentRef: 'TR3-BAU-PENDING'
+      }
+    ]
+  },
+  'JAG-WSH-0031': {
+    ...MOCK_PROGRESS_PROJECT,
+    ticketId: 'JAG-WSH-0031',
+    titleEn: 'Hybrid Battery Voltage Stabilizer for Forest Health Sub-Center',
+    titleHi: 'वन स्वास्थ्य उप-केंद्र हेतु हाइब्रिड बैटरी वोल्टेज स्टेबलाइजर',
+    titleSat: 'ᱵᱤᱨ ᱦᱚᱲᱢᱚ ᱥᱟᱶᱟᱨ ᱛᱟᱞᱢᱟ ᱞᱟᱹᱜᱤᱫ ᱦᱟᱭᱵᱽᱨᱤᱰ ᱵᱮᱴᱨᱤ ᱵᱷᱳᱞᱴᱮᱡᱽ ᱥᱴᱮᱵᱤᱞᱟᱭᱤᱡᱟᱨ',
+    domainEn: 'Clean Energy & Cold Chain Protection',
+    domainHi: 'स्वच्छ ऊर्जा एवं शीत श्रृंखला सुरक्षा',
+    domainSat: 'ᱯᱷᱟᱨᱪᱟ ᱫᱟᱲᱮ ᱟᱨ ᱨᱩᱠᱷᱤᱭᱟᱹ',
+    locationEn: '📍 Chaibasa, West Singhbhum District',
+    locationHi: '📍 चाईबासा, पश्चिमी सिंहभूम ज़िला',
+    locationSat: '📍 ᱪᱟᱭᱵᱟᱥᱟ, ᱯᱟᱪᱮ ᱥᱤᱝᱵᱷᱩᱢ ᱡᱤᱞᱟᱹ',
+    institutionEn: 'National Institute of Technology (NIT), Jamshedpur',
+    institutionHi: 'राष्ट्रीय प्रौद्योगिकी संस्थान (एनआईटी), जमशेदपुर',
+    institutionSat: 'ᱱᱮᱥᱱᱟᱞ ᱤᱱᱥᱴᱤᱴᱤᱭᱩᱴ ᱚᱯᱷ ᱴᱮᱠᱱᱳᱞᱳᱡᱤ (NIT), ᱡᱟᱢᱥᱮᱫᱽᱯᱩᱨ',
+    facultyPi: 'Dr. A. K. Mahato',
+    facultyDeptEn: 'Associate Professor, Electrical Engineering Lab',
+    facultyDeptHi: 'सह-प्राध्यापक, विद्युत अभियांत्रिकी प्रयोगशाला',
+    facultyDeptSat: 'ᱯᱨᱚᱯᱷᱮᱥᱚᱨ, ᱵᱤᱡᱽᱞᱤ ᱤᱧᱡᱤᱱᱤᱭᱟᱹᱨᱤᱝ',
+    totalBudget: '₹2,85,000',
+    currentDay: 22,
+    totalMaturationDays: 45,
+    maturationPercentage: 49,
+    escrowTranches: [
+      {
+        trancheNumber: 1,
+        percentage: 30,
+        amount: '₹85,500',
+        milestoneTitleEn: 'Inverter Topology & MOSFET Skids',
+        milestoneTitleHi: 'इन्वर्टर टोपोलॉजी एवं मॉसफेट स्किड',
+        milestoneTitleSat: 'ᱤᱱᱵᱷᱟᱨᱴᱟᱨ ᱥᱟᱢᱟᱱ ᱠᱤᱨᱤᱧ',
+        status: 'DISBURSED',
+        disbursedDate: '10 Aug 2026',
+        verificationBadgeEn: 'Tranche 1 Disbursed (₹85,000 released)',
+        verificationBadgeHi: 'प्रथम चरण संवितरित (₹८५,००० विमुक्त)',
+        verificationBadgeSat: 'ᱯᱩᱭᱞᱩ ᱦᱟᱹᱴᱤᱧ ᱮᱢ ᱟᱠᱟᱱᱟ (₹᱘᱕,᱐᱐᱐)',
+        attachmentRef: 'TR1-NITJ-WSH-01'
+      },
+      {
+        trancheNumber: 2,
+        percentage: 40,
+        amount: '₹1,14,000',
+        milestoneTitleEn: 'NABL Safety Bench Testing & Surge Clearance',
+        milestoneTitleHi: 'एनएबीएल सुरक्षा परीक्षण एवं सर्ज सप्रेशन',
+        milestoneTitleSat: 'NABL ᱨᱩᱠᱷᱤᱭᱟᱹ ᱯᱟᱹᱨᱠᱷᱟᱹᱣ',
+        status: 'LOCKED',
+        verificationBadgeEn: 'NABL Certificate Verification in Progress',
+        verificationBadgeHi: 'एनएबीएल प्रमाणपत्र सत्यापन जारी',
+        verificationBadgeSat: 'NABL ᱥᱟᱹᱨᱤ ᱠᱟᱜᱚᱡᱽ ᱛᱟᱺᱜᱤ',
+        attachmentRef: 'TR2-NITJ-PENDING'
+      },
+      {
+        trancheNumber: 3,
+        percentage: 30,
+        amount: '₹85,500',
+        milestoneTitleEn: 'Sub-Center Deployment & Cold Chain Integration',
+        milestoneTitleHi: 'उप-केंद्र प्रतिष्ठापन एवं शीत श्रृंखला एकीकरण',
+        milestoneTitleSat: 'ᱴᱷᱟᱶ ᱨᱮ ᱵᱟᱹᱭᱥᱟᱹᱣ ᱟᱨ ᱪᱟᱞ',
+        status: 'LOCKED',
+        verificationBadgeEn: 'District Health Officer Handover Sign-off',
+        verificationBadgeHi: 'ज़िला स्वास्थ्य अधिकारी सुपुर्दगी हस्ताक्षर पर',
+        verificationBadgeSat: 'ᱡᱤᱞᱟᱹ ᱦᱚᱲᱢᱚ ᱥᱟᱶᱟᱨ ᱥᱩᱦᱤ',
+        attachmentRef: 'TR3-NITJ-PENDING'
+      }
+    ]
+  },
+  'JAG-DHN-0055': {
+    ...MOCK_PROGRESS_PROJECT,
+    ticketId: 'JAG-DHN-0055',
+    titleEn: 'Bio-Methanation Digester for Weekly Tribal Haat',
+    titleHi: 'साप्ताहिक जनजातीय हाट हेतु बायो-मीथेनेशन संयंत्र',
+    titleSat: 'ᱦᱟᱯᱛᱟᱠᱤᱭᱟᱹ ᱟᱹᱫᱤᱵᱟᱹᱥᱤ ᱦᱟᱴ ᱞᱟᱹᱜᱤᱫ ᱡᱤᱣᱤ-ᱢᱤᱛᱷᱮᱱ ᱯᱞᱟᱱᱴ',
+    domainEn: 'Clean Energy & Haat Organic Waste Management',
+    domainHi: 'स्वच्छ ऊर्जा एवं हाट जैविक अपशिष्ट प्रबंधन',
+    domainSat: 'ᱯᱷᱟᱨᱪᱟ ᱫᱟᱲᱮ ᱟᱨ ᱦᱟᱴ ᱵᱮᱠᱟᱨ ᱥᱟᱢᱵᱽᱲᱟᱣ',
+    locationEn: '📍 Nirsa Block, Dhanbad District',
+    locationHi: '📍 निरसा प्रखंड, धनबाद ज़िला',
+    locationSat: '📍 ᱱᱤᱨᱥᱟ ᱯᱨᱚᱠᱷᱚᱸᱰ, ᱫᱷᱟᱱᱵᱟᱫᱽ ᱡᱤᱞᱟᱹ',
+    institutionEn: 'IIT (ISM), Dhanbad',
+    institutionHi: 'भारतीय प्रौद्योगिकी संस्थान (आईएसएम), धनबाद',
+    institutionSat: 'ᱟᱭ.ᱟᱭ.ᱴᱤ (ISM), ᱫᱷᱟᱱᱵᱟᱫᱽ',
+    facultyPi: 'Prof. P. Sengupta',
+    facultyDeptEn: 'Professor, Dept. of Environmental Science & Engineering',
+    facultyDeptHi: 'प्रोफेसर, पर्यावरण विज्ञान एवं अभियांत्रिकी विभाग',
+    facultyDeptSat: 'ᱯᱨᱚᱯᱷᱮᱥᱚᱨ, ᱥᱟᱪᱟᱨᱦᱮ ᱥᱟᱬᱮᱥ',
+    totalBudget: '₹3,80,000',
+    currentDay: 28,
+    totalMaturationDays: 45,
+    maturationPercentage: 62,
+    escrowTranches: [
+      {
+        trancheNumber: 1,
+        percentage: 30,
+        amount: '₹1,14,000',
+        milestoneTitleEn: 'Digester Excavation & Microbe Inoculation',
+        milestoneTitleHi: 'डाइजेस्टर खुदाई एवं जीवाणु संवर्धन',
+        milestoneTitleSat: 'ᱚᱛ ᱠᱷᱟᱫᱟᱱ ᱟᱨ ᱡᱤᱣᱤ ᱥᱟᱢᱵᱽᱲᱟᱣ',
+        status: 'DISBURSED',
+        disbursedDate: '01 Aug 2026',
+        verificationBadgeEn: 'Tranche 1 Disbursed (₹1,14,000 released)',
+        verificationBadgeHi: 'प्रथम चरण संवितरित (₹१,१४,००० विमुक्त)',
+        verificationBadgeSat: 'ᱯᱩᱭᱞᱩ ᱦᱟᱹᱴᱤᱧ ᱮᱢ ᱟᱠᱟᱱᱟ (₹᱑,᱑᱔,᱐᱐᱐)',
+        attachmentRef: 'TR1-IITD-DHN-01'
+      },
+      {
+        trancheNumber: 2,
+        percentage: 40,
+        amount: '₹1,52,000',
+        milestoneTitleEn: 'Dome Fabrication & Methane Telemetry Sensor',
+        milestoneTitleHi: 'डोम निर्माण एवं मीथेन टेलीमेट्री सेंसर',
+        milestoneTitleSat: 'ᱰᱳᱢ ᱵᱮᱱᱟᱣ ᱟᱨ ᱜᱮᱥ ᱥᱮᱱᱥᱚᱨ',
+        status: 'DISBURSED',
+        disbursedDate: '24 Aug 2026',
+        verificationBadgeEn: 'Tranche 2 Disbursed (₹1,52,000 released)',
+        verificationBadgeHi: 'द्वितीय चरण संवितरित (₹१,५२,००० विमुक्त)',
+        verificationBadgeSat: 'ᱫᱚᱥᱟᱨ ᱦᱟᱹᱴᱤᱧ ᱮᱢ ᱟᱠᱟᱱᱟ (₹᱑,᱕᱒,᱐᱐᱐)',
+        attachmentRef: 'TR2-IITD-DHN-02'
+      },
+      {
+        trancheNumber: 3,
+        percentage: 30,
+        amount: '₹1,14,000',
+        milestoneTitleEn: 'Haat Vendor Gas Distribution & PESA Handover',
+        milestoneTitleHi: 'हाट विक्रेता गैस वितरण एवं पेसा सुपुर्दगी',
+        milestoneTitleSat: 'ᱦᱟᱴ ᱦᱚᱲ ᱜᱮᱥ ᱮᱢ ᱟᱨ ᱪᱟᱞ',
+        status: 'LOCKED',
+        verificationBadgeEn: 'PESA Gram Sabha Quorum Sign-off Trigger',
+        verificationBadgeHi: 'पेसा ग्राम सभा कोरम अनुमोदन पर विमोच्य',
+        verificationBadgeSat: 'PESA ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱠᱳᱨᱟᱢ ᱛᱟᱭᱚᱢ',
+        attachmentRef: 'TR3-IITD-PENDING'
+      }
+    ]
+  }
+};
+
+export function getMockProjectData(ticketId: string): ProjectProgressData {
+  if (ALL_MOCK_PROJECTS[ticketId]) {
+    return ALL_MOCK_PROJECTS[ticketId];
+  }
+  return {
+    ...MOCK_PROGRESS_PROJECT,
+    ticketId,
+  };
+}
+
 
