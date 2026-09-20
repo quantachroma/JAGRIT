@@ -17,9 +17,15 @@ export type UserRole =
   | 'ADMIN' 
   | 'TRUSTEE';
 
-/**
- * Challenge Lifecycle Statuses (Aligned with PRD & ADR-004)
- */
+// 5 Designated Community Trustees (Updated: No Jal Sahiya, Added Independent Gram Sabha Member)
+export type TrusteeRole = 
+  | 'SCHOOL_HEADMASTER' 
+  | 'PRI_WARD_MEMBER' 
+  | 'INDEPENDENT_GRAM_SABHA_MEMBER' 
+  | 'BENEFICIARY_SC_ST_1' 
+  | 'BENEFICIARY_CITIZEN_2';
+
+// Challenge Statuses from PRD
 export type ChallengeStatus = 
   | 'PENDING_HITL'
   | 'ROUTED_CIVIC'
@@ -151,9 +157,27 @@ export interface AIAnalysisResult {
   suggestedTimelineWeeks: number;
 }
 
-/**
- * Citizen Quorum Feedback Payload (ADR-006: Key 2 Public Quorum)
- */
+// XAI Spider Chart Data (Updated to 6-Axis matching v14.1.0-PROD)
+export interface XAISpiderChartData {
+  domainExpertise: number;     // 25% (Combines labs, patents, faculty specialization)
+  facultyAvailability: number; // 20%
+  nablLab: number;             // 20%
+  proximity: number;           // 15%
+  campusCapacity: number;      // 10%
+  trackRecord: number;         // 10% (Includes H-Score penalty)
+  overallMatchScore: number;   // 0 - 100
+}
+
+// Escrow Milestone Schema (Role 3)
+export interface EscrowMilestone {
+  milestoneNumber: 1 | 2 | 3;
+  percentage: 30 | 40 | 30;
+  amountINR: number;
+  isDisbursed: boolean;
+  requiredProof: 'PROPOSAL_APPROVAL' | 'NABL_CERTIFICATE' | 'PESA_GRAM_SABHA_NOC';
+}
+
+// Quorum Feedback (Role 1 & 3)
 export interface QuorumFeedbackPayload {
   challengeId: string;
   projectId?: string;

@@ -26,46 +26,48 @@ CREATE TABLE IF NOT EXISTS public.users (
     h_score INT DEFAULT 100 CHECK (h_score BETWEEN 0 AND 100),
     preferred_language VARCHAR(10) DEFAULT 'hi',
     is_phone_verified BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ========================================================================
--- 3. Incident Clusters Table (ADR-003: Composite Deduplication D >= 0.72)
--- ========================================================================
+-- [NEW] Universities Table (For H-Score and Institutional Matching)
+CREATE TABLE IF NOT EXISTS public.universities (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) UNIQUE NOT NULL,
+    domains_supported TEXT[] DEFAULT '{}',
+    certified_labs TEXT[] DEFAULT '{}',
+    max_project_capacity INT DEFAULT 5,
+    active_projects INT DEFAULT 0,
+    has_pesa_cell BOOLEAN DEFAULT FALSE,
+    h_score INT DEFAULT 100, -- Base H-score (deduct 5 for ignored bids)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- [NEW] Incident Clusters Table (For Composite Deduplication D >= 0.72)
 CREATE TABLE IF NOT EXISTS public.incident_clusters (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     cluster_code VARCHAR(50) UNIQUE NOT NULL,
-    centroid GEOMETRY(Point, 4326) NOT NULL,
-    radius_meters NUMERIC(8, 2) DEFAULT 500.00,
-    incident_count INT DEFAULT 1,
-    status VARCHAR(30) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'MERGED', 'IN_PROGRESS', 'RESOLVED', 'ARCHIVED')),
-    primary_domain VARCHAR(100) NOT NULL,
-    district VARCHAR(100) NOT NULL,
-    block VARCHAR(100),
-    panchayat VARCHAR(100),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    title VARCHAR(255) NOT NULL,
+    thematic_domain VARCHAR(50),
+    centroid_location GEOMETRY(Point, 4326) NOT NULL,
+    district VARCHAR(100),
+    report_velocity INT DEFAULT 1,
+    priority_score NUMERIC(5,2) DEFAULT 0.00,
+    status VARCHAR(50) DEFAULT 'OPEN_FOR_PRIORITIZATION',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_incident_clusters_spatial ON public.incident_clusters USING GIST(centroid);
-CREATE INDEX IF NOT EXISTS idx_incident_clusters_district ON public.incident_clusters(district);
-CREATE INDEX IF NOT EXISTS idx_incident_clusters_status ON public.incident_clusters(status);
-
--- ========================================================================
--- 4. Challenges Table (Ingestion, AI Embeddings & Bidding Window)
--- ========================================================================
+-- 3. Challenges Table (Updated to link to clusters and vector embeddings)
 CREATE TABLE IF NOT EXISTS public.challenges (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     ticket_number VARCHAR(50) UNIQUE NOT NULL,
-    cluster_id UUID REFERENCES public.incident_clusters(id) ON DELETE SET NULL,
+    cluster_id UUID REFERENCES public.incident_clusters(id) ON DELETE SET NULL, -- Linked to Cluster
     submitted_by UUID REFERENCES public.users(id) ON DELETE SET NULL,
     submission_channel VARCHAR(30) NOT NULL CHECK (submission_channel IN (
         'APP', 'WEB', 'WHATSAPP', 'INSTITUTIONAL_DOSSIER', 'FIELD_SURVEY'
     )),
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    description_embedding vector(1536),
+    description_embedding vector(1536), -- Vector embeddings for pgvector deduplication
     raw_audio_url TEXT,
     media_urls TEXT[] DEFAULT '{}',
     location GEOMETRY(Point, 4326) NOT NULL,
@@ -90,23 +92,14 @@ CREATE TABLE IF NOT EXISTS public.challenges (
 );
 
 CREATE INDEX IF NOT EXISTS idx_challenges_spatial ON public.challenges USING GIST(location);
-CREATE INDEX IF NOT EXISTS idx_challenges_cluster ON public.challenges(cluster_id);
-CREATE INDEX IF NOT EXISTS idx_challenges_status ON public.challenges(status);
-CREATE INDEX IF NOT EXISTS idx_challenges_district ON public.challenges(district);
+CREATE INDEX IF NOT EXISTS idx_challenges_vector ON public.challenges USING hnsw (description_embedding vector_cosine_ops);
 
--- HNSW Cosine Distance Index for pgvector 1536-dim embeddings
-CREATE INDEX IF NOT EXISTS idx_challenges_embedding ON public.challenges 
-USING hnsw (description_embedding vector_cosine_ops);
-
--- ========================================================================
--- 5. Projects Table (Tranche Escrow 30/40/30 & 45-Day Maturation Buffer)
--- ========================================================================
+-- 4. Projects & Escrow Table (Updated with spares_kit_months)
 CREATE TABLE IF NOT EXISTS public.projects (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     challenge_id UUID REFERENCES public.challenges(id) ON DELETE CASCADE,
-    execution_mode VARCHAR(30) NOT NULL CHECK (execution_mode IN (
-        'DIRECT_RND', 'DYNAMIC_HACKATHON', 'CONSORTIUM'
-    )),
+    execution_mode VARCHAR(25) NOT NULL,
+    lead_university_id UUID REFERENCES public.universities(id) ON DELETE SET NULL,
     lead_university_name VARCHAR(255) NOT NULL,
     partner_university_name VARCHAR(255),
     pi_faculty_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
@@ -117,23 +110,32 @@ CREATE TABLE IF NOT EXISTS public.projects (
     tranche_1_disbursed BOOLEAN DEFAULT FALSE,
     tranche_2_disbursed BOOLEAN DEFAULT FALSE,
     tranche_3_disbursed BOOLEAN DEFAULT FALSE,
+    spares_kit_months INT DEFAULT 12, -- 12 months, or 24 if Stage 1 escalation expands scope
     nabl_cert_url TEXT,
     pesa_noc_url TEXT,
     field_deployment_date TIMESTAMP WITH TIME ZONE,
     maturation_ends_at TIMESTAMP WITH TIME ZONE,
-    clock_paused BOOLEAN DEFAULT FALSE,
-    paused_at TIMESTAMP WITH TIME ZONE,
-    breakdown_alerts_count INT DEFAULT 0,
-    resolution_status VARCHAR(35) DEFAULT 'IN_PROGRESS' CHECK (resolution_status IN (
-        'IN_PROGRESS', 'MATURING', 'UNDER_REPAIR', 'IN_QUORUM', 'RESOLVED', 'FAILED'
-    )),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    resolution_status VARCHAR(35) DEFAULT 'IN_PROGRESS',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_projects_challenge ON public.projects(challenge_id);
-CREATE INDEX IF NOT EXISTS idx_projects_resolution_status ON public.projects(resolution_status);
-CREATE INDEX IF NOT EXISTS idx_projects_pi_faculty ON public.projects(pi_faculty_id);
+-- [NEW] Project Trustees Table (For Key 1: 5 Designated Community Trustees)
+CREATE TABLE IF NOT EXISTS public.project_trustees (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
+    trustee_role VARCHAR(50) NOT NULL CHECK (trustee_role IN (
+        'SCHOOL_HEADMASTER', 
+        'PRI_WARD_MEMBER', 
+        'INDEPENDENT_GRAM_SABHA_MEMBER', 
+        'BENEFICIARY_SC_ST_1', 
+        'BENEFICIARY_CITIZEN_2'
+    )),
+    full_name VARCHAR(150) NOT NULL,
+    phone_hashed VARCHAR(64) NOT NULL, -- DPDP Act Compliance
+    verification_vote BOOLEAN DEFAULT NULL, -- NULL = Pending, TRUE = YES, FALSE = NO
+    voted_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE(project_id, trustee_role)
+);
 
 -- ========================================================================
 -- 6. Project Trustees Table (ADR-006: Dual-Lock Key 1 - 4 of 5 Quorum)
@@ -214,12 +216,24 @@ CREATE TABLE IF NOT EXISTS public.rnd_failure_repository (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_failure_repo_project ON public.rnd_failure_repository(project_id);
-CREATE INDEX IF NOT EXISTS idx_failure_repo_classification ON public.rnd_failure_repository(failure_classification);
+-- [NEW] Verified Blueprints Table (For 1-Click Solution Blueprint Cloning)
+CREATE TABLE IF NOT EXISTS public.verified_blueprints (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    blueprint_code VARCHAR(50) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    thematic_domain VARCHAR(50) NOT NULL,
+    developed_by_heis TEXT[] NOT NULL,
+    bom_json JSONB NOT NULL,
+    cad_schematic_urls TEXT[] DEFAULT '{}',
+    sop_vernacular_url TEXT,
+    nabl_cert_url TEXT,
+    capital_cost_inr NUMERIC(12,2) NOT NULL,
+    mean_quorum_rating NUMERIC(4,2) NOT NULL,
+    cloned_count INT DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
--- ========================================================================
--- 10. Samvaad Community Threads Table
--- ========================================================================
+-- 7. Samvaad Community Threads Table
 CREATE TABLE IF NOT EXISTS public.community_threads (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     author_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
@@ -229,132 +243,4 @@ CREATE TABLE IF NOT EXISTS public.community_threads (
     tags TEXT[] DEFAULT '{}',
     likes_count INT DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_community_threads_parent ON public.community_threads(parent_thread_id);
-CREATE INDEX IF NOT EXISTS idx_community_threads_author ON public.community_threads(author_id);
-
--- ========================================================================
--- 11. Row Level Security (RLS) Policies
--- ========================================================================
-
--- Enable RLS across all tables
-ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.incident_clusters ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.challenges ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.project_trustees ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.feedback_ledger ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.verified_blueprints ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.rnd_failure_repository ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.community_threads ENABLE ROW LEVEL SECURITY;
-
--- 11.1 Users RLS
-CREATE POLICY "Public profiles are viewable by everyone" 
-ON public.users FOR SELECT USING (true);
-
-CREATE POLICY "Users can update their own profile" 
-ON public.users FOR UPDATE USING (auth.uid() = id);
-
--- 11.2 Incident Clusters RLS
-CREATE POLICY "Incident clusters are viewable by everyone" 
-ON public.incident_clusters FOR SELECT USING (true);
-
-CREATE POLICY "Service role and evaluators can manage clusters" 
-ON public.incident_clusters FOR ALL USING (
-    auth.role() = 'service_role' OR 
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('EVALUATOR', 'ADMIN'))
-);
-
--- 11.3 Challenges RLS
-CREATE POLICY "Challenges are viewable by everyone" 
-ON public.challenges FOR SELECT USING (true);
-
-CREATE POLICY "Anyone can submit challenges" 
-ON public.challenges FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "Evaluators and admins can update challenges" 
-ON public.challenges FOR UPDATE USING (
-    auth.role() = 'service_role' OR 
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('EVALUATOR', 'ADMIN'))
-);
-
--- 11.4 Projects RLS
-CREATE POLICY "Projects are viewable by everyone" 
-ON public.projects FOR SELECT USING (true);
-
-CREATE POLICY "Project team and admins can update projects" 
-ON public.projects FOR UPDATE USING (
-    auth.role() = 'service_role' OR 
-    pi_faculty_id = auth.uid() OR 
-    auth.uid() = ANY(student_team_ids) OR
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('ADMIN', 'EVALUATOR'))
-);
-
-CREATE POLICY "Admins and evaluators can insert projects" 
-ON public.projects FOR INSERT WITH CHECK (
-    auth.role() = 'service_role' OR 
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('ADMIN', 'EVALUATOR'))
-);
-
--- 11.5 Project Trustees RLS
-CREATE POLICY "Trustees are viewable by project stakeholders" 
-ON public.project_trustees FOR SELECT USING (true);
-
-CREATE POLICY "Trustees can cast their own vote" 
-ON public.project_trustees FOR UPDATE USING (
-    trustee_user_id = auth.uid() OR auth.role() = 'service_role'
-);
-
-CREATE POLICY "Admins can manage project trustees" 
-ON public.project_trustees FOR ALL USING (
-    auth.role() = 'service_role' OR 
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'ADMIN')
-);
-
--- 11.6 Feedback Ledger RLS
-CREATE POLICY "Feedback is viewable by everyone" 
-ON public.feedback_ledger FOR SELECT USING (true);
-
-CREATE POLICY "Citizens can submit feedback" 
-ON public.feedback_ledger FOR INSERT WITH CHECK (true);
-
--- 11.7 Verified Blueprints RLS
-CREATE POLICY "Blueprints are viewable by everyone" 
-ON public.verified_blueprints FOR SELECT USING (true);
-
-CREATE POLICY "Admins and PIs can publish blueprints" 
-ON public.verified_blueprints FOR INSERT WITH CHECK (
-    auth.role() = 'service_role' OR 
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('FACULTY_PI', 'ADMIN'))
-);
-
-CREATE POLICY "Admins and PIs can update blueprints" 
-ON public.verified_blueprints FOR UPDATE USING (
-    auth.role() = 'service_role' OR 
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('FACULTY_PI', 'ADMIN'))
-);
-
--- 11.8 R&D Failure Repository RLS
-CREATE POLICY "Failure repository entries are viewable by everyone" 
-ON public.rnd_failure_repository FOR SELECT USING (true);
-
-CREATE POLICY "Evaluators, PIs, and admins can insert failure entries" 
-ON public.rnd_failure_repository FOR INSERT WITH CHECK (
-    auth.role() = 'service_role' OR 
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('FACULTY_PI', 'EVALUATOR', 'ADMIN'))
-);
-
--- 11.9 Samvaad Community Threads RLS
-CREATE POLICY "Threads are viewable by everyone" 
-ON public.community_threads FOR SELECT USING (true);
-
-CREATE POLICY "Authenticated users can create threads" 
-ON public.community_threads FOR INSERT WITH CHECK (
-    auth.uid() IS NOT NULL OR auth.role() = 'service_role'
-);
-
-CREATE POLICY "Authors can update their own threads" 
-ON public.community_threads FOR UPDATE USING (
-    author_id = auth.uid() OR auth.role() = 'service_role'
 );
