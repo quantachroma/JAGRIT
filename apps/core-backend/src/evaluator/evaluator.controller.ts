@@ -1,7 +1,24 @@
 import { Router } from 'express';
 import { query } from '../db/client';
+import { routeTriage, TriageCategory } from './evaluator.service';
 
 export const evaluatorRouter = Router();
+
+evaluatorRouter.post('/triage', (request, response) => {
+	try {
+		const body = request.body as Record<string, unknown>;
+		const ticketId = String(body.ticket_id || body.ticketId || '').trim();
+		const category = String(body.category || '').trim() as TriageCategory;
+		const isHighConfidence = body.is_high_confidence === true || body.isHighConfidence === true;
+		if (!ticketId || !['TYPE_A_CIVIC', 'TYPE_B_R_AND_D'].includes(category)) {
+			response.status(400).json({ error: 'ticket_id and a valid category are required.' });
+			return;
+		}
+		response.json(routeTriage({ ticketId, category, isHighConfidence }));
+	} catch (error) {
+		response.status(400).json({ error: error instanceof Error ? error.message : 'Invalid triage request.' });
+	}
+});
 
 evaluatorRouter.get('/queue', async (_request, response) => {
 	try {
