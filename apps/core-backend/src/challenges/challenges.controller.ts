@@ -1,25 +1,44 @@
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { query } from '../db/client';
 import {
 	ChallengeSubmission,
 	createOrDeduplicateChallenge,
+	hashPhoneNumber,
+	blurPublicLocation,
 } from './challenges.service';
 
 export const challengesRouter = Router();
 
-challengesRouter.post('/submit', async (request, response) => {
+async function submissionBody(request: Request): Promise<Record<string, unknown>> {
+	if (!request.is('multipart/form-data')) return request.body as Record<string, unknown>;
+	const boundary = request.headers['content-type']?.match(/boundary=([^;]+)/i)?.[1]?.replace(/^"|"$/g, '');
+	if (!boundary) throw new Error('Multipart boundary is required.');
+	const chunks: Buffer[] = [];
+	for await (const chunk of request) chunks.push(Buffer.from(chunk));
+	const fields: Record<string, string> = {};
+	for (const part of Buffer.concat(chunks).toString('utf8').split(`--${boundary}`)) {
+		const name = part.match(/name="([^"]+)"/)?.[1];
+		const value = part.split('\r\n\r\n')[1]?.replace(/\r\n$/, '');
+		if (name && value !== undefined && !part.includes('filename=')) fields[name] = value;
+	}
+	return fields;
+}
+
+challengesRouter.post('/submit', async (request: Request, response: Response) => {
 	try {
-		const body = request.body as Record<string, unknown>;
-		const lat = Number(body.lat);
-		const lon = Number(body.lon);
+		const body = await submissionBody(request);
+		const location = typeof body.location === 'string' ? JSON.parse(body.location) as Record<string, unknown> : {};
+		const lat = Number(body.lat ?? location.lat);
+		const lon = Number(body.lon ?? location.lon);
 		const title = String(body.title || '').trim();
 		const description = String(body.description || '').trim();
 		const district = String(body.district || 'JHK').trim();
 		const block = body.block == null || body.block === '' ? null : String(body.block);
 		const panchayat = body.panchayat == null || body.panchayat === '' ? null : String(body.panchayat);
+		const phone = String(body.phone || body.phone_number || '').trim();
 
-		if (!title || !description || !Number.isFinite(lat) || !Number.isFinite(lon)) {
-			response.status(400).json({ error: 'title, description, lat, and lon are required.' });
+		if (!title || !description || !phone || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+			response.status(400).json({ error: 'title, description, phone, lat, and lon are required.' });
 			return;
 		}
 
@@ -31,9 +50,10 @@ challengesRouter.post('/submit', async (request, response) => {
 			district,
 			block,
 			panchayat,
+			phoneHash: hashPhoneNumber(phone),
 		};
 		const result = await createOrDeduplicateChallenge(submission);
-		response.status(result.is_duplicate ? 200 : 201).json(result);
+		response.status(result.is_duplicate ? 200 : 201).json({ ...result, public_location: blurPublicLocation(lat, lon) });
 	} catch (error) {
 		console.error('Challenge submission failed:', error);
 		response.status(500).json({ error: 'Unable to submit challenge.' });
@@ -48,7 +68,7 @@ challengesRouter.get('/trending', async (_request, response) => {
 			 FROM public.challenges
 			 ORDER BY upvotes_count DESC LIMIT 10;`,
 		);
-		response.json(result.rows);
+		response.json(result.rows.map((row) => ({ ...row, ...blurPublicLocation(Number(row.lat), Number(row.lon)) })));
 	} catch (error) {
 		console.error('Trending challenges query failed:', error);
 		response.status(500).json({ error: 'Unable to load trending challenges.' });

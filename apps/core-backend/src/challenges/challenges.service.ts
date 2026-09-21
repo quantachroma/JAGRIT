@@ -1,4 +1,5 @@
 import { query } from '../db/client';
+import { createHmac, randomBytes } from 'crypto';
 
 export interface ChallengeSubmission {
 	title: string;
@@ -8,6 +9,32 @@ export interface ChallengeSubmission {
 	district: string;
 	block: string | null;
 	panchayat?: string | null;
+	phoneHash?: string;
+}
+
+export interface PublicLocation {
+	lat: number;
+	lon: number;
+}
+
+const EARTH_RADIUS_METRES = 6_371_000;
+
+/** ADR-003: raw phone numbers must never be persisted. */
+export function hashPhoneNumber(phone: string): string {
+	const secret = process.env.PHONE_HMAC_SECRET;
+	if (!secret) throw new Error('PHONE_HMAC_SECRET must be configured.');
+	return createHmac('sha256', secret).update(phone.trim()).digest('hex');
+}
+
+/** ADR-003: public coordinates are offset by exactly 50 metres in a random direction. */
+export function blurPublicLocation(lat: number, lon: number): PublicLocation {
+	const bearing = (randomBytes(4).readUInt32BE(0) / 0xffffffff) * Math.PI * 2;
+	const angularDistance = 50 / EARTH_RADIUS_METRES;
+	const originLat = lat * Math.PI / 180;
+	const originLon = lon * Math.PI / 180;
+	const blurredLat = Math.asin(Math.sin(originLat) * Math.cos(angularDistance) + Math.cos(originLat) * Math.sin(angularDistance) * Math.cos(bearing));
+	const blurredLon = originLon + Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(originLat), Math.cos(angularDistance) - Math.sin(originLat) * Math.sin(blurredLat));
+	return { lat: blurredLat * 180 / Math.PI, lon: blurredLon * 180 / Math.PI };
 }
 
 interface NearbyChallenge {
