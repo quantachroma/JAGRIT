@@ -17,9 +17,9 @@ export default function XaiSpiderChart({ data, studentPool = 82, ticketId }: Pro
   }, []);
 
   const chartData = [
-    { subject: 'NABL Labs', score: data?.labCapability ?? 95 },
-    { subject: 'Patents', score: data?.facultyPatents ?? 90 },
-    { subject: 'Proximity', score: data?.geographicProximity ?? 85 },
+    { subject: 'NABL Labs', score: data?.nablLab ?? 95 },
+    { subject: 'Faculty Availability', score: data?.facultyAvailability ?? 90 },
+    { subject: 'Proximity', score: data?.proximity ?? 85 },
     { subject: 'Track Record', score: data?.trackRecord ?? 98 },
     { subject: 'Student Pool', score: studentPool },
   ];

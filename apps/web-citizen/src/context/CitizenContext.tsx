@@ -39,6 +39,9 @@ export interface CitizenContextType {
   setCurrentLocation: (loc: GeoLocation) => void;
   detectLocation: () => Promise<void>;
   isDetectingLocation: boolean;
+  mounted: boolean;
+  hasSeenSplash: boolean;
+  setHasSeenSplash: (seen: boolean) => void;
   t: (section: string, key?: string, fallback?: string) => string;
   dict: any;
 }
@@ -52,9 +55,12 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
   });
   const [currentLocation, setCurrentLocation] = useState<GeoLocation>(DEFAULT_RANCHI_LOCATION);
   const [isDetectingLocation, setIsDetectingLocation] = useState<boolean>(false);
+  const [mounted, setMounted] = useState(false);
+  const [hasSeenSplash, setHasSeenSplashState] = useState(true);
 
   // Initialize stored preferences if present in browser
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== 'undefined') {
       const storedUser = localStorage.getItem('jagrit_citizen_user');
       if (storedUser) {
@@ -73,8 +79,14 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
           // ignore corrupted session storage
         }
       }
+      setHasSeenSplashState(localStorage.getItem('jagrit_seen_splash') === 'true');
     }
   }, []);
+
+  const setHasSeenSplash = (seen: boolean) => {
+    setHasSeenSplashState(seen);
+    if (typeof window !== 'undefined') localStorage.setItem('jagrit_seen_splash', String(seen));
+  };
 
   const login = (phone: string, name?: string) => {
     const newUser: CitizenUser = {
@@ -211,6 +223,9 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
         setCurrentLocation,
         detectLocation,
         isDetectingLocation,
+        mounted,
+        hasSeenSplash,
+        setHasSeenSplash,
         t,
         dict: legacyDictionaries[language] || legacyDictionaries.hi,
       }}
@@ -227,4 +242,3 @@ export function useCitizen(): CitizenContextType {
   }
   return context;
 }
-

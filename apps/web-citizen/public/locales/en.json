@@ -27,7 +27,29 @@
     "logout": "Logout",
     "footerText": "JAGRIT — Jharkhand Academia Industry Gateway for Research, Innovation and Transformation of Society",
     "footerSubtext": "Department of Higher and Technical Education, Government of Jharkhand | NEP 2020 & PESA 1996 Aligned",
-    "footerDistricts": "Ranchi • Dhanbad • Jamshedpur • Dumka • Hazaribagh • Palamu • Khunti • Chaibasa"
+    "footerDistricts": "Ranchi • Dhanbad • Jamshedpur • Dumka • Hazaribagh • Palamu • Khunti • Chaibasa",
+    "repository": "R&D Repository",
+    "admin": "Government Console"
+  },
+  "repository": {
+    "title": "R&D Failure Knowledge Base & Solution Profiles",
+    "subtitle": "Preserving negative research results and technical failure modes to prevent repeating flawed engineering approaches.",
+    "search": "Search by failure mode, material used, domain, or district.",
+    "rootCause": "Why It Failed - Root Cause",
+    "directive": "Preserved Engineering Directive",
+    "panIndia": "PROMOTED TO BI-ANNUAL PAN-INDIA NATIONAL HACKATHON"
+  },
+  "admin": {
+    "title": "Government of Jharkhand Command Center",
+    "treasury": "State Treasury Overview",
+    "triage": "AI Triage Approval Queue",
+    "escrow": "Milestone Escrow Disbursement Gatekeeper",
+    "csr": "Industry & CSR Partnership Hub"
+  },
+  "csr": {
+    "title": "Corporate CSR & Industry Innovation Hub",
+    "matching": "Matching Grant Escrow",
+    "partnerships": "CSR Partnerships"
   },
   "home": {
     "heroBadge": "Government of Jharkhand Initiative",

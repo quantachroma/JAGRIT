@@ -15,6 +15,8 @@ import {
   Send,
   Clock,
   TrendingUp,
+  Landmark,
+  Archive,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -27,6 +29,8 @@ export default function Navbar() {
     { href: '/report', label: t('common', 'report', 'Report Problem'), icon: AlertCircle },
     { href: '/dashboard', label: t('common', 'dashboard', 'My Grievances'), icon: LayoutDashboard },
     { href: '/progress', label: t('common', 'progress', 'Progress'), icon: TrendingUp },
+    { href: '/repository', label: t('common', 'repository', 'R&D Repository'), icon: Archive },
+    { href: '/admin', label: t('common', 'admin', 'Government Console'), icon: Landmark },
     { href: '/samvaad', label: t('common', 'samvaad', 'Jan Samvaad'), icon: MessageSquare },
     { href: '/time-machine', label: t('common', 'timeMachine', 'Time Machine'), icon: Clock },
     { href: '/whatsapp-simulator', label: t('common', 'whatsappSim', 'WhatsApp Seva Bot'), icon: Send },

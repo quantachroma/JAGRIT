@@ -94,7 +94,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const role = user.role ? ROLE_ALIASES[user.role] || user.role as NavRole : null;
   const navItems = [
     { label: t.nav.citizen, href: '/dashboard', icon: Users, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
-    { label: t.nav.progress || 'Progress Tracker', href: '/dashboard/progress/JAG-4102', icon: TrendingUp, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.progress || 'Progress Tracker', href: '/progress', icon: TrendingUp, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.feedback || '45-Day Feedback', href: '/feedback', icon: CheckCircle2, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.whatsapp, href: '/whatsapp-simulator', icon: MessageCircle, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.pledgeSupport || 'Pledge & Support', href: '/pledge-support', icon: HeartHandshake, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
@@ -104,6 +104,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     { label: t.nav.samvaad, href: '/samvaad', icon: MessageSquare, roles: ['CITIZEN', 'STUDENT', 'FACULTY_PI', 'INDUSTRY_MENTOR', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.hackathon, href: '/university/hackathon/annual', icon: Trophy, roles: ['STUDENT', 'FACULTY_PI', 'INDUSTRY_MENTOR', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.rndFailures, href: '/repository', icon: Archive, roles: ['STUDENT', 'FACULTY_PI', ...FULL_VISIBILITY_ROLES] },
+    { label: language === 'hi' ? 'शासन केंद्र' : language === 'sat' ? 'ᱥᱚᱨᱠᱟᱨ ᱠᱮᱱᱫᱨ' : 'Government Console', href: '/admin', icon: Landmark, roles: FULL_VISIBILITY_ROLES },
   ].filter((item) => role && item.roles.includes(role));
 
   return (
@@ -232,7 +233,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                     language === l ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-blue-600'
                   }`}
                 >
-                  {l === 'en' ? 'English' : l === 'hi' ? 'हिन्दी' : 'संथाली'}
+                  {l === 'en' ? 'English' : l === 'hi' ? 'हिन्दी' : 'ᱥᱟᱱᱛᱟᱲᱤ'}
                 </button>
               ))}
             </div>

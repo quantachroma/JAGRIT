@@ -226,6 +226,34 @@ export interface HackathonTranslations {
 }
 
 export interface RepositoryTranslations {
+  eyebrow: string;
+  subtitle: string;
+  searchLabel: string;
+  filterLabel: string;
+  profilesLabel: string;
+  filterAll: string;
+  filterWater: string;
+  filterAgritech: string;
+  filterEnergy: string;
+  problemLabel: string;
+  directiveLabel: string;
+  panIndiaBadge: string;
+  palamuTitle: string;
+  palamuMeta: string;
+  palamuProblem: string;
+  palamuFailure: string;
+  palamuDirective: string;
+  palamuCost: string;
+  khuntiTitle: string;
+  khuntiMeta: string;
+  khuntiProblem: string;
+  khuntiFailure: string;
+  khuntiDirective: string;
+  damodarTitle: string;
+  damodarMeta: string;
+  damodarProblem: string;
+  damodarFailure: string;
+  damodarDirective: string;
   bannerBadge: string;
   bannerTitle: string;
   bannerDesc: string;
@@ -623,6 +651,34 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       }
     },
     repository: {
+      eyebrow: "Public research archive",
+      subtitle: "Preserving negative research results and technical failure modes to prevent repeating flawed engineering approaches.",
+      searchLabel: "Search the failure knowledge base",
+      filterLabel: "Filter solution profiles by domain",
+      profilesLabel: "Failure post-mortem solution profiles",
+      filterAll: "All domains",
+      filterWater: "Water",
+      filterAgritech: "Agritech",
+      filterEnergy: "Energy",
+      problemLabel: "Problem Profile",
+      directiveLabel: "Preserved Engineering Directive",
+      panIndiaBadge: "PROMOTED TO BI-ANNUAL PAN-INDIA NATIONAL HACKATHON",
+      palamuTitle: "Activated Alumina Sorbent Column in Palamu Basin",
+      palamuMeta: "Lead: Previous University Cohort (2025)",
+      palamuProblem: "Groundwater Fluoride (8.2 mg/L), Dissolved Iron (5.4 mg/L).",
+      palamuFailure: "Dissolved iron (>5.0 mg/L) oxidized on air contact and co-precipitated as ferric hydroxide sludge, choking alumina pores and reducing adsorption capacity by 90% within 96 hours of field operation.",
+      palamuDirective: "Future water filtration proposals in Palamu MUST incorporate an upstream catalytic oxidation and manganese-greensand pre-filter to eliminate dissolved iron prior to fluoride adsorption.",
+      palamuCost: "Field expenditure: ₹2,40,000",
+      khuntiTitle: "Evaporative Cooling Chambers for Lac Cocoons in Khunti",
+      khuntiMeta: "Failure mode: Humidity saturation causing white mold growth.",
+      khuntiProblem: "Tribal lac cocoon storage requires stable low-humidity handling through the monsoon season.",
+      khuntiFailure: "Humidity saturation inside the passive chamber triggered white mold growth and compromised cocoon quality.",
+      khuntiDirective: "Passive evaporative cooling is unviable for tribal lac during monsoon; active phase-change dehumidification required.",
+      damodarTitle: "Acid Mine Drainage Neutralization in Damodar River Basin",
+      damodarMeta: "Severity: Severe Heavy Metal Leaching.",
+      damodarProblem: "Acid mine drainage continues to carry heavy-metal loads through the Damodar River Basin.",
+      damodarFailure: "Prior neutralization pilots could not contain severe, variable heavy-metal leaching at basin scale.",
+      damodarDirective: "Escalated to premier national institutions: IITs, IISc, and CSIR labs for a bi-annual Pan-India challenge.",
       bannerBadge: "State University Hackathon (Held Once a Year)",
       bannerTitle: "📢 Micro and Minor Failures are open for the Annual State University Hackathon (Held Once a Year)! Students can re-engineer these challenges.",
       bannerDesc: "Turn past hardware, metallurgical, and thermal setbacks into award-winning university capstone solutions with state escrow grants up to ₹2,50,000 + 4 NEP 2020 APAAR credits.",
@@ -965,6 +1021,34 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       }
     },
     repository: {
+      eyebrow: "सार्वजनिक अनुसंधान अभिलेखागार",
+      subtitle: "त्रुटिपूर्ण इंजीनियरिंग दृष्टिकोणों की पुनरावृत्ति रोकने के लिए नकारात्मक शोध परिणामों और तकनीकी विफलता प्रकारों का संरक्षण।",
+      searchLabel: "विफलता ज्ञान भंडार खोजें",
+      filterLabel: "क्षेत्र के अनुसार समाधान प्रोफ़ाइल छाँटें",
+      profilesLabel: "विफलता पश्च-विश्लेषण समाधान प्रोफ़ाइल",
+      filterAll: "सभी क्षेत्र",
+      filterWater: "जल",
+      filterAgritech: "कृषि तकनीक",
+      filterEnergy: "ऊर्जा",
+      problemLabel: "समस्या प्रोफ़ाइल",
+      directiveLabel: "संरक्षित इंजीनियरिंग निर्देश",
+      panIndiaBadge: "द्विवार्षिक अखिल भारतीय राष्ट्रीय हैकाथॉन हेतु उन्नत",
+      palamuTitle: "पलामू बेसिन में सक्रिय एल्युमिना सोर्बेंट कॉलम",
+      palamuMeta: "नेतृत्व: पूर्व विश्वविद्यालय समूह (2025)",
+      palamuProblem: "भूजल फ्लोराइड (8.2 mg/L), घुलित लोहा (5.4 mg/L)।",
+      palamuFailure: "घुलित लोहा (>5.0 mg/L) हवा के संपर्क में ऑक्सीकरण होकर फेरिक हाइड्रॉक्साइड कीचड़ के रूप में सह-अवक्षेपित हुआ, जिससे एल्युमिना छिद्र बंद हुए और 96 घंटों में अवशोषण क्षमता 90% घट गई।",
+      palamuDirective: "पलामू में भावी जल-निस्पंदन प्रस्तावों में फ्लोराइड अवशोषण से पहले घुलित लोहा हटाने हेतु अपस्ट्रीम उत्प्रेरक ऑक्सीकरण और मैंगनीज-ग्रीनसैंड प्री-फिल्टर अनिवार्य है।",
+      palamuCost: "क्षेत्रीय व्यय: ₹2,40,000",
+      khuntiTitle: "खूंटी में लाख कोकून हेतु वाष्पीकरणीय शीतलन कक्ष",
+      khuntiMeta: "विफलता प्रकार: आर्द्रता संतृप्ति से सफेद फफूंद वृद्धि।",
+      khuntiProblem: "आदिवासी लाख कोकून भंडारण हेतु मानसून में स्थिर कम-आर्द्रता संचालन आवश्यक है।",
+      khuntiFailure: "निष्क्रिय कक्ष में आर्द्रता संतृप्त होने से सफेद फफूंद बढ़ी और कोकून की गुणवत्ता प्रभावित हुई।",
+      khuntiDirective: "मानसून में आदिवासी लाख के लिए निष्क्रिय वाष्पीकरणीय शीतलन व्यवहार्य नहीं है; सक्रिय फेज-चेंज डीह्यूमिडिफिकेशन आवश्यक है।",
+      damodarTitle: "दामोदर नदी बेसिन में अम्लीय खदान जल निष्प्रभावीकरण",
+      damodarMeta: "गंभीरता: तीव्र भारी धातु रिसाव।",
+      damodarProblem: "अम्लीय खदान जल दामोदर नदी बेसिन में भारी धातुओं का भार पहुंचाता रहता है।",
+      damodarFailure: "पूर्व निष्प्रभावीकरण पायलट बेसिन स्तर पर गंभीर और परिवर्तनीय भारी धातु रिसाव को नहीं रोक सके।",
+      damodarDirective: "द्विवार्षिक अखिल भारतीय चुनौती के लिए IIT, IISc और CSIR प्रयोगशालाओं सहित प्रमुख राष्ट्रीय संस्थानों को भेजा गया।",
       bannerBadge: "राज्य विश्वविद्यालय हैकाथॉन (वर्ष में एक बार)",
       bannerTitle: "📢 वार्षिक राज्य विश्वविद्यालय हैकाथॉन हेतु सूक्ष्म एवं लघु विफलताएं खुली हैं! छात्र इन चुनौतियों का पुनर्रचना कर सकते हैं।",
       bannerDesc: "विगत हार्डवेयर, धातुकर्म और तापीय विफलताओं को राज्य एस्क्रो अनुदान (₹२,५०,००० तक) और ४ एनईपी अपार क्रेडिट के साथ समाधान में बदलें।",
@@ -1313,6 +1397,34 @@ export const TRANSLATIONS: Record<Language, TranslationDictionary> = {
       }
     },
     repository: {
+      eyebrow: "ᱯᱟᱵᱞᱤᱠ ᱨᱤᱥᱟᱨᱪ ᱟᱨᱠᱷᱟᱭᱤᱵ",
+      subtitle: "ᱵᱟᱹᱲᱤᱡ ᱤᱧᱡᱤᱱᱤᱭᱟᱹᱨᱤᱝ ᱦᱚᱨ ᱫᱚᱦᱚᱨᱟᱣ ᱵᱟᱝ ᱞᱟᱹᱜᱤᱫ ᱮᱴᱟᱜ ᱨᱤᱥᱟᱨᱪ ᱨᱮᱱᱟᱜ ᱵᱟᱹᱲᱤᱡ ᱟᱨ ᱴᱮᱠᱱᱤᱠᱟᱞ ᱦᱚᱨ ᱫᱚᱦᱚ ᱢᱮ᱾",
+      searchLabel: "ᱵᱟᱹᱲᱤᱡ ᱜᱮᱭᱟᱱ ᱵᱷᱟᱱᱰᱟᱨ ᱥᱮᱸᱫᱽᱨᱟᱭ ᱢᱮ",
+      filterLabel: "ᱰᱚᱢᱮᱱ ᱛᱮ ᱥᱚᱞᱦᱮ ᱯᱨᱚᱯᱷᱟᱭᱤᱞ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+      profilesLabel: "ᱵᱟᱹᱲᱤᱡ ᱯᱚᱥᱴ-ᱢᱚᱨᱴᱮᱢ ᱥᱚᱞᱦᱮ ᱯᱨᱚᱯᱷᱟᱭᱤᱞ",
+      filterAll: "ᱡᱚᱛᱚ ᱰᱚᱢᱮᱱ",
+      filterWater: "ᱫᱟᱜ",
+      filterAgritech: "ᱪᱟᱥ ᱴᱮᱠᱱᱤᱠ",
+      filterEnergy: "ᱮᱱᱟᱨᱡᱤ",
+      problemLabel: "ᱮᱴᱠᱮᱴᱚᱬᱮ ᱯᱨᱚᱯᱷᱟᱭᱤᱞ",
+      directiveLabel: "ᱫᱚᱦᱚ ᱟᱠᱟᱱ ᱤᱧᱡᱤᱱᱤᱭᱟᱹᱨᱤᱝ ᱱᱤᱨᱫᱮᱥ",
+      panIndiaBadge: "ᱫᱩᱭ ᱵᱚᱪᱷᱚᱨ ᱨᱮ ᱯᱮᱱ-ᱤᱱᱰᱤᱭᱟ ᱡᱟᱹᱛᱤᱭᱟᱹᱨᱤ ᱦᱮᱯᱨᱟᱣ ᱛᱮ ᱩᱪᱷᱟᱹᱱ",
+      palamuTitle: "ᱯᱟᱞᱟᱢᱩ ᱵᱮᱥᱤᱱ ᱨᱮ ᱮᱠᱴᱤᱵᱮᱴᱮᱰ ᱮᱞᱩᱢᱤᱱᱟ ᱥᱚᱨᱵᱮᱱᱴ ᱠᱚᱞᱚᱢ",
+      palamuMeta: "ᱟᱹᱭᱩᱨ: ᱢᱟᱬᱟᱝ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱠᱚᱦᱚᱨᱴ (2025)",
+      palamuProblem: "ᱵᱷᱩᱜᱚᱨᱵᱷ ᱫᱟᱜ ᱯᱷᱞᱳᱨᱟᱭᱤᱰ (8.2 mg/L), ᱞᱮᱠᱟᱱ ᱢᱮᱦᱮᱫ (5.4 mg/L)।",
+      palamuFailure: "ᱞᱮᱠᱟᱱ ᱢᱮᱦᱮᱫ (>5.0 mg/L) ᱦᱚᱭᱟ ᱥᱟᱶ ᱚᱠᱥᱤᱰᱟᱭᱤᱡ ᱮᱱᱟ ᱟᱨ ᱯᱷᱮᱨᱤᱠ ᱦᱟᱭᱰᱨᱚᱠᱥᱟᱭᱤᱰ ᱠᱟᱹᱫᱟ ᱛᱮ ᱠᱚᱯᱤ ᱯᱨᱮᱥᱤᱯᱤᱴᱮᱴ ᱮᱱᱟ; 96 ᱴᱟᱲᱟᱢ ᱨᱮ ᱮᱰᱥᱚᱨᱯᱥᱚᱱ 90% ᱠᱚᱢ ᱮᱱᱟ।",
+      palamuDirective: "ᱯᱟᱞᱟᱢᱩ ᱨᱮ ᱵᱷᱟᱵᱤᱥᱭᱚ ᱫᱟᱜ ᱯᱷᱤᱞᱴᱟᱨ ᱯᱨᱚᱯᱚᱥᱟᱞ ᱨᱮ ᱯᱷᱞᱳᱨᱟᱭᱤᱰ ᱮᱰᱥᱚᱨᱯᱥᱚᱱ ᱢᱟᱬᱟᱝ ᱠᱮᱴᱟᱞᱤᱴᱤᱠ ᱚᱠᱥᱤᱰᱮᱥᱚᱱ ᱟᱨ ᱢᱮᱝᱜᱮᱱᱤᱡ-ᱜᱨᱤᱱᱥᱮᱸᱰ ᱯᱨᱤ-ᱯᱷᱤᱞᱴᱟᱨ ᱡᱚᱨᱩᱨᱤ।",
+      palamuCost: "ᱯᱷᱤᱞᱰ ᱠᱷᱚᱨᱪ: ₹2,40,000",
+      khuntiTitle: "ᱠᱷᱩᱸᱴᱤ ᱨᱮ ᱞᱟᱠ ᱠᱚᱠᱩᱱ ᱞᱟᱹᱜᱤᱫ ᱤᱵᱷᱟᱯᱚᱨᱮᱴᱤᱵ ᱠᱩᱞᱤᱝ ᱪᱮᱢᱵᱟᱨ",
+      khuntiMeta: "ᱵᱟᱹᱲᱤᱡ ᱦᱚᱨ: ᱫᱟᱣ ᱯᱩᱨᱟᱹᱣ ᱛᱮ ᱯᱩᱸᱰ ᱪᱷᱟᱛᱨᱟ ᱜᱟᱫᱟᱜ।",
+      khuntiProblem: "ᱟᱹᱫᱤᱵᱟᱹᱥᱤ ᱞᱟᱠ ᱠᱚᱠᱩᱱ ᱥᱴᱚᱨᱮᱡ ᱞᱟᱹᱜᱤᱫ ᱢᱚᱱᱥᱩᱱ ᱨᱮ ᱠᱚᱢ ᱫᱟᱣ ᱡᱚᱛᱚ ᱚᱠᱛᱚ ᱞᱟᱹᱠᱛᱤ।",
+      khuntiFailure: "ᱯᱮᱥᱤᱵ ᱪᱮᱢᱵᱟᱨ ᱨᱮ ᱫᱟᱣ ᱯᱩᱨᱟᱹᱣ ᱛᱮ ᱯᱩᱸᱰ ᱪᱷᱟᱛᱨᱟ ᱜᱟᱫᱟᱜ ᱟᱨ ᱠᱚᱠᱩᱱ ᱜᱩᱱ ᱵᱟᱹᱲᱤᱡ ᱮᱱᱟ।",
+      khuntiDirective: "ᱢᱚᱱᱥᱩᱱ ᱨᱮ ᱟᱹᱫᱤᱵᱟᱹᱥᱤ ᱞᱟᱠ ᱞᱟᱹᱜᱤᱫ ᱯᱮᱥᱤᱵ ᱤᱵᱷᱟᱯᱚᱨᱮᱴᱤᱵ ᱠᱩᱞᱤᱝ ᱵᱟᱝ ᱪᱟᱞᱟᱜ-ᱟ; ᱮᱠᱴᱤᱵ ᱯᱷᱮᱡ-ᱪᱮᱸᱡ ᱰᱤᱦᱭᱩᱢᱤᱰᱤᱯᱷᱤᱠᱮᱥᱚᱱ ᱞᱟᱹᱠᱛᱤ।",
+      damodarTitle: "ᱫᱟᱢᱚᱫᱚᱨ ᱜᱟᱰᱟ ᱵᱮᱥᱤᱱ ᱨᱮ ᱮᱥᱤᱰ ᱢᱟᱭᱤᱱ ᱰᱨᱮᱱᱮᱡ ᱱᱤᱣᱴᱨᱟᱞᱟᱭᱤᱡᱮᱥᱚᱱ",
+      damodarMeta: "ᱜᱟᱹᱨᱵᱤᱲ: ᱵᱟᱹᱲᱛᱤ ᱦᱮᱵᱤ ᱢᱮᱴᱟᱞ ᱞᱤᱠᱮᱡ।",
+      damodarProblem: "ᱮᱥᱤᱰ ᱢᱟᱭᱤᱱ ᱰᱨᱮᱱᱮᱡ ᱫᱟᱢᱚᱫᱚᱨ ᱵᱮᱥᱤᱱ ᱨᱮ ᱦᱮᱵᱤ-ᱢᱮᱴᱟᱞ ᱞᱚᱰ ᱟᱹᱜᱩᱭᱮᱫ-ᱟ।",
+      damodarFailure: "ᱢᱟᱬᱟᱝ ᱱᱤᱣᱴᱨᱟᱞᱟᱭᱤᱡᱮᱥᱚᱱ ᱯᱟᱭᱞᱚᱴ ᱵᱮᱥᱤᱱ ᱛᱮ ᱵᱟᱹᱲᱛᱤ ᱟᱨ ᱵᱚᱫᱚᱞ ᱦᱮᱵᱤ-ᱢᱮᱴᱟᱞ ᱞᱤᱠᱮᱡ ᱵᱟᱝ ᱠᱟᱹᱵᱩ ᱫᱟᱲᱮᱞᱮᱫ-ᱟ।",
+      damodarDirective: "ᱫᱩᱭ ᱵᱚᱪᱷᱚᱨ ᱯᱮᱱ-ᱤᱱᱰᱤᱭᱟ ᱪᱮᱞᱮᱱᱡ ᱞᱟᱹᱜᱤᱫ IIT, IISc ᱟᱨ CSIR ᱞᱮᱵ ᱥᱟᱶ ᱢᱟᱨᱟᱝ ᱡᱟᱹᱛᱤᱭᱟᱹᱨᱤ ᱛᱷᱟᱶ ᱛᱮ ᱩᱪᱷᱟᱹᱱ ᱮᱱᱟ।",
       bannerBadge: "ᱯᱚᱱᱚᱛ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱦᱮᱯᱨᱟᱣ (ᱥᱮᱨᱢᱟ ᱨᱮ ᱢᱤᱫ ᱫᱷᱟᱣ)",
       bannerTitle: "📢 ᱥᱮᱨᱢᱟᱠᱤᱭᱟᱹ ᱦᱮᱯᱨᱟᱣ ᱞᱟᱹᱜᱤᱫ ᱵᱟᱹᱲᱤᱡ ᱠᱷᱟᱛᱟ ᱡᱷᱤᱡ ᱟᱠᱟᱱᱟ! ᱯᱟᱹᱴᱷᱩᱣᱟᱹ ᱠᱚ ᱱᱚᱣᱟ ᱠᱚ ᱱᱟᱣᱟ ᱛᱮ ᱵᱮᱱᱟᱣ ᱫᱟᱲᱮᱭᱟᱜ-ᱟᱠᱚ᱾",
       bannerDesc: "ᱢᱟᱬᱟᱝ ᱦᱟᱨᱰᱣᱮᱭᱟᱨ ᱟᱨ ᱢᱮᱬᱦᱮᱫ ᱵᱟᱹᱲᱤᱡ ᱠᱚ ₹᱒,᱕᱐,᱐᱐᱐ ᱜᱚᱲᱚ ᱯᱷᱟᱱᱰ ᱟᱨ ᱔ ᱠᱨᱮᱰᱤᱴ ᱥᱟᱶ ᱡᱤᱛᱠᱟᱹᱨ ᱥᱚᱞᱦᱮ ᱨᱮ ᱵᱚᱫᱚᱞ ᱢᱮ᱾",

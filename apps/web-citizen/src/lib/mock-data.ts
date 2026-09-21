@@ -61,7 +61,7 @@ export const openChallenges: OpenChallenge[] = [
     status: "OPEN_FOR_BIDS",
     skills: ["Environmental engineering", "Membrane filtration", "Field sensors"],
     timelineWeeks: 12,
-    xai: { labCapability: 92, facultyPatents: 88, geographicProximity: 74, trackRecord: 90, overallMatchScore: 94 },
+    xai: { domainExpertise: 94, facultyAvailability: 88, nablLab: 92, proximity: 74, campusCapacity: 86, trackRecord: 90, overallMatchScore: 94 },
   },
   {
     ticketId: "JAG-3891",
@@ -76,7 +76,7 @@ export const openChallenges: OpenChallenge[] = [
     status: "OPEN_FOR_BIDS",
     skills: ["Solar thermal", "Cold chain", "IoT metering"],
     timelineWeeks: 14,
-    xai: { labCapability: 86, facultyPatents: 72, geographicProximity: 81, trackRecord: 84, overallMatchScore: 88 },
+    xai: { domainExpertise: 88, facultyAvailability: 72, nablLab: 86, proximity: 81, campusCapacity: 80, trackRecord: 84, overallMatchScore: 88 },
   },
   {
     ticketId: "JAG-4022",
@@ -91,7 +91,7 @@ export const openChallenges: OpenChallenge[] = [
     status: "OPEN_FOR_BIDS",
     skills: ["Bio-process design", "Low-cost fabrication", "Behavioural ops"],
     timelineWeeks: 10,
-    xai: { labCapability: 78, facultyPatents: 64, geographicProximity: 77, trackRecord: 80, overallMatchScore: 79 },
+    xai: { domainExpertise: 79, facultyAvailability: 64, nablLab: 78, proximity: 77, campusCapacity: 74, trackRecord: 80, overallMatchScore: 79 },
   },
 ];
 

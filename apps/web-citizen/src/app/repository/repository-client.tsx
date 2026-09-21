@@ -1,69 +1,28 @@
 "use client";
-import { useMemo, useState } from "react";
-import Link from "next/link";
-import { Archive, Search, Trophy } from "lucide-react";
-import FailureCard from "./failure-card";
-import { filterFailures, type FailureTab } from "@/lib/failures";
-import { ALL_FAILURE_CASES } from "@/lib/failure-cases";
+
+import { useState } from "react";
+import { AlertTriangle, Archive, Building2, FlaskConical, IndianRupee, MapPin, Search, ShieldCheck, Trophy } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+
+type Profile = { id: string; domain: "water" | "agritech" | "energy"; district: string; title: string; meta: string; problem: string; failure: string; directive: string; escalated?: boolean };
 
 export default function RepositoryClient() {
   const { t } = useLanguage();
-  const [tab, setTab] = useState<FailureTab>("All Archives");
-  const [q, setQ] = useState("");
-  const list = useMemo(() => filterFailures(ALL_FAILURE_CASES, tab, q), [tab, q]);
-  const minor = ALL_FAILURE_CASES.filter((c) => c.severity === "MINOR").length;
-  const major = ALL_FAILURE_CASES.filter((c) => c.severity === "MAJOR").length;
+  const [query, setQuery] = useState("");
+  const [domain, setDomain] = useState<"all" | Profile["domain"]>("all");
+  const profiles: Profile[] = [
+    { id: "palamu", domain: "water", district: "Palamu", title: t.repository.palamuTitle, meta: t.repository.palamuMeta, problem: t.repository.palamuProblem, failure: t.repository.palamuFailure, directive: t.repository.palamuDirective },
+    { id: "khunti", domain: "agritech", district: "Khunti", title: t.repository.khuntiTitle, meta: t.repository.khuntiMeta, problem: t.repository.khuntiProblem, failure: t.repository.khuntiFailure, directive: t.repository.khuntiDirective },
+    { id: "damodar", domain: "energy", district: "Damodar River Basin", title: t.repository.damodarTitle, meta: t.repository.damodarMeta, problem: t.repository.damodarProblem, failure: t.repository.damodarFailure, directive: t.repository.damodarDirective, escalated: true },
+  ];
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  const visibleProfiles = profiles.filter((profile) => (domain === "all" || profile.domain === domain) && (!normalizedQuery || `${profile.title} ${profile.district} ${profile.problem} ${profile.failure} ${profile.directive}`.toLocaleLowerCase().includes(normalizedQuery)));
+  const filters = [{ key: "all" as const, label: t.repository.filterAll }, { key: "water" as const, label: t.repository.filterWater }, { key: "agritech" as const, label: t.repository.filterAgritech }, { key: "energy" as const, label: t.repository.filterEnergy }];
 
-  const tabOptions: { key: FailureTab; label: string }[] = useMemo(() => [
-    { key: "All Archives", label: t.repository.tabAll },
-    { key: "Minor Engineering Failures", label: t.repository.tabMinor },
-    { key: "Major State Challenges", label: t.repository.tabMajor },
-  ], [t.repository]);
-
-  return (
-    <div className="space-y-5">
-      {/* Prominent Annual Hackathon Callout Banner */}
-      <div className="rounded-2xl bg-gradient-to-r from-sky-500 via-sky-600 to-sky-600 p-5 sm:p-6 text-slate-950 shadow-md border-2 border-sky-400 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider bg-slate-950 text-sky-300 px-2.5 py-0.5 rounded-md">
-            <Trophy className="w-3.5 h-3.5 text-sky-400" />
-            <span>{t.repository.bannerBadge}</span>
-          </div>
-          <p className="text-sm sm:text-base font-black text-slate-950 leading-snug">
-            {t.repository.bannerTitle}
-          </p>
-          <p className="text-xs font-semibold text-slate-900/85">
-            {t.repository.bannerDesc}
-          </p>
-        </div>
-
-        <Link
-          href="/university/hackathon/annual"
-          className="shrink-0 inline-flex items-center space-x-2 bg-slate-950 hover:bg-slate-900 text-sky-300 hover:text-white font-black px-5 py-3.5 rounded-xl text-xs sm:text-sm shadow-md transition-all active:scale-95 whitespace-nowrap"
-        >
-          <span>{t.repository.bannerCta}</span>
-        </Link>
-      </div>
-
-      <div className="rounded-xl border bg-white p-5 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#2563EB]">{t.repository.tagline}</p>
-        <h1 className="mt-1 flex items-center gap-2 text-2xl font-bold"><Archive className="h-6 w-6 text-[#1E3A8A]" />{t.repository.title}</h1>
-        <p className="mt-1 text-sm text-slate-600">{ALL_FAILURE_CASES.length} {t.repository.archivesSummary} ({minor} minor / {major} major)</p>
-        <label className="mt-3 flex items-center gap-2 rounded-lg border px-3 py-2">
-          <Search className="h-4 w-4 text-slate-400" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t.repository.searchPlaceholder} className="w-full bg-transparent text-sm outline-none" />
-        </label>
-        <div className="mt-3 flex flex-wrap gap-2" role="tablist" aria-label="Failure filters">
-          {tabOptions.map((opt) => (
-            <button key={opt.key} role="tab" aria-selected={tab === opt.key} onClick={() => setTab(opt.key)} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${tab === opt.key ? "bg-[#0F172A] text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}>{opt.label}</button>
-          ))}
-        </div>
-      </div>
-      {list.length === 0 && <p role="status" className="rounded-xl border bg-white p-5 text-sm text-slate-600">{t.repository.noMatch}</p>}
-      <div className="grid gap-4 lg:grid-cols-2">
-        {list.map((c) => <FailureCard key={c.id} c={c} />)}
-      </div>
-    </div>
-  );
+  return <div className="mx-auto max-w-7xl space-y-7 pb-16">
+    <section className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-950 via-blue-800 to-cyan-700 p-6 text-white shadow-lg sm:p-9"><div className="flex max-w-4xl items-start gap-4"><div className="rounded-2xl bg-white/15 p-3"><Archive className="h-7 w-7 text-cyan-200" /></div><div><p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-200">{t.repository.eyebrow}</p><h1 className="mt-2 text-2xl font-black tracking-tight sm:text-4xl">{t.repository.title}</h1><p className="mt-3 max-w-3xl text-sm leading-relaxed text-blue-100 sm:text-base">{t.repository.subtitle}</p></div></div></section>
+    <section aria-label={t.repository.searchLabel} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"><div className="flex flex-col gap-3 lg:flex-row lg:items-center"><label className="flex min-h-12 flex-1 items-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-3 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100"><Search className="h-5 w-5 shrink-0 text-slate-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.repository.searchPlaceholder} className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400" /></label><div className="flex flex-wrap gap-2" role="group" aria-label={t.repository.filterLabel}>{filters.map((filter) => <button key={filter.key} type="button" onClick={() => setDomain(filter.key)} className={`min-h-11 rounded-xl px-3 text-xs font-bold transition-colors ${domain === filter.key ? "bg-blue-700 text-white" : "bg-slate-100 text-slate-700 hover:bg-blue-50"}`}>{filter.label}</button>)}</div></div></section>
+    <section className="grid gap-5 xl:grid-cols-3" aria-label={t.repository.profilesLabel}>{visibleProfiles.map((profile) => <article key={profile.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex flex-wrap items-center gap-2"><span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-800"><FlaskConical className="h-3.5 w-3.5" />{profile.domain === "water" ? t.repository.filterWater : profile.domain === "agritech" ? t.repository.filterAgritech : t.repository.filterEnergy}</span><span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500"><MapPin className="h-3.5 w-3.5" />{profile.district}</span></div>{profile.escalated && <div className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-1.5 text-[10px] font-black leading-tight text-amber-900"><Trophy className="h-3.5 w-3.5 shrink-0" />{t.repository.panIndiaBadge}</div>}<h2 className="mt-4 text-lg font-black leading-snug text-slate-950">{profile.title}</h2><p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-slate-600"><Building2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" />{profile.meta}</p><div className="mt-4 rounded-xl bg-slate-50 p-3 text-sm text-slate-700"><p className="font-bold text-slate-900">{t.repository.problemLabel}</p><p className="mt-1 leading-relaxed">{profile.problem}</p></div><div className="mt-3 rounded-xl border-l-4 border-red-600 bg-red-50 p-3"><p className="flex items-center gap-1.5 text-sm font-black text-red-900"><AlertTriangle className="h-4 w-4" />{t.repository.rootCauseLabel}</p><p className="mt-1 text-sm leading-relaxed text-red-950">{profile.failure}</p></div><div className="mt-3 rounded-xl border-l-4 border-emerald-600 bg-emerald-50 p-3"><p className="flex items-center gap-1.5 text-sm font-black text-emerald-900"><ShieldCheck className="h-4 w-4" />{t.repository.directiveLabel}</p><p className="mt-1 text-sm leading-relaxed text-emerald-950">{profile.directive}</p></div>{profile.id === "palamu" && <p className="mt-4 flex items-center gap-1.5 text-xs font-bold text-slate-600"><IndianRupee className="h-4 w-4 text-blue-700" />{t.repository.palamuCost}</p>}</article>)}</section>
+    {visibleProfiles.length === 0 && <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">{t.repository.noMatch}</p>}
+  </div>;
 }
