@@ -10,6 +10,7 @@ import { quorumRouter } from './feedback-quorum/quorum.controller';
 import { bidsRouter } from './bids/bids.controller';
 import { projectsRouter } from './projects/projects.controller';
 import { creditsRouter } from './credits/credits.controller';
+import { blueprintsRouter } from './blueprints/blueprints.controller';
 
 export const app = express();
 const port = Number(process.env.PORT || 5000);
@@ -44,6 +45,7 @@ app.use('/api/v1/quorum', quorumRouter);
 app.use('/api/v1/bids', bidsRouter);
 app.use('/api/v1/projects', projectsRouter);
 app.use('/api/v1/credits', creditsRouter);
+app.use('/api/v1/blueprints', blueprintsRouter);
 
 app.get('/api/v1/test-all', async (_request: Request, response: Response) => {
 	const client = await pool.connect();

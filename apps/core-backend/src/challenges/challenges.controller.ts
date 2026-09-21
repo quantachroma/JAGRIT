@@ -6,6 +6,7 @@ import {
 	hashPhoneNumber,
 	blurPublicLocation,
 } from './challenges.service';
+import { dedupScore, embed, triageClassify } from '../ai/ai.service';
 
 export const challengesRouter = Router();
 
@@ -52,8 +53,17 @@ challengesRouter.post('/submit', async (request: Request, response: Response) =>
 			panchayat,
 			phoneHash: hashPhoneNumber(phone),
 		};
+		const [triage, embedding, deduplication] = await Promise.all([
+			triageClassify({ title, description }),
+			embed({ text: `${title}\n${description}` }),
+			dedupScore({ title, description, lat, lon }),
+		]);
 		const result = await createOrDeduplicateChallenge(submission);
-		response.status(result.is_duplicate ? 200 : 201).json({ ...result, public_location: blurPublicLocation(lat, lon) });
+		response.status(result.is_duplicate ? 200 : 201).json({
+			...result,
+			public_location: blurPublicLocation(lat, lon),
+			ai: { triage: triage.data, embedding: embedding.data, deduplication: deduplication.data, fallback: triage.fallback || embedding.fallback || deduplication.fallback },
+		});
 	} catch (error) {
 		console.error('Challenge submission failed:', error);
 		response.status(500).json({ error: 'Unable to submit challenge.' });

@@ -4,7 +4,20 @@
  * before calling `getSupabaseClient` in a live environment.
  */
 export interface SupabaseClientLike {
-	from(table: string): unknown;
+	from(table: string): SupabaseQueryLike;
+}
+
+export interface SupabaseResult<T> {
+	data: T | null;
+	error: { message: string } | null;
+}
+
+export interface SupabaseQueryLike extends PromiseLike<SupabaseResult<unknown>> {
+	select(columns?: string): SupabaseQueryLike;
+	insert(values: Record<string, unknown> | Record<string, unknown>[]): SupabaseQueryLike;
+	update(values: Record<string, unknown>): SupabaseQueryLike;
+	eq(column: string, value: unknown): SupabaseQueryLike;
+	single(): SupabaseQueryLike;
 }
 
 type CreateClient = (url: string, key: string) => SupabaseClientLike;
