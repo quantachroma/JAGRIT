@@ -7,6 +7,9 @@ import { evaluatorRouter } from './evaluator/evaluator.controller';
 import { hackathonRouter } from './hackathon/hackathon.controller';
 import { escrowRouter } from './escrow/escrow.controller';
 import { quorumRouter } from './feedback-quorum/quorum.controller';
+import { bidsRouter } from './bids/bids.controller';
+import { projectsRouter } from './projects/projects.controller';
+import { creditsRouter } from './credits/credits.controller';
 
 export const app = express();
 const port = Number(process.env.PORT || 5000);
@@ -38,6 +41,9 @@ app.use('/api/v1/evaluator', evaluatorRouter);
 app.use('/api/v1/hackathon', hackathonRouter);
 app.use('/api/v1/escrow', escrowRouter);
 app.use('/api/v1/quorum', quorumRouter);
+app.use('/api/v1/bids', bidsRouter);
+app.use('/api/v1/projects', projectsRouter);
+app.use('/api/v1/credits', creditsRouter);
 
 app.get('/api/v1/test-all', async (_request: Request, response: Response) => {
 	const client = await pool.connect();
