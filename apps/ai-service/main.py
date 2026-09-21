@@ -1,40 +1,38 @@
-"""
-JAGRIT AI Microservice — FastAPI Application Entrypoint
+"""JAGRIT AI Microservice - FastAPI application entrypoint."""
 
-Role 4 (Applied AI/ML & Ingestion Microservices Lead)
-Stage 0: Baseline scaffolding, CORS, modular routing, health & stub endpoints.
-"""
+import logging
+import traceback
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from core.config import settings
 from routers import (
     asr_routes,
-    vision_routes,
-    triage_routes,
+    dedup_routes,
     deduplication_routes,
     quorum_nlp_routes,
+    sentiment_routes,
+    timeline_routes,
+    triage_routes,
+    vision_routes,
+    whatsapp_routes,
 )
 
+logger = logging.getLogger("jagrit.ai.main")
+logging.basicConfig(level=logging.INFO)
+
 app = FastAPI(
-    title="JAGRIT-AI-Core",
+    title="Jagrit AI Service",
     description="Applied AI/ML & Ingestion Microservices for the JAGRIT platform (DHTE Jharkhand).",
     version="0.1.0",
 )
 
-# --- CORS Middleware ---
-# Allow the citizen PWA, institution portal, and core backend to call
-# this microservice directly during local development.
-ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:5000",
-]
-
+# TODO(security): restrict CORS before production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,29 +42,43 @@ app.add_middleware(
 @app.on_event("startup")
 async def warm_up_engine():
     print("JAGRIT AI Engine warmed up and demo-ready on Port 8000")
-    
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled exception on {request.method} {request.url.path}: {exc}")
+    logger.error(traceback.format_exc())
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Internal server error"},
+    )
+
+
 @app.get("/health")
 async def health():
-    """Health check endpoint used by verification scripts and orchestration."""
     return {
         "status": "ok",
-        "service": "JAGRIT-AI-Core",
-        "mock_mode": settings.MOCK_INFERENCE,
+        "mock_mode": settings.MODEL_MOCK_MODE,
+        "device": settings.MODEL_DEVICE,
     }
+
+
+app.include_router(asr_routes.router, prefix="/api/v1/ai", tags=["asr"])
+app.include_router(vision_routes.router, prefix="/api/v1/ai", tags=["vision"])
+app.include_router(triage_routes.router, prefix="/api/v1/ai", tags=["triage"])
+app.include_router(dedup_routes.router, prefix="/api/v1/ai", tags=["dedup"])
+app.include_router(timeline_routes.router, prefix="/api/v1/ai", tags=["timeline"])
+app.include_router(sentiment_routes.router, prefix="/api/v1/ai", tags=["sentiment"])
+app.include_router(whatsapp_routes.router, prefix="/api/v1/webhooks", tags=["whatsapp"])
+app.include_router(
+    deduplication_routes.router,
+    prefix="/api/v1/ai",
+    tags=["deduplication"],
+)
+app.include_router(quorum_nlp_routes.router, prefix="/api/v1/ai", tags=["quorum-sentiment"])
 
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="0.0.0.0", port=settings.PORT, reload=True)
-
-# In apps/ai-service/main.py
-app.include_router(asr_routes.router, prefix="/api/v1/ai")
-app.include_router(vision_routes.router, prefix="/api/v1/ai")
-app.include_router(triage_routes.router, prefix="/api/v1/ai")
-app.include_router(deduplication_routes.router, prefix="/api/v1/ai")
-app.include_router(quorum_nlp_routes.router, prefix="/api/v1/ai")
-
-# Also keep root aliases for backward compatibility if you like:
-app.include_router(triage_routes.router)
-app.include_router(deduplication_routes.router)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
