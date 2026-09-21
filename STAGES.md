@@ -1,281 +1,198 @@
-# JAGRIT — Master Autonomous Execution Matrix & Stage Checklist
-> **Authority:** Department of Higher & Technical Education, Government of Jharkhand  
-> **Framework:** Smart Education (NEP 2020) | PRD v1.0.0-PROD | SIH-26043  
-> **Notice for All Members (M1–M6):** Locate your assigned role and current phase. Work strictly within your assigned jail directory (Rule 1). Do not modify shared contracts without M6 approval (Rule 3). Verify your deliverables using the specified verification commands before marking checkboxes `[x]`.
+# JAGRIT — Master Engineering Task Checklist (v14.1.0-PROD)
+
+> **Managed by M6 on the `dev` branch.** M1-M5 report finished tasks in their **PR description** (template in `AUDIT.md`, Rule 6). M6 ticks the box on merge.
+> **Rules:** `AUDIT.md` | **Decisions:** `DECISION.md` (ADR-001 to ADR-021) | **Values:** PRD v14.1 Appendix A
+> **Legend:** `[ ]` not started | `[~]` stub or mock merged (contract works, real logic pending) | `[x]` done and verified with the command shown.
+> **Task IDs:** `P<phase>-M<member>-<n>` (for example `P1-M4-7` = Sprint Phase 1, member 4, task 7). *Sprint Phase* means the 24-hour schedule below, not Bidding Phase 1 or 2.
+> **Note:** the `[x]` and `[~]` marks on M5's tasks come from the titles of merged PRs #1 and #4. M5 should confirm them in the next PR.
 
 ---
 
-## Global Sprint Roadmap (Phases 0 – 4)
+## Sprint Clock (24 hours) and Phase Gates
 
-```
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│ PHASE 0: BASELINE SCAFFOLDING, SHARED CONTRACTS & DATABASE DDL (Hours 0 – 4)     │
-│ • Cloud Supabase PostgreSQL + PostGIS + pgvector DDL locked                       │
-│ • Shared contracts @jagrit/contracts frozen                                      │
-│ • Directory jailing and monorepo build verified                                   │
-└─────────────────────────────────────────┬─────────────────────────────────────────┘
-                                          │
-                                          ▼
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│ PHASE 1: INGESTION, AI TRIAGE & GEOSPATIAL DEDUPLICATION (Hours 4 – 12)           │
-│ • Multilingual Citizen Intake (Audio, Image, GPS) & WhatsApp Simulator            │
-│ • AI Microservices: Whisper/Bhashini ASR, ViT Defect Detection, DeBERTa Triage   │
-│ • PostGIS 500m Deduplication Radar & Incident Clustering (D >= 0.72)              │
-└─────────────────────────────────────────┬─────────────────────────────────────────┘
-                                          │
-                                          ▼
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│ PHASE 2: DYNAMIC HACKATHON, BIDDING & TRANCHE ESCROW (Hours 12 – 22)             │
-│ • 10-Day Bidding Window & Accelerated 72h Community Upvoting                      │
-│ • 3-Stage Hackathon Arena (Ideation -> Bench Prototype -> DPR & BOM Table)        │
-│ • Milestone-Based Escrow Release Ledger (30% -> 40% -> 30%)                       │
-└─────────────────────────────────────────┬─────────────────────────────────────────┘
-                                          │
-                                          ▼
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│ PHASE 3: DUAL-LOCK QUORUM, NEP CREDITS & BLUEPRINT CLONING (Hours 22 – 30)       │
-│ • 45-Day Maturation Buffer & Early Breakdown Alarm (3-5 alerts trigger SLA)       │
-│ • Dual-Lock Quorum: 4/5 Designated Trustees + >=70% Citizen Quorum               │
-│ • NEP 2020 Academic Credit Banking (30 hrs = 1 Credit to APAAR / DigiLocker)     │
-│ • 1-Click Solution Blueprint Cloning Engine & R&D Failure Repository              │
-└─────────────────────────────────────────┬─────────────────────────────────────────┘
-                                          │
-                                          ▼
-┌───────────────────────────────────────────────────────────────────────────────────┐
-│ PHASE 4: FULL SYSTEM INTEGRATION, CROSS-AUDIT & LIVE PILOT DEMO (Hours 30 – 36)   │
-│ • Cross-role automated end-to-end user journeys (Citizen -> HEI -> Trustee)       │
-│ • Zero-console-error bug bash & performance optimization                          │
-│ • Production seeding with authentic Jharkhand field data                         │
-└───────────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Member Role Assignments & Directory Jails
-
-| Member | Assigned Role | Directory Jail (Strictly Scoped) | Core Deliverables |
+| Phase | Hours | Goal | Gate (must be true before the next phase) |
 |:---|:---|:---|:---|
-| **M1** | Citizen Frontend Lead | `apps/web-citizen/src/app/` (`report`, `whatsapp`, `home`), `apps/web-citizen/src/components/`, `apps/web-citizen/public/locales/` | Multilingual Report Studio, WhatsApp Simulator, Geo-picker |
-| **M2** | University Portal Lead | `apps/web-citizen/src/app/university/`, `apps/web-institution/` | Discovery Feed, XAI Radar, 3-Stage Hackathon, DPR Builder |
-| **M3** | Admin & Progress Lead | `apps/web-citizen/src/app/` (`progress`, `admin`, `repository`) | State-wide Progress Tracker, Failure Repo, Blueprint Cloner |
-| **M4** | Core Backend Lead | `apps/core-backend/` | PostGIS Spatial Engine, Deduplication, Escrow, Quorum API |
-| **M5** | AI Service Lead | `apps/ai-service/` | Whisper/Bhashini ASR, ViT Laser Scan, DeBERTa Triage, pgvector |
-| **M6** | Lead DBA & Integrator | `packages/` (`db-schema/`, `contracts/`, `ui-kit/`), Root Governance | Supabase DDL, Shared Contracts, Monorepo Build, Audit Guard |
+| **P0** | 0-2 | Database and contracts lockdown | `pnpm run build` passes; contracts frozen; leaked keys rotated; health routes return 200 |
+| **P1** | 2-8 | Independent module build (each member works against contracts and mocks) | Each member's unit tests or screens pass; two reports within 100 m merge in the M4 test |
+| **P2** | 8-14 | Engine wiring and database fixtures | M4 and M5 talk to Supabase and to each other; the four fixtures are seeded |
+| **P3** | 14-20 | Full system un-mocking | `/report` creates a real ticket; all three quorum outcomes (14A/14B/14C) pass |
+| **P4** | 20-24 | Production build gate and demo | Zero TypeScript and hydration errors; end-to-end demo journey works |
+
+**Members:** M1 Citizen Web | M2 University Portal | M3 Govt, CSR, Progress & Repository | M4 Core Backend & Escrow | M5 AI/ML & WhatsApp Webhook | M6 DBA, Integrator & Demo.
 
 ---
 
-## PHASE 0: Baseline Infrastructure, Contracts & Database DDL
-*Goal: Establish unified Supabase schema, frozen TypeScript contracts, and green monorepo build.*
+## P0: Baseline & Contracts Lockdown (Hours 0-2)
 
-### Member 1 (Citizen Frontend Lead)
-- [ ] **Task 1.0.1:** Verify Next.js PWA structure inside `apps/web-citizen/` with Tailwind CSS and Lucide React.
-- [ ] **Task 1.0.2:** Ensure multilingual dictionary support in `public/locales/` (`hi.json`, `sat.json`, `en.json`).
-- [ ] **Task 1.0.3:** Scaffold global state wrapper for citizen session, offline caching, and location provider.
-- [ ] **Task 1.0.4:** Configure mock submission handlers targeting typed `@jagrit/contracts`.
-- *Verification Command:* `pnpm --filter web-citizen run build`
+### M6
+- [ ] **P0-M6-1** Deploy Supabase DDL in `packages/db-schema/schema.sql`: PostGIS, `vector(1536)`, RLS, enums for every state machine. Tables cover at least: users, institutions (with `h_score`), challenges, incident_clusters, upvotes, bids, hackathon_rounds, seed_allowances, projects, tranches, project_trustees, votes, breakdown_alarms, h_score_events, credits, verified_blueprints, rnd_failure_repository, lab_bookings, csr_pledges, notifications.
+- [ ] **P0-M6-2** Create Storage buckets `challenge-media`, `dpr-docs`, `governance-certs`.
+- [ ] **P0-M6-3** Freeze `packages/contracts` v1.1: `ChallengePayload`, `ClusterIncident`, `PriorityScore`, `Bid`, `XAISpiderScores` (6 axes), `EscrowTranche`, `TrusteeVote` (5 trustee roles), `BreakdownAlarm`, `CreditPayload`, `Blueprint`. Add `rules.ts` with the canonical constants from `DECISION.md`.
+- [ ] **P0-M6-4** **Security:** rotate every credential that was ever in `.env.example` (Supabase DB password, anon and service-role keys, JWT secret, Google AI key). Replace `.env.example` with placeholders only.
+- [ ] **P0-M6-5** Protect `dev`, add `CODEOWNERS` and the PR template, turn on secret scanning (`AUDIT.md`, section 5). Remove `apps/web-institution` if it exists.
+- [ ] **P0-M6-6** Run the root build and commit the baseline to `dev`.
+- *Verify:* `pnpm run build`
 
-### Member 2 (University Portal Lead)
-- [ ] **Task 2.0.1:** Scaffold academic layout with persona switcher (`Faculty PI`, `Student Lead`, `Industry Mentor`).
-- [ ] **Task 2.0.2:** Initialize university navigation hierarchy and challenge discovery feed.
-- [ ] **Task 2.0.3:** Set up mock JSON payloads for institutional capability matching and radar metrics.
-- *Verification Command:* `pnpm --filter web-institution run build`
+### M1
+- [ ] **P0-M1-1** Pull `dev`; confirm `apps/web-citizen` builds with Tailwind and Lucide.
+- [ ] **P0-M1-2** Add locale files `public/locales/{en,hi,sat}.json` and a language switcher.
+- [ ] **P0-M1-3** Add providers for citizen session, offline queue and location.
+- *Verify:* `pnpm --filter web-citizen run build`
 
-### Member 3 (Admin, Progress & Repository Lead)
-- [ ] **Task 3.0.1:** Scaffold state-wide progress overview dashboard route at `/progress`.
-- [ ] **Task 3.0.2:** Scaffold R&D Failure Knowledge Base portal layout at `/repository`.
-- [ ] **Task 3.0.3:** Initialize administrative governance layout and audit panel at `/admin`.
-- *Verification Command:* `node web/node_modules/typescript/bin/tsc --noEmit --project apps/web-citizen/tsconfig.json`
+### M2
+- [ ] **P0-M2-1** Scaffold `src/app/university/` layout with a persona switcher (Faculty PI, Student Lead, Industry Mentor) and an exported `UniversityDashboard`.
+- [ ] **P0-M2-2** Add mock JSON for the bidding feed and the 6-axis radar, typed from contracts.
+- *Verify:* `pnpm --filter web-citizen run build`
 
-### Member 4 (Core Backend Lead)
-- [ ] **Task 4.0.1:** Initialize backend application in `apps/core-backend/` with Supabase PostgreSQL client.
-- [ ] **Task 4.0.2:** Configure environment variables (`DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) and health check.
-- [ ] **Task 4.0.3:** Scaffold modular routing structure (`/challenges`, `/clusters`, `/escrow`, `/trustees`).
-- *Verification Command:* `pnpm --filter core-backend run build`
+### M3
+- [ ] **P0-M3-1** Scaffold routes `/progress`, `/repository`, `/admin` (Evaluator), `/industry` (CSR), `/samvaad`.
+- [ ] **P0-M3-2** Export `EvaluatorDashboard` and `IndustryDashboard`; add mock data for the tranche ledger, CSR pool and 24-district table.
+- *Verify:* `pnpm --filter web-citizen exec tsc --noEmit`
 
-### Member 5 (AI Service Lead)
-- [ ] **Task 5.0.1:** Configure Python virtual environment and dependencies in `apps/ai-service/`.
-- [ ] **Task 5.0.2:** Initialize FastAPI application with CORS headers for ports 3000, 3001, and 5000.
-- [ ] **Task 5.0.3:** Implement `/health` endpoint returning operational status of AI model pipelines.
-- *Verification Command:* `curl -s http://localhost:8000/health || echo "FastAPI scaffolded"`
+### M4
+- [ ] **P0-M4-1** Initialise the NestJS app in `apps/core-backend/` (port 5000) with the Supabase client, env validation and a standard error format.
+- [ ] **P0-M4-2** Add `/health`, CORS (localhost 3000 and 5000) and module folders: `challenges`, `evaluator`, `bids`, `hackathon`, `escrow`, `projects`, `credits`, `blueprints`.
+- [ ] **P0-M4-3** Stub every planned route with typed mock data so M1-M3 can integrate early.
+- *Verify:* `pnpm --filter core-backend run build` and `curl -s http://localhost:5000/health`
 
-### Member 6 (Lead DBA & Systems Integrator)
-- [ ] **Task 6.0.1:** Lock `AUDIT.md` with the 5 Golden Rules of Conflict-Free Monorepo Development.
-- [ ] **Task 6.0.2:** Record architectural decisions ADR-001 through ADR-010 in `DECISION.md`.
-- [ ] **Task 6.0.3:** Deploy comprehensive Supabase DDL schema with PostGIS, pgvector, and RLS in `packages/db-schema/schema.sql`.
-- [ ] **Task 6.0.4:** Freeze shared universal contracts (`ChallengePayload`, `ClusterIncident`, `TrusteeVote`, `EscrowTranche`, `XAISpiderScores`) in `packages/contracts/src/index.ts`.
-- [ ] **Task 6.0.5:** Execute full monorepo compilation and commit baseline to `dev`.
-- *Verification Command:* `pnpm run build`
+### M5
+- [x] **P0-M5-1** Python venv, `requirements.txt`, FastAPI app with CORS and modular routers.
+- [x] **P0-M5-2** `/health` returning a `mock_mode` flag.
+- [ ] **P0-M5-3** Move **all** AI routes under `/api/v1/ai/*` (`embed` and `copilot-query` currently have no prefix); keep old paths as aliases only. Embedding dimension must be 1536.
+- [ ] **P0-M5-4** Add `apps/ai-service/core/rules.py` mirroring the constants in `DECISION.md`.
+- *Verify:* `curl -s http://localhost:8000/health` and `curl -s -X POST http://localhost:8000/api/v1/ai/embed -H "Content-Type: application/json" -d '{"text":"test"}'`
 
----
-
-## PHASE 1: Ingestion, AI Triage & Geospatial Deduplication
-*Goal: Multimodal reporting (App/WhatsApp), AI defect scanning & triage, and PostGIS 500m deduplication.*
-
-### Member 1 (Citizen Frontend Lead)
-- [ ] **Task 1.1.1:** Build Problem Submission Studio (`/report`): client-side media compression ($\le 500\text{ KB}$), audio recorder, and GPS coordinate picker.
-- [ ] **Task 1.1.2:** Build WhatsApp Ingestion Simulator (`/whatsapp-simulator`): simulated voice note, photo attachment, and location beacon.
-- [ ] **Task 1.1.3:** Build animated CV Laser Scanner component rendering visual bounding boxes and defect confidence labels.
-- *Verification Command:* Verify interactive submission flow on `/report` and `/whatsapp-simulator`.
-
-### Member 2 (University Portal Lead)
-- [ ] **Task 2.1.1:** Build Institutional Auth Screen with Edu-ID / AISHE institutional credentials.
-- [ ] **Task 2.1.2:** Build Challenge Discovery Feed with domain tags, urgency indicators, and grant size pills.
-- [ ] **Task 2.1.3:** Implement interactive `XAISpiderChart` (Labs, Patents, Proximity, Track Record, Faculty).
-- [ ] **Task 2.1.4:** Build Challenge Acceptance Modal (Single HEI Bid vs Joint Consortium).
-- *Verification Command:* Verify spider chart renders dynamically on challenge discovery page.
-
-### Member 3 (Admin, Progress & Repository Lead)
-- [ ] **Task 3.1.1:** Build Statewide Problem Map view with live clustering pins across Jharkhand districts.
-- [ ] **Task 3.1.2:** Implement HITL (Human-in-the-Loop) Evaluator Triage Queue interface.
-- [ ] **Task 3.1.3:** Build Evaluator Dispatch Action: Approve for University Bidding vs Reroute to ULB/JharSewa.
-- *Verification Command:* Verify HITL queue renders pending tickets with routing controls.
-
-### Member 4 (Core Backend Lead)
-- [ ] **Task 4.1.1:** Implement `POST /api/v1/challenges/submit` supporting multipart media, voice URLs, and GeoJSON coordinates.
-- [ ] **Task 4.1.2:** Implement PostGIS 500-meter spatial proximity query (`ST_DWithin(location, ..., 500)`).
-- [ ] **Task 4.1.3:** Implement Spatio-Temporal Deduplication ($D \ge 0.72$) logic and incident cluster merging.
-- [ ] **Task 4.1.4:** Build Ticket Upvote Engine: Increment upvotes for clustered incidents without duplicating tickets.
-- *Verification Command:* `curl -X POST http://localhost:5000/api/v1/challenges/submit -d "{\"title\":\"Test\"}"`
-
-### Member 5 (AI Service Lead)
-- [ ] **Task 5.1.1:** Implement `POST /api/v1/ai/transcribe`: Whisper/Bhashini ASR pipeline for Hindi, Santhali, and English.
-- [ ] **Task 5.1.2:** Implement `POST /api/v1/ai/defect-scan`: Vision Transformer (ViT) returning bounding box coordinates and defect classification.
-- [ ] **Task 5.1.3:** Implement `POST /api/v1/ai/triage-classify`: Zero-shot DeBERTa-v3 separating Type A (Civic Routine) from Type B (Applied R&D).
-- [ ] **Task 5.1.4:** Implement `POST /api/v1/ai/embed`: Generate 1536-dimensional semantic vector embeddings.
-- *Verification Command:* Post sample audio/image to `/api/v1/ai/transcribe` and verify transcription output.
-
-### Member 6 (Lead DBA & Systems Integrator)
-- [ ] **Task 6.1.1:** Implement and verify PostGIS spatial indexing (`GIST`) on `challenges` and `incident_clusters`.
-- [ ] **Task 6.1.2:** Implement pgvector HNSW index for high-speed cosine distance search (`cosine_distance < 0.28`).
-- [ ] **Task 6.1.3:** Run integration test verifying composite deduplication scoring between M4 backend and M5 AI embeddings.
-- *Verification Command:* Execute database spatial vector query test script.
+**P0 gate:** build green, contracts frozen, keys rotated.
 
 ---
 
-## PHASE 2: Dynamic Hackathon, Bidding & Tranche Escrow
-*Goal: 10-day bidding window, accelerated 72h upvoting, 3-stage hackathon arena, and milestone escrow ledger.*
+## P1: Independent Module Build (Hours 2-8)
 
-### Member 1 (Citizen Frontend Lead)
-- [ ] **Task 1.2.1:** Implement Spatial Deduplication Radar component rendering pulsing 500m radius ring and matched cluster incidents.
-- [ ] **Task 1.2.2:** Build Accelerated 72h Community Upvoting Widget with progress bar and countdown indicator.
-- [ ] **Task 1.2.3:** Build Samvaad Community Discussion Feed (`/samvaad`) with grassroots thread participation.
-- *Verification Command:* Verify 500m radar and upvoting components in citizen view.
+### M1 (Citizen)
+- [ ] **P1-M1-1** Namaste typographic splash reveal and a clean navbar with a top-right WhatsApp button.
+- [ ] **P1-M1-2** Homepage editorial hero carousel and 3D card flips.
+- [ ] **P1-M1-3** `/report` studio: photo/video capture, audio recorder with live waveform, Leaflet GPS picker, client-side compression to ≤ 500 KB WebP, offline queue, laser-scan bounding-box animation.
+- [ ] **P1-M1-4** `/whatsapp-simulator`: voice note, photo, location beacon, instant ticket and dedup confirmation card.
+- [ ] **P1-M1-5** `CitizenDashboard`: action bar, 5-node grievance stepper, Hot Challenges feed (distance, thumbnail, category, +1 upvote), pulsing 500 m radar map.
+- *Verify:* walk the flow on `/report` and `/whatsapp-simulator`; `pnpm --filter web-citizen run build`
 
-### Member 2 (University Portal Lead)
-- [ ] **Task 2.2.1:** Implement 10-Day Bidding Countdown Clock with dynamic status flags.
-- [ ] **Task 2.2.2:** Build Hackathon Round 1 Studio: 5-slide pitch deck upload (PDF) and structured approach narrative.
-- [ ] **Task 2.2.3:** Build Hackathon Round 2 Studio: Industry/CSR mentor scheduling and bench telemetry logger.
-- [ ] **Task 2.2.4:** Build Hackathon Round 3 Studio: Detailed Project Report (DPR) Builder with dynamic Bill of Materials (BOM) calculator.
-- [ ] **Task 2.2.5:** Integrate Student R&D Copilot side-drawer suggesting historical failure pitfalls.
-- *Verification Command:* Test end-to-end DPR form submission and BOM calculation validation.
+### M2 (University)
+- [ ] **P1-M2-1** Institutional header: verified lab badges, active grants total, H-Score.
+- [ ] **P1-M2-2** Bidding feed: title, domain, match score, step-based countdown (3/5/7/10 days), Solo advantage badge, `Accept Solo Challenge` vs `Propose Joint Consortium`.
+- [ ] **P1-M2-3** XAI **6-axis** spider chart (Domain Expertise 25, Faculty Availability 20, NABL Lab 20, Proximity 15, Campus Capacity 10, Track Record 10).
+- [ ] **P1-M2-4** 3-stage hackathon workspace: Round 1 (pitch + BOM, ₹0), Round 2 (telemetry, video, mentor notes, ₹20,000 seed allowance), Round 3 (DPR builder with BOM table: Part, Source, Unit Cost, Qty, Total, Spares Escrow of 12 or 24 months).
+- [ ] **P1-M2-5** NEP 2020 credit widget (30 h = 1 credit, APAAR sync status) and the Lab Equipment Sharing tab (SEM, XRD, Gas Chromatography).
+- *Verify:* spider chart shows 6 axes; BOM totals compute; `pnpm --filter web-citizen run build`
 
-### Member 3 (Admin, Progress & Repository Lead)
-- [ ] **Task 3.2.1:** Build Escrow Fund Ledger interface displaying state innovation pool vs corporate CSR allocations.
-- [ ] **Task 3.2.2:** Build Jury Evaluation Panel for Round 3 physical defense scoring (Feasibility 40%, Sustainability 30%, Cost 30%).
-- [ ] **Task 3.2.3:** Implement Anti-Speculation Monitor displaying HEI Honor Scores (H-score) and penalty deductions.
-- *Verification Command:* Verify jury scoring form and live recalculation of ranking weights.
+### M3 (Govt, CSR, Progress & Repository)
+- [ ] **P1-M3-1** `/progress`: public 6-step lifecycle explainer, 4 macro counters, active pipeline cards, 24-district table.
+- [ ] **P1-M3-2** 1-Click Solution Blueprint Cloning modal on resolved projects.
+- [ ] **P1-M3-3** `/industry`: CSR pledge slider (₹50,000 to ₹10 Lakhs, 1:1 match) with **JAGRIT CSR Contribution Certificate** button (not a tax receipt), mentorship hub, ROFR catalog.
+- [ ] **P1-M3-4** `EvaluatorDashboard`: AI Triage Approval Queue (hides high-confidence Type A), Milestone Escrow Gatekeeper (Tranche 2 and 3 `Authorize`), State Mandate console.
+- [ ] **P1-M3-5** `/repository`: failure cards with problem, attempt, root cause, anti-repetition directives.
+- *Verify:* queue renders pending tickets with both action buttons; `pnpm --filter web-citizen exec tsc --noEmit`
 
-### Member 4 (Core Backend Lead)
-- [ ] **Task 4.2.1:** Implement Bidding Window State Engine: transitions to `DIRECT_RND` or `DYNAMIC_HACKATHON`.
-- [ ] **Task 4.2.2:** Implement Tranche 1 Escrow Disbursement API (30% released upon approved DPR).
-- [ ] **Task 4.2.3:** Implement Tranche 2 Escrow Disbursement API (40% released upon NABL lab certificate verification).
-- [ ] **Task 4.2.4:** Implement Tranche 3 Escrow Disbursement API (30% released upon PESA Gram Sabha NOC upload).
-- [ ] **Task 4.2.5:** Implement automated H-score penalty trigger (-5 points for abandoned bids).
-- *Verification Command:* Run automated escrow transition test suite.
+### M4 (Core Backend & Escrow): pure logic with unit tests, using mocks for the database and the AI service
+- [ ] **P1-M4-1** `POST /api/v1/challenges/submit` (multipart: media, voice, lat/lon, source) with DTO validation, HMAC-SHA-256 phone hashing and 50 m coordinate blurring.
+- [ ] **P1-M4-2** Priority score service (ADR-006): preliminary (upvotes = 0) and final MPS, S-value rules table in `rules.ts`.
+- [ ] **P1-M4-3** Upvote window scheduler (0/12/24/48/72 h, auto-close at 25 votes in 24 h) and vote rules (1 per hashed phone, 30 km geofence).
+- [ ] **P1-M4-4** Dedup pipeline (ADR-004): database gate, call M5 `dedup-score`, merge (+1 upvote) or create a new ticket; recurring-breakdown rule for Δt > 45 days.
+- [ ] **P1-M4-5** Triage routing and `/api/v1/evaluator` endpoints: high-confidence Type A to the ULB, Type B and low confidence to the queue, approve/reroute, grant ceiling.
+- [ ] **P1-M4-6** Bidding state engine (window by final MPS; `DIRECT_RND` / `DYNAMIC_HACKATHON` / escalation) and the hackathon round state machine with tier durations, exam buffer and the ₹20,000 seed-allowance ledger.
+- [ ] **P1-M4-7** Escrow state machine (30/40/30): T1 on kickoff, T2 needs NABL certificate plus Evaluator authorization, T3 needs Gram Sabha NOC (PESA NOC in Scheduled Areas) plus O&M handover plus spares kit; idempotent, audit-logged; SLA monitor (+7/+14/+30 days) and drawdown freeze.
+- [ ] **P1-M4-8** H-score penalty daemon (-5 per ignored Phase 1 invite, invited and match > 80%, floor 0) and the escalation daemon (Stages 1-4, +25% with scope expansion).
+- *Verify:* `pnpm --filter core-backend test` covers: T2 refused without certificate, T3 refused without NOC, bid outcomes for 0, 1 and 2 bids, penalty floor, window tables.
 
-### Member 5 (AI Service Lead)
-- [ ] **Task 5.2.1:** Build XAI Matching Engine computing institutional capability radar scores across 5 axes.
-- [ ] **Task 5.2.2:** Implement NABL Certificate PDF Parser extracting lab accreditation numbers and test validity.
-- [ ] **Task 5.2.3:** Implement DPR BOM Anomaly Detector identifying inflated vendor pricing against historical benchmarks.
-- *Verification Command:* Run sample NABL certificate parsing test script.
+### M5 (AI/ML & WhatsApp)
+- [~] **P1-M5-1** `POST /api/v1/ai/transcribe`: Whisper-large-v3/Bhashini for Hindi, Santhali, English. Real inference needed.
+- [~] **P1-M5-2** `POST /api/v1/ai/defect-scan`: ViT-H/14, 40 classes, bounding boxes. Real inference needed.
+- [~] **P1-M5-3** `POST /api/v1/ai/triage-classify`: DeBERTa-v3, 10 domains, Type A/B, confidence, defect class, hazard flags.
+- [~] **P1-M5-4** `POST /api/v1/ai/embed`: `text-embedding-3-large`, 1536 dimensions. Similar text must give similar vectors.
+- [ ] **P1-M5-5** `POST /api/v1/ai/dedup-score`: computes D for a new report against candidates (ADR-004).
+- [ ] **P1-M5-6** `POST /api/v1/ai/match-universities`: Score(U, P) with 6 axes and the XAI breakdown (M4 sends pre-filtered institutions).
+- [ ] **P1-M5-7** Live `POST /api/v1/webhooks/whatsapp`: return 200 within 250 ms, fetch media from the Meta Graph API, transcribe, reply "Aawaz darj ho gayi hai!", read the location pin, then call M4's submit endpoint.
+- [ ] **P1-M5-8** `POST /api/v1/ai/wbs-timeline`: tier, round durations, exam buffer, scope-expansion logic.
+- *Verify:* sample audio and image return output; two similar complaint texts give cosine ≥ 0.85; `curl` each endpoint.
 
-### Member 6 (Lead DBA & Systems Integrator)
-- [ ] **Task 6.2.1:** Verify database constraints and triggers on `projects.total_budget_inr` and tranche release booleans.
-- [ ] **Task 6.2.2:** Verify foreign key cascade and RLS permissions on escrow financial operations.
-- [ ] **Task 6.2.3:** Audit contract consistency between `@jagrit/contracts` and backend escrow data models.
-- *Verification Command:* `pnpm run build && node packages/db-schema/verify-constraints.js`
+### M6
+- [ ] **P1-M6-1** GIST spatial index on `challenges` and `incident_clusters`; pgvector HNSW index (gate query: cosine distance ≤ 0.15).
+- [ ] **P1-M6-2** Constraints and triggers: tranche amounts (30/40/30 of the budget), release flags, hashed-phone vote uniqueness, `h_score` bounds (0-100).
+- [ ] **P1-M6-3** Write `packages/db-schema/verify-constraints.js`.
+- *Verify:* `node packages/db-schema/verify-constraints.js` and `pnpm run build`
 
----
-
-## PHASE 3: Dual-Lock Quorum, NEP Credits & Blueprint Cloning
-*Goal: 45-day maturation buffer, early breakdown alarms, dual-lock quorum verification, and NEP credit minting.*
-
-### Member 1 (Citizen Frontend Lead)
-- [ ] **Task 1.3.1:** Build Citizen Quorum Voting Interface with geo-fenced eligibility check.
-- [ ] **Task 1.3.2:** Build Early Breakdown Alert Button (one-tap reporting with photo/voice capture during maturation).
-- [ ] **Task 1.3.3:** Build Dual-Lock Status Badge showing progress of Key 1 (Trustees) and Key 2 (Public Quorum).
-- *Verification Command:* Verify quorum voting modal and geo-location eligibility filter.
-
-### Member 2 (University Portal Lead)
-- [ ] **Task 2.3.1:** Build NEP 2020 Credit Transcript Viewer showing student workhours and APAAR/DigiLocker deposit status.
-- [ ] **Task 2.3.2:** Build 48h Breakdown SLA Alert Modal with 7-day repair sprint action plan.
-- [ ] **Task 2.3.3:** Build O&M Handover Packager: upload operator training logs and illustrated vernacular SOPs.
-- *Verification Command:* Verify credit calculation and APAAR payload viewer on student dashboard.
-
-### Member 3 (Admin, Progress & Repository Lead)
-- [ ] **Task 3.3.1:** Build 1-Click Solution Blueprint Cloning Portal: browse verified blueprints and initiate 14-day deployment replication.
-- [ ] **Task 3.3.2:** Build R&D Failure Knowledge Base search with semantic filtering by failure classification and district.
-- [ ] **Task 3.3.3:** Build Pan-India National Hackathon Escalation Panel for chronic unresolved challenges.
-- *Verification Command:* Test blueprint cloning trigger and search filtering on `/repository`.
-
-### Member 4 (Core Backend Lead)
-- [ ] **Task 4.3.1:** Implement 45-Day Maturation Buffer Time Machine and Early Breakdown Alarm clock pause/reset logic.
-- [ ] **Task 4.3.2:** Implement Key 1 Trustee Voting API (verifies 4 of 5 affirmative trustee signatures).
-- [ ] **Task 4.3.3:** Implement Key 2 Citizen Quorum Engine ($\text{Quorum}_{\min} = \max(15, \lceil k \sqrt{N} \rceil)$ and $\ge 70\%$ threshold).
-- [ ] **Task 4.3.4:** Implement NEP 2020 Credit Banking Service: generates signed APAAR / DigiLocker credit payloads.
-- [ ] **Task 4.3.5:** Implement Blueprint Generator API: extracts BOM, CAD URLs, and SOPs into `verified_blueprints`.
-- *Verification Command:* Execute dual-lock verification integration test.
-
-### Member 5 (AI Service Lead)
-- [ ] **Task 5.3.1:** Implement Citizen Feedback Sentiment Classifier separating Cosmetic Grievances from Critical Defects.
-- [ ] **Task 5.3.2:** Implement Failure Post-Mortem Synthesizer generating structured root-cause summaries.
-- [ ] **Task 5.3.3:** Implement Blueprint Cost Optimization Engine predicting replication cost savings ($\ge 60\%$).
-- *Verification Command:* Test sentiment classification against sample citizen feedback strings.
-
-### Member 6 (Lead DBA & Systems Integrator)
-- [ ] **Task 6.3.1:** Verify database schema and RLS policies on `project_trustees`, `verified_blueprints`, and `rnd_failure_repository`.
-- [ ] **Task 6.3.2:** Validate quorum aggregation stored procedures and atomic transaction locks.
-- [ ] **Task 6.3.3:** Test end-to-end data integrity of blueprint cloning replication records.
-- *Verification Command:* Run SQL transaction test suite on Supabase database.
+**P1 gate:** each member's screens or tests pass on mocks.
 
 ---
 
-## PHASE 4: Full System Integration, Cross-Audit & Live Pilot Demo
-*Goal: Zero-error production build, end-to-end user journeys, and live demonstration readiness.*
+## P2: Engine Wiring & Database Fixtures (Hours 8-14)
 
-### Member 1 (Citizen Frontend Lead)
-- [ ] **Task 1.4.1:** Conduct UI accessibility audit across all citizen screens (high contrast, vernacular typography, touch targets).
-- [ ] **Task 1.4.2:** Ensure zero console errors on citizen reporting flows in English, Hindi, and Santhali.
-- [ ] **Task 1.4.3:** Polish mobile-responsive layout for rural field tablet and low-cost smartphone viewports.
-- *Verification Command:* `pnpm --filter web-citizen run build`
+### M4 and M5: connect to the database and to each other
+- [ ] **P2-M4-1** Replace database mocks with real Supabase queries (PostGIS gate, pgvector gate, upvotes, bids, tranches).
+- [ ] **P2-M4-2** Call the real M5 endpoints (`triage-classify`, `embed`, `dedup-score`, `match-universities`, `wbs-timeline`) with timeouts and fallbacks.
+- [ ] **P2-M4-3** Institution loading with the 4 hard gates, invitations to Score ≥ 70%.
+- [ ] **P2-M4-4** Maturation clock, Breakdown Alarm (≥ 3 verified citizens in 24 h freezes the clock; 48 h inspection, 7-day repair, reset to Day 1; alerts to team, Jal Sahiya, BDO) and the `time-machine` endpoint.
+- [ ] **P2-M4-5** Dual-lock quorum: Key 1 needs ≥ 4 of 5 trustees (Jal Sahiya public-only); Key 2 needs `max(15, ceil(1.45·√N))` votes and ≥ 70% YES; outcomes 14A/14B/14C (exactly one key fails = 14B).
+- [ ] **P2-M4-6** Credit banking (30 h = 1 credit, signed APAAR/DigiLocker payload, 10 UGC-CAS points, ₹10 Lakh seed-grant flag), blueprint generator, CSR pledges with 1:1 match and certificate.
+- *Verify:* `pnpm --filter core-backend test` (quorum: both keys = 14A; trustees fail + public pass = 14B; public < 40% = 14C)
 
-### Member 2 (University Portal Lead)
-- [ ] **Task 2.4.1:** Verify all hackathon rounds (1, 2, 3) operate smoothly with live mock data and dynamic charts.
-- [ ] **Task 2.4.2:** Polish Jury Presentation Mode and live score calculation cards.
-- [ ] **Task 2.4.3:** Verify APAAR academic credit download and preview integration.
-- *Verification Command:* `pnpm --filter web-institution run build`
+- [ ] **P2-M5-1** Read from Supabase/pgvector (candidate embeddings, institution profiles).
+- [ ] **P2-M5-2** `POST /api/v1/ai/parse-nabl`: lab accreditation number and validity from a certificate PDF.
+- [ ] **P2-M5-3** `POST /api/v1/ai/bom-anomaly`: flag inflated vendor prices.
+- [~] **P2-M5-4** `POST /api/v1/ai/parse-feedback` and `generate-postmortem` (feedback parser is keyword-based today; feeds the alarm/Partial Success path and never closes tickets).
+- [~] **P2-M5-5** `POST /api/v1/ai/copilot-query` (hard-coded answers today) and the blueprint cost optimizer (≥ 60% savings estimate).
+- *Verify:* NABL sample parses; sentiment test strings return the expected class.
 
-### Member 3 (Admin, Progress & Repository Lead)
-- [ ] **Task 3.4.1:** Verify Statewide Progress Tracker displays live counts of resolved, in-progress, and cloned projects.
-- [ ] **Task 3.4.2:** Audit R&D Failure Repository search, filtering, and blueprint detail modals.
-- [ ] **Task 3.4.3:** Polish Administrative Executive Dashboard and exportable state summary reports.
-- *Verification Command:* `node web/node_modules/typescript/bin/tsc --noEmit --project apps/web-citizen/tsconfig.json`
+### M6
+- [ ] **P2-M6-1** Seed the 4 Jharkhand fixtures: Palamu, Khunti, Chaibasa, Dhanbad.
+- [ ] **P2-M6-2** Quorum aggregation procedure with atomic locks; RLS on `project_trustees`, `votes`, `breakdown_alarms`, `verified_blueprints`, `rnd_failure_repository`.
+- [ ] **P2-M6-3** Integration test: M4 dedup gate plus M5 embeddings and `dedup-score`.
+- [ ] **P2-M6-4** Contract audit: `@jagrit/contracts` vs M4 and M5 payloads.
+- *Verify:* `pnpm run build && node packages/db-schema/verify-constraints.js`
 
-### Member 4 (Core Backend Lead)
-- [ ] **Task 4.4.1:** Optimize PostGIS and Supabase API response times to $<200\text{ms}$ under concurrent load.
-- [ ] **Task 4.4.2:** Complete end-to-end test suite covering ticket ingestion $\rightarrow$ hackathon $\rightarrow$ escrow $\rightarrow$ quorum.
-- [ ] **Task 4.4.3:** Verify CORS, SSL, and environment security configurations for production deployment.
-- *Verification Command:* `pnpm --filter core-backend test`
+### M1, M2, M3 (UI for the remaining features; still on typed mocks)
+- [ ] **P2-M1-1** Upvote-window widget (0/12/24/48/72 h, progress to 25 votes) and Early Breakdown Alarm button (Days 1-45, one tap with photo/voice).
+- [ ] **P2-M1-2** Citizen quorum voting UI with geofence eligibility, Dual-Lock badge and Day 46 progress ring.
+- [ ] **P2-M1-3** `/time-machine` demo page; polish micro-interactions, touch targets ≥ 48 px, strict language isolation.
+- [ ] **P2-M2-1** 48-hour breakdown SLA modal with 7-day repair plan; O&M handover packager (caretaker logs, vernacular SOPs, spares kit record).
+- [ ] **P2-M2-2** Student R&D Copilot drawer; jury presentation mode.
+- [ ] **P2-M3-1** Round 3 jury panel (Feasibility 40 / Sustainability 30 / Cost 30) with live ranking; Anti-Speculation monitor (H-Scores, penalties).
+- [ ] **P2-M3-2** Pan-India escalation panel; `/samvaad` community discussion feed; repository search and State Post-Mortem console.
+- *Verify:* `pnpm --filter web-citizen run build`
 
-### Member 5 (AI Service Lead)
-- [ ] **Task 5.4.1:** Validate inference latency of Whisper/Bhashini ASR and ViT defect scanner pipelines.
-- [ ] **Task 5.4.2:** Verify AI fixture test suite covering Scenarios A through D with 100% pass rate.
-- [ ] **Task 5.4.3:** Package FastAPI service with production Uvicorn multi-worker configuration.
-- *Verification Command:* `python apps/ai-service/scripts/seed_ai_fixtures.py`
+**P2 gate:** the backend runs on real data; fixtures seeded.
 
-### Member 6 (Lead DBA & Systems Integrator)
-- [ ] **Task 6.4.1:** Execute full monorepo clean build (`pnpm run build`) with zero TypeScript, lint, or packaging errors.
-- [ ] **Task 6.4.2:** Seed realistic Jharkhand pilot datasets (Ranchi, Dhanbad, Khunti, Dumka) into Supabase.
-- [ ] **Task 6.4.3:** Conduct cross-role security and RLS policy audit on all 9 Supabase tables.
-- [ ] **Task 6.4.4:** Finalize production deployment documentation and lock `AUDIT_LOG.md`.
-- *Verification Command:* `pnpm run build && git status --porcelain`
+---
+
+## P3: Full System Integration (Hours 14-20)
+
+- [ ] **P3-M1-1** Wire `/report` to upload real media to Supabase Storage and call the backend; wire `/whatsapp-simulator`, alarm button, quorum vote and citizen dashboard to live endpoints.
+- [ ] **P3-M2-1** Wire the bidding feed, accept/consortium actions, hackathon deliverables and BOM table to the backend controllers.
+- [ ] **P3-M3-1** Wire 1-Click Blueprint Cloning, the escrow gatekeeper, CSR pledges and the evaluator queue to live endpoints and database records.
+- [ ] **P3-M4-1** Publish OpenAPI docs; fix contract mismatches reported by M1-M3; on 14C write `rnd_failure_repository` and request M5's post-mortem.
+- [ ] **P3-M4-2** Performance: main endpoints under 200 ms with light concurrent load.
+- [ ] **P3-M5-1** Turn mocks off where real models are available and list what remains; measure ASR and ViT latency; run the WhatsApp webhook end to end with M4.
+- [ ] **P3-M6-1** Verify each wiring end to end and record issues; keep contracts in sync.
+- *Verify:* `pnpm run build`; submit a report in `/report` and see the ticket in the Evaluator queue.
+
+**P3 gate:** a real report travels from `/report` to the Evaluator queue; all quorum outcomes pass.
+
+---
+
+## P4: Production Build & Lock (Hours 20-24)
+
+- [ ] **P4-M1-1** Accessibility pass (contrast, vernacular typography); zero console errors in English, Hindi and Santhali; mobile-responsive polish. *Verify:* `pnpm --filter web-citizen run build`
+- [ ] **P4-M2-1** Verify all three hackathon rounds and the APAAR credit preview with live data. *Verify:* `pnpm --filter web-citizen run build`
+- [ ] **P4-M3-1** Live counters on `/progress`; audit repository search and blueprint modals; export of state summary. *Verify:* `pnpm --filter web-citizen exec tsc --noEmit`
+- [ ] **P4-M4-1** End-to-end suite: report → dedup → priority → bid → hackathon → escrow → alarm → quorum → credit; unit tests for MPS, D, bidding windows and quorum using Appendix A numbers. *Verify:* `pnpm --filter core-backend test`
+- [ ] **P4-M4-2** Confirm CORS, SSL and that no secrets exist in the repo (`AUDIT.md`, Rule 4).
+- [ ] **P4-M5-1** Run the fixture suite (Scenarios A-D) against the v14.1 rules; production Uvicorn multi-worker config; list remaining mocks. *Verify:* `python apps/ai-service/scripts/seed_ai_fixtures.py`
+- [ ] **P4-M6-1** Full clean build with zero TypeScript and hydration errors. *Verify:* `pnpm run build && git status --porcelain`
+- [ ] **P4-M6-2** End-to-end user journey across all 4 portals (Citizen, University, Industry, Evaluator).
+- [ ] **P4-M6-3** RLS and security audit on all tables; confirm no secrets remain reachable in the repository.
+- [ ] **P4-M6-4** Tag the release `v1.0.0-demo`, merge to `main`, write release notes listing remaining mocks, and finalize `AUDIT_LOG.md`.
+
+**P4 gate (release):** build green, demo journey works, mocks disclosed.
+
+---
+
+*Post-sprint roadmap:* native Flutter app (offline SQLite queue), toll-free IVR, Pragya Kendra kiosks.
