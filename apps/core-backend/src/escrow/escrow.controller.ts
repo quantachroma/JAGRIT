@@ -28,6 +28,37 @@ escrowRouter.get('/audit-sla', async (_request, response) => {
 	}
 });
 
+escrowRouter.post('/release-tranche', async (request: Request, response: Response) => {
+	const body = request.body as Record<string, unknown>;
+	const tranche = Number(body.tranche);
+	if (!targetId(request) || ![1, 2, 3].includes(tranche)) {
+		response.status(400).json({ error: 'A project/challenge ID and tranche (1, 2, or 3) are required.' });
+		return;
+	}
+	try {
+		if (tranche === 1) {
+			if (body.kickoff_confirmed !== true) throw new Error('Tranche 1 requires confirmed kickoff.');
+			response.json(await releaseTranche1(targetId(request), true));
+			return;
+		}
+		if (tranche === 2) {
+			const nablCertUrl = String(body.nabl_cert_url || body.nablCertUrl || '').trim();
+			const evaluatorApproved = body.evaluator_approved === true || body.evaluatorApproved === true;
+			response.json(await releaseTranche2(targetId(request), nablCertUrl, evaluatorApproved));
+			return;
+		}
+		response.json(await releaseTranche3(targetId(request), {
+			nocUrl: String(body.pesa_noc_url || body.pesaNocUrl || body.noc_url || body.nocUrl || '').trim(),
+			sparesKitProofUrl: String(body.spares_kit_proof_url || body.sparesKitProofUrl || '').trim(),
+			omHandoverVerified: body.om_handover_verified === true || body.omHandoverVerified === true,
+			installationVerified: body.installation_verified === true || body.installationVerified === true,
+			jalSahiyasTrained: Number(body.jal_sahiyas_trained ?? body.jalSahiyasTrained),
+		}));
+	} catch (error) {
+		response.status(statusFor(error)).json({ error: error instanceof Error ? error.message : 'Unable to release tranche.' });
+	}
+});
+
 escrowRouter.post('/:id/tranche-1/release', async (request: Request, response: Response) => {
 	try {
 		const body = request.body as Record<string, unknown>;

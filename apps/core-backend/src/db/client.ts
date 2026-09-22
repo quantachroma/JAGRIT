@@ -1,6 +1,10 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path';
 import { Pool, QueryResult, QueryResultRow } from 'pg';
 import { getSupabaseClient } from './supabase.service';
+
+export const CORE_BACKEND_ENV_PATH = path.resolve(__dirname, '../../.env');
+dotenv.config({ path: CORE_BACKEND_ENV_PATH });
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

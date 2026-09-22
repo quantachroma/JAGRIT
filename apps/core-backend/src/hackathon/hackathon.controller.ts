@@ -1,7 +1,18 @@
 import { Router } from 'express';
-import { evaluateBids, placeBid } from './hackathon.service';
+import { evaluateBids, placeBid, submitDeliverableMock } from './hackathon.service';
 
 export const hackathonRouter = Router();
+
+hackathonRouter.post('/deliverable', (request, response) => {
+	const body = request.body as Record<string, unknown>;
+	const projectId = String(body.project_id || body.projectId || '').trim();
+	const round = Number(body.round);
+	if (!projectId || ![1, 2, 3].includes(round)) {
+		response.status(400).json({ error: 'project_id and round (1, 2, or 3) are required.' });
+		return;
+	}
+	response.status(201).json(submitDeliverableMock(projectId, round as 1 | 2 | 3));
+});
 
 hackathonRouter.post('/bid', async (request, response) => {
 	const body = request.body as Record<string, unknown>;

@@ -1,5 +1,15 @@
 import { query } from '../db/client';
 
+export interface HackathonDeliverableMock {
+	projectId: string;
+	round: 1 | 2 | 3;
+	status: 'DELIVERABLE_RECEIVED';
+}
+
+export function submitDeliverableMock(projectId: string, round: 1 | 2 | 3): HackathonDeliverableMock {
+	return { projectId, round, status: 'DELIVERABLE_RECEIVED' };
+}
+
 export async function placeBid(
 	challengeId: string,
 	universityName: string,

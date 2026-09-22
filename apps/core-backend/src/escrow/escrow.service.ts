@@ -17,6 +17,19 @@ export interface Tranche3Evidence {
 
 export type SlaStatus = 'ON_TRACK' | 'WARNING_DAY_7' | 'ESCALATION_DAY_14' | 'DRAW_DOWN_FROZEN_DAY_30';
 
+export function validateTranche2Requirements(nablCertUrl: string, evaluatorApproved: boolean): void {
+	assertNonEmpty(nablCertUrl, 'NABL certificate URL');
+	if (!evaluatorApproved) throw new Error('Tranche 2 requires Evaluator approval.');
+}
+
+export function validateTranche3Requirements(evidence: Tranche3Evidence): void {
+	assertNonEmpty(evidence.nocUrl, 'PESA or standard NOC URL');
+	assertNonEmpty(evidence.sparesKitProofUrl, 'Spares kit proof URL');
+	if (!evidence.omHandoverVerified) throw new Error('Tranche 3 requires verified O&M handover.');
+	if (!evidence.installationVerified) throw new Error('Tranche 3 requires verified installation.');
+	if (evidence.jalSahiyasTrained < 2) throw new Error('Tranche 3 requires two trained Jal Sahiyas.');
+}
+
 export function getSlaStatus(startedAt: Date | string, now = new Date()): SlaStatus {
 	const elapsedDays = (now.getTime() - new Date(startedAt).getTime()) / (24 * 60 * 60 * 1000);
 	if (elapsedDays >= 30) return 'DRAW_DOWN_FROZEN_DAY_30';
@@ -55,8 +68,7 @@ export async function releaseTranche1(targetId: string, kickoffConfirmed: boolea
 }
 
 export async function releaseTranche2(targetId: string, nablCertUrl: string, evaluatorApproved: boolean) {
-	assertNonEmpty(nablCertUrl, 'NABL certificate URL');
-	if (!evaluatorApproved) throw new Error('Tranche 2 requires Evaluator approval.');
+	validateTranche2Requirements(nablCertUrl, evaluatorApproved);
 	const projectId = await resolveProjectId(targetId);
 	const state = await query<{ tranche_1_disbursed: boolean; created_at: Date | string }>('SELECT tranche_1_disbursed, created_at FROM public.projects WHERE id = $1;', [projectId]);
 	if (!state.rows[0].tranche_1_disbursed) throw new Error('Tranche 1 must be disbursed before Tranche 2');
@@ -69,11 +81,7 @@ export async function releaseTranche2(targetId: string, nablCertUrl: string, eva
 }
 
 export async function releaseTranche3(targetId: string, evidence: Tranche3Evidence) {
-	assertNonEmpty(evidence.nocUrl, 'PESA or standard NOC URL');
-	assertNonEmpty(evidence.sparesKitProofUrl, 'Spares kit proof URL');
-	if (!evidence.omHandoverVerified) throw new Error('Tranche 3 requires verified O&M handover.');
-	if (!evidence.installationVerified) throw new Error('Tranche 3 requires verified installation.');
-	if (evidence.jalSahiyasTrained < 2) throw new Error('Tranche 3 requires two trained Jal Sahiyas.');
+	validateTranche3Requirements(evidence);
 	const projectId = await resolveProjectId(targetId);
 	const state = await query<{ tranche_2_disbursed: boolean; created_at: Date | string }>('SELECT tranche_2_disbursed, created_at FROM public.projects WHERE id = $1;', [projectId]);
 	if (!state.rows[0].tranche_2_disbursed) throw new Error('Tranche 2 must be disbursed before Tranche 3');

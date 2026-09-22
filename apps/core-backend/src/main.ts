@@ -1,7 +1,7 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import { pool } from './db/client';
+import { CORE_BACKEND_ENV_PATH, pool } from './db/client';
 import { challengesRouter } from './challenges/challenges.controller';
 import { evaluatorRouter } from './evaluator/evaluator.controller';
 import { hackathonRouter } from './hackathon/hackathon.controller';
@@ -11,6 +11,8 @@ import { bidsRouter } from './bids/bids.controller';
 import { projectsRouter } from './projects/projects.controller';
 import { creditsRouter } from './credits/credits.controller';
 import { blueprintsRouter } from './blueprints/blueprints.controller';
+
+dotenv.config({ path: CORE_BACKEND_ENV_PATH });
 
 export const app = express();
 const port = Number(process.env.PORT || 5000);

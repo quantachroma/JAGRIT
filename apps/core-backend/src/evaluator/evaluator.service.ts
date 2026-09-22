@@ -25,3 +25,11 @@ export function routeTriage(input: TriageInput): TriageRoute {
 	}
 	return { destination: 'EVALUATOR_QUEUE', ticketId: input.ticketId };
 }
+
+export type EvaluatorDecision = 'APPROVE_HEI' | 'REROUTE_CIVIC';
+
+export function toTriageAction(decision: EvaluatorDecision): { action: EvaluatorDecision; status: 'OPEN_FOR_BIDS' | 'ROUTED_CIVIC' } {
+	return decision === 'APPROVE_HEI'
+		? { action: decision, status: 'OPEN_FOR_BIDS' }
+		: { action: decision, status: 'ROUTED_CIVIC' };
+}
