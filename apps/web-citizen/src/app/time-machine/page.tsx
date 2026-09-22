@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useCitizen } from '@/context/CitizenContext';
 import QuorumGauge from '@/components/quorum-gauge';
+import { supabase } from '@/lib/supabase';
 import {
   Clock,
   Sparkles,
@@ -27,6 +28,27 @@ import {
   Info,
   PartyPopper,
 } from 'lucide-react';
+
+const ACTIVE_PROJECT_ID = 'd0000000-0000-0000-0000-000000000001';
+const TRUSTEE_ROLE_LABELS: Record<string, string> = {
+  JAL_SAHIYA_CARETAKER: 'Jal Sahiya Caretaker',
+  SCHOOL_HEADMASTER: 'School Headmaster',
+  PRI_WARD_MEMBER: 'PRI Ward Member',
+  BENEFICIARY_SC_ST_1: 'Beneficiary 1 (SC/ST)',
+  BENEFICIARY_CITIZEN_2: 'Beneficiary 2',
+};
+
+type Trustee = {
+  id: string;
+  trustee_role: string;
+  full_name: string;
+  verification_vote: boolean | null;
+};
+
+type LedgerVote = {
+  id: string;
+  is_core_functional_pass: boolean;
+};
 
 export default function TimeMachinePage() {
   const { language, t } = useCitizen();
@@ -59,6 +81,12 @@ export default function TimeMachinePage() {
   const [initialVotes, setInitialVotes] = useState(44);
   const [hasVoted, setHasVoted] = useState(false);
   const [voteChoice, setVoteChoice] = useState<'YES' | 'NO' | 'PARTIAL' | null>(null);
+  const [activeProjectId, setActiveProjectId] = useState(ACTIVE_PROJECT_ID);
+  const [trustees, setTrustees] = useState<Trustee[]>([]);
+  const [ledgerVotes, setLedgerVotes] = useState<LedgerVote[]>([]);
+  const [isLoadingLiveData, setIsLoadingLiveData] = useState(true);
+  const [voteError, setVoteError] = useState<string | null>(null);
+  const [creditAwarded, setCreditAwarded] = useState(false);
   const [showCelebrationModal, setShowCelebrationModal] = useState(false);
   const [showEscalationSuccessModal, setShowEscalationSuccessModal] = useState(false);
 
@@ -74,6 +102,60 @@ export default function TimeMachinePage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+
+  const affirmativeTrusteeVotes = trustees.filter((trustee) => trustee.verification_vote === true).length;
+  const affirmativePublicVotes = ledgerVotes.filter((vote) => vote.is_core_functional_pass).length;
+  const trusteeQuorumPassed = affirmativeTrusteeVotes >= 4;
+  const publicQuorumPassed = ledgerVotes.length > 0 && affirmativePublicVotes / ledgerVotes.length >= 0.7;
+  const dualQuorumPassed = trusteeQuorumPassed && publicQuorumPassed;
+
+  useEffect(() => {
+    let active = true;
+
+    const loadLiveQuorum = async () => {
+      const preferredTrustees = await supabase
+        .from('project_trustees')
+        .select('id, project_id, trustee_role, full_name, verification_vote')
+        .eq('project_id', ACTIVE_PROJECT_ID)
+        .order('trustee_role');
+
+      let projectId = ACTIVE_PROJECT_ID;
+      let trusteeRows = preferredTrustees.data as Trustee[] | null;
+
+      if (preferredTrustees.error || !trusteeRows?.length) {
+        const fallbackProject = await supabase
+          .from('project_trustees')
+          .select('project_id')
+          .order('project_id')
+          .limit(1)
+          .maybeSingle();
+        projectId = fallbackProject.data?.project_id || ACTIVE_PROJECT_ID;
+        const fallbackTrustees = await supabase
+          .from('project_trustees')
+          .select('id, project_id, trustee_role, full_name, verification_vote')
+          .eq('project_id', projectId)
+          .order('trustee_role');
+        trusteeRows = fallbackTrustees.data as Trustee[] | null;
+      }
+
+      const ledgerResult = await supabase
+        .from('feedback_ledger')
+        .select('id, is_core_functional_pass')
+        .eq('project_id', projectId);
+
+      if (!active) return;
+      setActiveProjectId(projectId);
+      setTrustees(trusteeRows || []);
+      setLedgerVotes((ledgerResult.data || []) as LedgerVote[]);
+      setInitialVotes((ledgerResult.data || []).length);
+      setIsLoadingLiveData(false);
+    };
+
+    void loadLiveQuorum();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleToggleTimeMachine = (enable: boolean) => {
     if (enable) {
@@ -163,11 +245,46 @@ export default function TimeMachinePage() {
     };
   }, [isRecording, stopVoiceRecording]);
 
-  const handleVoteSubmit = (choice: 'YES' | 'NO' | 'PARTIAL') => {
+  const handleVoteSubmit = async (choice: 'YES' | 'NO' | 'PARTIAL') => {
     setVoteChoice(choice);
-    if (choice === 'YES') {
-      setInitialVotes((prev) => prev + 1);
-      setHasVoted(true);
+    if (choice === 'PARTIAL') return;
+
+    setVoteError(null);
+    const isYes = choice === 'YES';
+    const { data: insertedVote, error } = await supabase
+      .from('feedback_ledger')
+      .insert({
+        project_id: activeProjectId,
+        voter_location: 'POINT(84.2104 23.9921)',
+        is_core_functional_pass: isYes,
+        complaint_type: isYes ? 'NONE' : 'COSMETIC_GRIEVANCE',
+      })
+      .select('id, is_core_functional_pass')
+      .single();
+
+    if (error) {
+      setVoteError(error.message);
+      return;
+    }
+
+    const nextVotes = [...ledgerVotes, insertedVote as LedgerVote];
+    setLedgerVotes(nextVotes);
+    setInitialVotes(nextVotes.length);
+    setHasVoted(true);
+
+    const nextPublicPass = nextVotes.filter((vote) => vote.is_core_functional_pass).length / nextVotes.length >= 0.7;
+    if (trusteeQuorumPassed && nextPublicPass) {
+      const { error: projectError } = await supabase
+        .from('projects')
+        .update({ resolution_status: 'COMPLETELY_SOLVED' })
+        .eq('id', activeProjectId);
+
+      if (projectError) {
+        setVoteError(projectError.message);
+        return;
+      }
+
+      setCreditAwarded(true);
       setShowCelebrationModal(true);
     }
   };
@@ -315,6 +432,45 @@ export default function TimeMachinePage() {
         </div>
       </div>
 
+      {/* Designated Community Trustees and live quorum locks */}
+      <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-xs space-y-4">
+        <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div>
+            <h2 className="text-sm font-black text-slate-900">Designated Community Trustees</h2>
+            <p className="text-xs text-slate-500">Live verification quorum for this Palamu project</p>
+          </div>
+          {isLoadingLiveData && <span className="text-xs text-slate-500">Loading live records...</span>}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {Object.entries(TRUSTEE_ROLE_LABELS).map(([role, label]) => {
+            const trustee = trustees.find((candidate) => candidate.trustee_role === role);
+            return (
+              <div key={role} className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 border border-slate-200 px-3 py-2.5">
+                <div className="min-w-0">
+                  <span className="block text-xs font-bold text-slate-800 truncate">{label}</span>
+                  <span className="block text-[11px] text-slate-500 truncate">{trustee?.full_name || 'Awaiting trustee record'}</span>
+                </div>
+                <span className={`text-[10px] font-black uppercase ${trustee?.verification_vote === true ? 'text-emerald-700' : trustee?.verification_vote === false ? 'text-red-700' : 'text-slate-500'}`}>
+                  {trustee?.verification_vote === true ? 'YES' : trustee?.verification_vote === false ? 'NO' : 'PENDING'}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div className={`rounded-xl border px-3 py-2.5 ${trusteeQuorumPassed ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-700'}`}>
+            <span className="font-black">Key 1: Trustees {affirmativeTrusteeVotes}/5 YES</span>
+            <span className="block mt-0.5">{trusteeQuorumPassed ? 'Passed' : 'Requires 4 YES votes'}</span>
+          </div>
+          <div className={`rounded-xl border px-3 py-2.5 ${publicQuorumPassed ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-700'}`}>
+            <span className="font-black">Key 2: Public Quorum {affirmativePublicVotes}/{ledgerVotes.length} YES</span>
+            <span className="block mt-0.5">{publicQuorumPassed ? 'Passed' : 'Requires 70% YES votes'}</span>
+          </div>
+        </div>
+      </div>
+
       {/* 3. Circular Quorum Gauge */}
       <QuorumGauge
         population={projectDetails.settlementPopulation}
@@ -363,7 +519,7 @@ export default function TimeMachinePage() {
             </button>
           </div>
         </div>
-      ) : hasVoted && voteChoice === 'YES' ? (
+      ) : dualQuorumPassed ? (
         <div className="bg-white border-2 border-blue-200 rounded-3xl p-6 text-center space-y-3 shadow-xs">
           <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-700 mx-auto flex items-center justify-center">
             <CheckCircle2 className="w-7 h-7" />
@@ -382,6 +538,11 @@ export default function TimeMachinePage() {
               ? 'ᱟᱢᱟᱜ ᱵᱷᱳᱴ ᱟᱹᱛᱩ ᱵᱟᱹᱭᱥᱤ ᱨᱮ ᱥᱮᱞᱮᱫ ᱮᱱᱟ᱾ ᱑᱐᱐% ᱠᱳᱨᱚᱢ ᱯᱩᱨᱟᱹᱣ ᱮᱱᱟ᱾'
               : 'Your affirmative vote has been logged into the Gram Sabha ledger. 100% quorum achieved.'}
           </p>
+          {creditAwarded && (
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-black text-amber-900">
+              NEP 2020 Credit Award: 4 credits added to APAAR
+            </div>
+          )}
           <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
@@ -421,6 +582,12 @@ export default function TimeMachinePage() {
               </h3>
             </div>
           </div>
+
+          {voteError && (
+            <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">
+              Unable to record the live vote: {voteError}
+            </div>
+          )}
 
           {/* Core Question */}
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-center space-y-2">

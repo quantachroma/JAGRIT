@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useCitizen } from '@/context/CitizenContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { supabase } from '@/lib/supabase';
 import {
   MessageSquare,
   Heart,
@@ -52,265 +53,64 @@ export interface SamvaadThread {
   attachmentCaption?: string;
 }
 
-const INITIAL_THREADS: SamvaadThread[] = [
-  {
-    id: 'th-1',
-    author: 'Dr. Anand Verma',
-    role: 'RESEARCHER',
-    roleLabel: 'Dr. Anand Verma - BIT Mesra',
-    institution: 'BIT Mesra · Water & Environmental Engineering',
-    location: 'Palamu, Satbarwa Block',
-    timeAgo: '2 hours ago',
-    category: 'WATER',
-    title: 'Palamu District: Solar Defluoridation Unit Active in 45-Day Verification Phase',
-    content:
-      'To address severe groundwater fluoride contamination in Satbarwa, BIT Mesra deployed an unassisted solar membrane defluoridation unit. Operating efficiency is at 88%. Gram Sabha members are actively participating in the citizen quorum audit.',
-    tags: ['WaterResearch', 'FluorideRemoval', 'BITMesra'],
-    likesCount: 68,
-    isLiked: false,
-    attachmentCaption: 'Palamu Solar Defluoridation Unit: 45-Day Durability Audit',
-    replies: [
-      {
-        id: 'c-1-1',
-        author: 'Somra Oraon',
-        role: 'CITIZEN',
-        roleLabel: 'Citizen',
-        timeAgo: '1 hour ago',
-        content: 'Drinking water quality has noticeably improved in our hamlet.',
-      },
-    ],
-  },
-  {
-    id: 'th-2',
-    author: 'Sunil Hembrom',
-    role: 'STUDENT',
-    roleLabel: 'Student Lead',
-    institution: 'NIT Jamshedpur · Renewable Energy',
-    location: 'West Singhbhum, Chaibasa',
-    timeAgo: '5 hours ago',
-    category: 'ENERGY',
-    title: 'Chaibasa: Solar Microgrid Voltage Stabilizer for Rural Primary Health Centre',
-    content:
-      'In Tonto health centre, evening battery voltage dropped to 140V, risking cold-chain vaccine refrigeration. Our student engineering team installed an active battery management system maintaining a steady 220V.',
-    tags: ['Energy', 'HealthCenterSolar', 'NITJamshedpur'],
-    likesCount: 82,
-    isLiked: true,
-    attachmentCaption: 'Active Telemetry Controller Board installed at Chaibasa PHC',
-    replies: [],
-  },
-  {
-    id: 'th-3',
-    author: 'Ramesh Munda',
-    role: 'CITIZEN',
-    roleLabel: 'Citizen',
-    location: 'Ranchi, Kanke Panchayat',
-    timeAgo: '1 day ago',
-    category: 'WATER',
-    title: 'Kanke Ward 4: Community Monitoring Committee Formed for Solar Handpump',
-    content:
-      'The new solar-powered deep bore pump in Ward 4 is supplying clean water to 45 families daily. A village maintenance committee has been established to protect the solar panels.',
-    tags: ['WaterResearch', 'SolarPump', 'GramSabha'],
-    likesCount: 46,
-    isLiked: false,
-    attachmentCaption: 'Operational solar pump providing clean water to 45 households',
-    replies: [],
-  },
-  {
-    id: 'th-4',
-    author: 'Birsa Munda SHG',
-    role: 'CITIZEN',
-    roleLabel: 'Citizen',
-    location: 'Khunti, Murhu Block',
-    timeAgo: '3 hours ago',
-    category: 'LIVELIHOODS',
-    title: 'Khunti District: Post-Harvest Spoilage in Lac — Solar Tunnel Dryer Required',
-    content:
-      'Heavy monsoon dampness is causing over 35% fungal rot in our harvested kusmi and rangini lac produce. Can a portable solar dehumidifier dryer be piloted for our 20 women self-help groups?',
-    tags: ['Livelihoods', 'Agritech', 'PostHarvestDecay'],
-    likesCount: 54,
-    isLiked: false,
-    attachmentCaption: 'Raw Lac Spoilage Assessment & Storage Issues in Murhu',
-    replies: [],
-  },
-];
-
-const INITIAL_THREADS_BY_LANG: Record<string, SamvaadThread[]> = {
-  en: INITIAL_THREADS,
-  hi: [
-    {
-      id: 'th-1',
-      author: 'डॉ. आनंद वर्मा',
-      role: 'RESEARCHER',
-      roleLabel: 'डॉ. आनंद वर्मा - बीआईटी मेसरा',
-      institution: 'बीआईटी मेसरा · जल एवं पर्यावरण इंजीनियरिंग',
-      location: 'पलामू, सतबरवा प्रखंड',
-      timeAgo: '२ घंटे पहले',
-      category: 'WATER',
-      title: 'पलामू ज़िला: ४५-दिवसीय सत्यापन चरण में सौर फ्लोराइड-मुक्त इकाई सक्रिय',
-      content:
-        'सतबरवा में भूजल के अत्यधिक फ्लोराइड संदूषण से निपटने हेतु बीआईटी मेसरा ने सौर ऊर्जा चालित फ्लोराइड निष्कासन इकाई स्थापित की है। कार्यकुशलता ८८% है। ग्राम सभा सदस्य नागरिक कोरम सत्यापन में भाग ले रहे हैं।',
-      tags: ['जलअनुसंधान', 'फ्लोराइडनिवारण', 'बीआईटीमेसरा'],
-      likesCount: 68,
-      isLiked: false,
-      attachmentCaption: 'पलामू सौर फ्लोराइड-मुक्त इकाई: ४५-दिवसीय स्थायित्व परीक्षण',
-      replies: [
-        {
-          id: 'c-1-1',
-          author: 'सोमरा उरांव',
-          role: 'CITIZEN',
-          roleLabel: 'नागरिक',
-          timeAgo: '१ घंटा पहले',
-          content: 'हमारे टोले में पीने के पानी की गुणवत्ता में उल्लेखनीय सुधार हुआ है।',
-        },
-      ],
-    },
-    {
-      id: 'th-2',
-      author: 'सुनील हेम्ब्रम',
-      role: 'STUDENT',
-      roleLabel: 'छात्र दल प्रमुख',
-      institution: 'एनआईटी जमशेदपुर · नवीकरणीय ऊर्जा',
-      location: 'पश्चिमी सिंहभूम, चाईबासा',
-      timeAgo: '५ घंटे पहले',
-      category: 'ENERGY',
-      title: 'चाईबासा: ग्रामीण प्राथमिक स्वास्थ्य केंद्र हेतु सोलर माइक्रोग्रिड वोल्टेज स्टेबलाइजर',
-      content:
-        'टोन्टो स्वास्थ्य केंद्र में शाम को बैटरी वोल्टेज १४०V तक गिर जाता था, जिससे टीकों के कोल्ड-चेन प्रशीतन को खतरा था। हमारी छात्र इंजीनियरिंग टीम ने सक्रिय बैटरी प्रबंधन प्रणाली स्थापित कर २२०V स्थिर किया।',
-      tags: ['ऊर्जा', 'स्वास्थ्यकेंद्रसौर', 'एनआईटीजमशेदपुर'],
-      likesCount: 82,
-      isLiked: true,
-      attachmentCaption: 'चाईबासा पीएचसी में स्थापित सक्रिय टेलीमेट्री नियंत्रक बोर्ड',
-      replies: [],
-    },
-    {
-      id: 'th-3',
-      author: 'रमेश मुंडा',
-      role: 'CITIZEN',
-      roleLabel: 'नागरिक',
-      location: 'रांची, कांके पंचायत',
-      timeAgo: '१ दिन पहले',
-      category: 'WATER',
-      title: 'कांके वार्ड ४: सोलर चापाकल हेतु सामुदायिक निगरानी समिति गठित',
-      content:
-        'वार्ड ४ में नया सौर संचालित डीप बोर पंप प्रतिदिन ४५ परिवारों को स्वच्छ जल उपलब्ध करा रहा है। सौर पैनलों की सुरक्षा हेतु ग्राम रखरखाव समिति बनाई गई है।',
-      tags: ['जलअनुसंधान', 'सोलरपंप', 'ग्रामसभा'],
-      likesCount: 46,
-      isLiked: false,
-      attachmentCaption: '४५ परिवारों को पेयजल प्रदान करता क्रियाशील सौर पंप',
-      replies: [],
-    },
-    {
-      id: 'th-4',
-      author: 'बिरसा मुंडा स्वयं सहायता समूह',
-      role: 'CITIZEN',
-      roleLabel: 'नागरिक',
-      location: 'खूंटी, मुरहू प्रखंड',
-      timeAgo: '३ घंटे पहले',
-      category: 'LIVELIHOODS',
-      title: 'खूंटी ज़िला: लाह की फसल में फफूंद से बचाव — सोलर टनल ड्रायर की आवश्यकता',
-      content:
-        'मानसून की भारी नमी के कारण हमारी कुसुमी और रंगीनी लाह की ३५% फसल खराब हो रही है। क्या हमारे २० महिला स्वयं सहायता समूहों के लिए एक पोर्टेबल सोलर डीह्यूमिडिफायर ड्रायर का परीक्षण किया जा सकता है?',
-      tags: ['आजीविका', 'कृषितकनीक', 'फसलबचाव'],
-      likesCount: 54,
-      isLiked: false,
-      attachmentCaption: 'मुरहू में कच्ची लाह की बर्बादी एवं भंडारण समस्या का आकलन',
-      replies: [],
-    },
-  ],
-  sat: [
-    {
-      id: 'th-1',
-      author: 'Dr. Anand Verma',
-      role: 'RESEARCHER',
-      roleLabel: 'Dr. Anand Verma - BIT Mesra',
-      institution: 'BIT Mesra · Daq ar Poribesh Eng.',
-      location: 'Palamu, Satbarwa Block',
-      timeAgo: '2 ᱴᱟᱲᱟᱝ ᱢᱟᱬᱟᱝ',
-      category: 'WATER',
-      title: 'Palamu District: Solar Defluoridation Unit 45-Maha Bidao Re Menah-a',
-      content:
-        'Satbarwa re daq re fluoride kom laigi BIT Mesra solar defluoridation unit lagao keda. 88% bes kaami choloh kana. Aatu hor baisi re vote em kana.',
-      tags: ['DaqKondron', 'FluorideKom', 'BITMesra'],
-      likesCount: 68,
-      isLiked: false,
-      attachmentCaption: 'Palamu Solar Defluoridation Unit: 45-Maha Bidao Audit',
-      replies: [
-        {
-          id: 'c-1-1',
-          author: 'Somra Oraon',
-          role: 'CITIZEN',
-          roleLabel: 'Aatu Hor',
-          timeAgo: '1 ᱴᱟᱲᱟᱝ ᱢᱟᱬᱟᱝ',
-          content: 'Ńu daq nahaq bes bujhao kana.',
-        },
-      ],
-    },
-    {
-      id: 'th-2',
-      author: 'Sunil Hembrom',
-      role: 'STUDENT',
-      roleLabel: 'Student Lead',
-      institution: 'NIT Jamshedpur · Renewable Energy',
-      location: 'West Singhbhum, Chaibasa',
-      timeAgo: '5 ᱴᱟᱲᱟᱝ ᱢᱟᱬᱟᱝ',
-      category: 'ENERGY',
-      title: 'Chaibasa: Solar Microgrid Voltage Stabilizer Rural PHC Laigi',
-      content:
-        'Tonto health centre re tikin tayom battery 140V dhabich komolen tahikana, vaccine baarijoh kan tahikana. NIT Jamshedpur team active BMS lagao keda 220V doho laigi.',
-      tags: ['Energy', 'HealthSolar', 'NITJamshedpur'],
-      likesCount: 82,
-      isLiked: true,
-      attachmentCaption: 'Chaibasa PHC re controller board lagao ena',
-      replies: [],
-    },
-    {
-      id: 'th-3',
-      author: 'Ramesh Munda',
-      role: 'CITIZEN',
-      roleLabel: 'Aatu Hor',
-      location: 'Ranchi, Kanke Panchayat',
-      timeAgo: '1 ᱢᱟᱦᱟᱸ ᱢᱟᱬᱟᱝ',
-      category: 'WATER',
-      title: 'Kanke Ward 4: Solar Handpump Laigi Gram Sabha Committee Benaw Ena',
-      content:
-        'Ward 4 re solar deep bore pump 45 oraq hor daq em kana. Solar panel joton laigi aatu hor baisi keda.',
-      tags: ['DaqKondron', 'SolarPump', 'GramSabha'],
-      likesCount: 46,
-      isLiked: false,
-      attachmentCaption: '45 oraq hor laigi solar pump chalu menah-a',
-      replies: [],
-    },
-    {
-      id: 'th-4',
-      author: 'Birsa Munda SHG',
-      role: 'CITIZEN',
-      roleLabel: 'Aatu Hor',
-      location: 'Khunti, Murhu Block',
-      timeAgo: '3 ᱴᱟᱲᱟᱝ ᱢᱟᱬᱟᱝ',
-      category: 'LIVELIHOODS',
-      title: 'Khunti District: Lac Produce Baarijoh Kana — Solar Dryer Darkar',
-      content:
-        'Japud re 35% lac baarijoh kana. 20 gogo dol laigi portable solar dehumidifier dryer pilote banaw daareyaleba?',
-      tags: ['AsulogHor', 'ChasHunar', 'PostHarvest'],
-      likesCount: 54,
-      isLiked: false,
-      attachmentCaption: 'Murhu re lac baarijoh katha nel ena',
-      replies: [],
-    },
-  ],
+type CommunityThreadRow = {
+  id: string;
+  author_id?: string;
+  author_name?: string;
+  author_role?: string;
+  content: string;
+  tags: string[] | null;
+  likes_count: number | null;
+  created_at: string;
 };
 
 export default function SamvaadPage() {
-  const { currentLocation } = useCitizen();
-  const { language, t } = useLanguage();
+  const { currentLocation, user } = useCitizen();
+  const { t } = useLanguage();
 
-  const [threads, setThreads] = useState<SamvaadThread[]>(() => INITIAL_THREADS);
+  const [threads, setThreads] = useState<SamvaadThread[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(['WaterResources']);
 
-  // Sync sample threads when language changes
-  React.useEffect(() => {
-    const localized = INITIAL_THREADS_BY_LANG[language] || INITIAL_THREADS_BY_LANG.en;
-    setThreads(localized);
-  }, [language]);
+  const mapCommunityThread = (row: CommunityThreadRow): SamvaadThread => {
+    const content = row.content || '';
+    const tags = row.tags || [];
+    const authorRole: AuthorRole = row.author_role === 'RESEARCHER' || row.author_role === 'STUDENT'
+      ? row.author_role
+      : 'CITIZEN';
+
+    return {
+      id: row.id,
+      author: row.author_name || user.name || 'Citizen Contributor',
+      role: authorRole,
+      roleLabel: authorRole === 'CITIZEN' ? t.samvaad.roles.citizen : row.author_role || t.samvaad.roles.citizen,
+      location: `${currentLocation.district || 'Ranchi'}, ${currentLocation.block || 'Kanke'}`,
+      timeAgo: new Date(row.created_at).toLocaleDateString(),
+      category: tags.some((tag) => /water/i.test(tag)) ? 'WATER' : tags.some((tag) => /agri|livelihood/i.test(tag)) ? 'AGRITECH' : tags.some((tag) => /energy/i.test(tag)) ? 'ENERGY' : 'LIVELIHOODS',
+      title: content.slice(0, 50) + (content.length > 50 ? '...' : ''),
+      content,
+      tags,
+      likesCount: row.likes_count || 0,
+      replies: [],
+    };
+  };
+
+  useEffect(() => {
+    const loadThreads = async () => {
+      const { data, error } = await supabase
+        .from('community_threads')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Failed to load community threads:', error);
+        return;
+      }
+
+      setThreads((data as CommunityThreadRow[]).map(mapCommunityThread));
+    };
+
+    void loadThreads();
+  }, [currentLocation.block, currentLocation.district, t, user.name]);
 
   const [activeCategory, setActiveCategory] = useState<TopicCategory>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -319,6 +119,7 @@ export default function SamvaadPage() {
   const [composerText, setComposerText] = useState('');
   const [composerCategory, setComposerCategory] = useState<TopicCategory>('WATER');
   const [composerRole, setComposerRole] = useState<AuthorRole>('RESEARCHER');
+  const availableTags = ['WaterResources', 'Palamu', 'Agritech', 'Energy', 'Livelihoods'];
 
   // Comment Expander / Drawer State
   const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
@@ -333,17 +134,29 @@ export default function SamvaadPage() {
   };
 
   // Optimistic Like Toggle
-  const handleToggleLike = (threadId: string) => {
-    setThreads((prev) =>
-      prev.map((thread) => {
-        if (thread.id === threadId) {
-          const isLiked = !thread.isLiked;
-          const likesCount = isLiked ? thread.likesCount + 1 : thread.likesCount - 1;
-          return { ...thread, isLiked, likesCount };
-        }
-        return thread;
-      })
-    );
+  const handleToggleLike = async (thread: SamvaadThread) => {
+    if (thread.isLiked) return;
+
+    const nextLikesCount = thread.likesCount + 1;
+    setThreads((prev) => prev.map((currentThread) =>
+      currentThread.id === thread.id
+        ? { ...currentThread, isLiked: true, likesCount: nextLikesCount }
+        : currentThread
+    ));
+
+    const { error } = await supabase
+      .from('community_threads')
+      .update({ likes_count: nextLikesCount })
+      .eq('id', thread.id);
+
+    if (error) {
+      setThreads((prev) => prev.map((currentThread) =>
+        currentThread.id === thread.id
+          ? { ...currentThread, isLiked: false, likesCount: thread.likesCount }
+          : currentThread
+      ));
+      console.error('Failed to like community thread:', error);
+    }
   };
 
   // Optimistic Reply Action
@@ -400,48 +213,28 @@ export default function SamvaadPage() {
   };
 
   // Post Composer Action
-  const handleQuickPost = () => {
+  const handleQuickPost = async () => {
     if (!composerText.trim()) return;
 
-    const authorName =
-      composerRole === 'RESEARCHER'
-        ? 'Dr. Anand Verma'
-        : composerRole === 'STUDENT'
-        ? 'Student Lead'
-        : 'Citizen Contributor';
+    const currentUserId = (user as typeof user & { id?: string }).id || crypto.randomUUID();
+    const { data, error } = await supabase
+      .from('community_threads')
+      .insert({
+        content: composerText.trim(),
+        tags: selectedTags,
+        author_id: currentUserId,
+        likes_count: 0,
+      })
+      .select('*')
+      .single();
 
-    const roleLabel =
-      composerRole === 'RESEARCHER'
-        ? t.samvaad.roles.researcher
-        : composerRole === 'STUDENT'
-        ? t.samvaad.roles.student
-        : t.samvaad.roles.citizen;
+    if (error) {
+      console.error('Failed to create community thread:', error);
+      showToast('Unable to start discussion');
+      return;
+    }
 
-    const newThread: SamvaadThread = {
-      id: `th-user-${Date.now()}`,
-      author: authorName,
-      role: composerRole,
-      roleLabel: roleLabel,
-      location: `${currentLocation.district || 'Ranchi'}, ${currentLocation.block || 'Kanke'}`,
-      timeAgo: 'Just now',
-      category: composerCategory === 'ALL' ? 'WATER' : composerCategory,
-      title: composerText.slice(0, 50) + (composerText.length > 50 ? '...' : ''),
-      content: composerText,
-      tags: [
-        composerCategory === 'WATER'
-          ? 'WaterResearch'
-          : composerCategory === 'AGRITECH'
-          ? 'Agritech'
-          : composerCategory === 'ENERGY'
-          ? 'Energy'
-          : 'Livelihoods',
-      ],
-      likesCount: 1,
-      isLiked: true,
-      replies: [],
-    };
-
-    setThreads([newThread, ...threads]);
+    setThreads((prev) => [mapCommunityThread(data as CommunityThreadRow), ...prev]);
     setComposerText('');
     showToast(t.samvaad.toastPostSuccess);
   };
@@ -584,6 +377,30 @@ export default function SamvaadPage() {
               <option value="STUDENT">{t.samvaad.roles.student}</option>
               <option value="CITIZEN">{t.samvaad.roles.citizen}</option>
             </select>
+
+            <div className="flex flex-wrap gap-1.5">
+              {availableTags.map((tag) => {
+                const isSelected = selectedTags.includes(tag);
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() =>
+                      setSelectedTags((prev) =>
+                        isSelected ? prev.filter((selectedTag) => selectedTag !== tag) : [...prev, tag]
+                      )
+                    }
+                    className={`px-2.5 py-1 rounded-full border text-[10px] font-bold transition-colors ${
+                      isSelected
+                        ? 'bg-blue-600 border-blue-600 text-white'
+                        : 'bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-700'
+                    }`}
+                  >
+                    #{tag}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <button
@@ -697,7 +514,7 @@ export default function SamvaadPage() {
                     {/* Like Button */}
                     <button
                       type="button"
-                      onClick={() => handleToggleLike(thread.id)}
+                      onClick={() => void handleToggleLike(thread)}
                       className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl transition-all active:scale-95 ${
                         thread.isLiked
                           ? 'bg-blue-50 text-blue-700 font-black'

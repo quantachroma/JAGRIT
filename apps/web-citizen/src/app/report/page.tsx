@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import type { ChallengeSubmissionPayload, GeoLocation } from '@jagrit/contracts';
+import type { GeoLocation } from '@jagrit/contracts';
 import { useCitizen } from '@/context/CitizenContext';
+import { supabase } from "@/lib/supabase";
 import AudioRecorder from '@/components/audio-recorder';
 import CVLaserScanner, { DetectedDefect } from '@/components/cv-laser-scanner';
 import SpatialRadarMap from '@/components/spatial-radar-map';
@@ -281,7 +282,6 @@ export default function ProblemSubmissionStudio() {
     });
   };
 
-  // Submission to API strictly obeying ChallengeSubmissionPayload
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -296,47 +296,58 @@ export default function ProblemSubmissionStudio() {
         panchayat: currentLocation.panchayat || `${activeBlock} Ward`,
       };
 
-      const challengePayload: ChallengeSubmissionPayload = {
-        title: title.trim() || 'Rural Infrastructure Problem',
-        description: description.trim(),
-        mediaUrls: compressedFile ? [compressedFile.name] : [],
-        location: locationPayload,
-        preferredLanguage: (language as 'hi' | 'sat' | 'en') || 'hi',
-        rawAudioUrl: recordedAudioUrl || undefined,
-      };
-
-      const formData = new FormData();
-      formData.append('title', challengePayload.title);
-      formData.append('description', challengePayload.description);
-      formData.append('category', category);
-      formData.append('language', challengePayload.preferredLanguage);
-      formData.append('latitude', String(challengePayload.location.lat));
-      formData.append('longitude', String(challengePayload.location.lon));
-      formData.append('district', challengePayload.location.district);
-      formData.append('block', challengePayload.location.block || 'Kanke');
-      formData.append('panchayat', challengePayload.location.panchayat || 'Kanke');
+      const mediaUrls: string[] = [];
+      let rawAudioUrl: string | undefined;
 
       if (compressedFile) {
-        formData.append('evidence', compressedFile);
-      }
-      if (recordedAudioUrl) {
-        formData.append('audioData', recordedAudioUrl);
-      }
-      if (detectedDefects.length > 0) {
-        formData.append('cvDefects', JSON.stringify(detectedDefects));
+        const imagePath = `reports/${Date.now()}_${Math.random().toString(36).substring(7)}.webp`;
+        const { error: imageUploadError } = await supabase.storage
+          .from('challenge-media')
+          .upload(imagePath, compressedFile);
+
+        if (imageUploadError) throw imageUploadError;
+
+        const { data: imageUrlData } = supabase.storage
+          .from('challenge-media')
+          .getPublicUrl(imagePath);
+        mediaUrls.push(imageUrlData.publicUrl);
       }
 
-      const res = await fetch('/api/mock/submit', {
-        method: 'POST',
-        body: formData,
+      if (recordedAudioBlob) {
+        const audioPath = `audio/${Date.now()}_voice.ogg`;
+        const { error: audioUploadError } = await supabase.storage
+          .from('challenge-media')
+          .upload(audioPath, recordedAudioBlob);
+
+        if (audioUploadError) throw audioUploadError;
+
+        const { data: audioUrlData } = supabase.storage
+          .from('challenge-media')
+          .getPublicUrl(audioPath);
+        rawAudioUrl = audioUrlData.publicUrl;
+      }
+
+      const ticketNumber = `JAG-${new Date().getFullYear()}-${(activeDistrict || 'RAN')
+        .substring(0, 3)
+        .toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const { error: insertError } = await supabase.from('challenges').insert({
+        ticket_number: ticketNumber,
+        title: title.trim() || 'Grassroots Civic Challenge',
+        description: description.trim(),
+        location: `POINT(${mapCoords.lon || 85.3096} ${mapCoords.lat || 23.3441})`,
+        district: activeDistrict || 'Ranchi',
+        block: activeBlock || 'Kanke',
+        panchayat: currentLocation.panchayat || 'Chianki',
+        media_urls: mediaUrls,
+        raw_audio_url: rawAudioUrl,
+        submission_channel: 'APP',
+        status: 'OPEN_FOR_PRIORITIZATION',
+        upvotes_count: 1,
       });
 
-      if (!res.ok) {
-        throw new Error(`Submission failed with HTTP ${res.status}`);
-      }
+      if (insertError) throw insertError;
 
-      const data = await res.json();
-      setSubmitResult(data);
+      setSubmitResult({ ticketNumber, upvotes: 1 });
     } catch (err: any) {
       setErrorMsg(err?.message || 'Error occurred during problem submission.');
     } finally {

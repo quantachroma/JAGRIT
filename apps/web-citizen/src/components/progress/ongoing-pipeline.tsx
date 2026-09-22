@@ -8,7 +8,6 @@ import {
   ChallengeStage,
   OngoingProjectItem,
 } from './statewide-types';
-import { ONGOING_PROJECTS_DATA } from './statewide-data';
 import {
   Droplets,
   Sprout,
@@ -33,9 +32,10 @@ import {
 
 interface OngoingPipelineProps {
   language: StatewideLanguage;
+  projects: OngoingProjectItem[];
 }
 
-export default function OngoingPipeline({ language }: OngoingPipelineProps) {
+export default function OngoingPipeline({ language, projects }: OngoingPipelineProps) {
   const [selectedDomain, setSelectedDomain] = useState<ChallengeDomain>('all');
   const [selectedStage, setSelectedStage] = useState<ChallengeStage>('all');
 
@@ -56,12 +56,12 @@ export default function OngoingPipeline({ language }: OngoingPipelineProps) {
   ];
 
   const filteredProjects = useMemo(() => {
-    return ONGOING_PROJECTS_DATA.filter((project) => {
+    return projects.filter((project) => {
       const matchDomain = selectedDomain === 'all' || project.domainKey === selectedDomain;
       const matchStage = selectedStage === 'all' || project.stageKey === selectedStage;
       return matchDomain && matchStage;
     });
-  }, [selectedDomain, selectedStage]);
+  }, [projects, selectedDomain, selectedStage]);
 
   const getSectionTitle = () => {
     if (language === 'hi') return 'वर्तमान में क्या प्रगति है — लाइव परियोजना पाइपलाइन';

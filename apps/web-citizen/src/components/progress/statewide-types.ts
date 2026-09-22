@@ -4,6 +4,10 @@ export type ChallengeDomain = 'all' | 'water' | 'agritech' | 'energy' | 'healthc
 
 export type ChallengeStage = 'all' | 'bidding' | 'prototyping' | 'deployment' | 'maturation';
 
+export interface LiveProjectItem extends OngoingProjectItem {
+  resolutionStatus: string;
+}
+
 export interface MacroMetrics {
   solvedProblemsCount: string;
   solvedProblemsLabel: { en: string; hi: string; sat: string };
