@@ -2,10 +2,14 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useCitizen } from '@/context/CitizenContext';
 import { useLanguage } from '@/context/LanguageContext';
 import type { Language } from '@/lib/translations';
-import SpatialRadarMap from '@/components/spatial-radar-map';
+import GrievanceStepper from '@/components/GrievanceStepper';
+import BreakdownAlarmModal from '@/components/BreakdownAlarmModal';
+import HotChallengesFeed from '@/components/HotChallengesFeed';
+import { triggerBreakdownAlarm, upvoteChallenge } from '@/services/api';
 import {
   Search,
   CheckCircle2,
@@ -22,6 +26,8 @@ import {
   ChevronRight,
   TrendingUp,
 } from 'lucide-react';
+
+const SpatialRadarMap = dynamic(() => import('@/components/spatial-radar-map'), { ssr: false });
 
 export interface ChallengeItem {
   id: string;
@@ -163,11 +169,14 @@ export default function CitizenDashboardPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [viewMode, setViewMode] = useState<'cards' | 'radar'>('cards');
+  const [breakdownModalOpen, setBreakdownModalOpen] = useState(false);
+  const [pilotPaused, setPilotPaused] = useState(false);
 
   // Optimistic Upvote State
   const [optimisticUpvotes, setOptimisticUpvotes] = useState<Record<string, { count: number; isUpvoted: boolean }>>({});
 
   const handleOptimisticUpvote = (challengeId: string, initialCount: number) => {
+    void upvoteChallenge(challengeId, getCitizenUserHash());
     setOptimisticUpvotes((prev) => {
       const current = prev[challengeId];
       if (current && current.isUpvoted) {
@@ -183,6 +192,15 @@ export default function CitizenDashboardPage() {
         };
       }
     });
+  };
+
+  const getCitizenUserHash = () => {
+    if (typeof window === 'undefined') return 'citizen-demo';
+    const existing = localStorage.getItem('jagrit_citizen_user_hash');
+    if (existing) return existing;
+    const generated = `citizen-${Math.random().toString(36).slice(2, 12)}`;
+    localStorage.setItem('jagrit_citizen_user_hash', generated);
+    return generated;
   };
 
   const filteredChallenges = useMemo(() => {
@@ -410,7 +428,14 @@ export default function CitizenDashboardPage() {
             href="/report"
             className="inline-flex items-center justify-center space-x-2 bg-[#1E3A8A] hover:bg-[#2563EB] text-white px-5 py-3 min-h-[48px] rounded-2xl text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all active:scale-95"
           >
-            <span>{t.reportBtn}</span>
+            <span>Report New Problem (Voice/Photo)</span>
+          </Link>
+
+          <Link
+            href="/whatsapp-simulator"
+            className="inline-flex items-center justify-center space-x-2 bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-3 min-h-[48px] rounded-2xl text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95"
+          >
+            <span>Open WhatsApp Seva Bot</span>
           </Link>
         </div>
       </div>
@@ -486,6 +511,17 @@ export default function CitizenDashboardPage() {
           </div>
         </div>
       </div>
+
+      <GrievanceStepper paused={pilotPaused} />
+
+      <section className="flex flex-col items-start justify-between gap-4 rounded-3xl border-2 border-red-200 bg-red-50 p-5 shadow-sm sm:flex-row sm:items-center sm:p-6">
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-red-700">USP 5 · Days 1-45 breakdown protocol</p>
+          <h2 className="mt-1 text-lg font-black text-red-950">Is the field pilot not working?</h2>
+          <p className="mt-1 max-w-2xl text-xs leading-5 text-red-900/80">Report a machine breakdown immediately so verified citizen signals can freeze the resolution clock.</p>
+        </div>
+        <button type="button" onClick={() => setBreakdownModalOpen(true)} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-red-700 px-5 text-sm font-black text-white shadow-lg shadow-red-900/20 transition-colors hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500">🚨 Report Machine Breakdown / Kharab Ho Gaya</button>
+      </section>
 
       {/* 2. Challenges Near You */}
       <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-xs space-y-5">
@@ -618,7 +654,9 @@ export default function CitizenDashboardPage() {
 
         {/* Cards Feed View */}
         {viewMode === 'cards' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <>
+            <HotChallengesFeed challenges={filteredChallenges} language={language} onUpvote={(ticketId) => { void upvoteChallenge(ticketId, getCitizenUserHash()); }} />
+            <div className="hidden">
             {filteredChallenges.length === 0 ? (
               <div className="col-span-full text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                 <AlertTriangle className="w-8 h-8 text-sky-500 mx-auto mb-2" />
@@ -759,9 +797,19 @@ export default function CitizenDashboardPage() {
                 );
               })
             )}
-          </div>
+            </div>
+          </>
         )}
       </div>
+      <BreakdownAlarmModal
+        open={breakdownModalOpen}
+        onClose={() => setBreakdownModalOpen(false)}
+        onConfirm={(reason) => {
+          void triggerBreakdownAlarm('JAG-4102', reason);
+          setPilotPaused(true);
+          setBreakdownModalOpen(false);
+        }}
+      />
     </div>
   );
 }

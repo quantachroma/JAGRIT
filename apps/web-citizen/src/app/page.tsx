@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import HeroBackgroundSvg from '@/components/hero/hero-background-svg';
+import HeroCarousel from '@/components/HeroCarousel';
+import FlipCard3D, { type FlipCardData } from '@/components/FlipCard3D';
 import { MOCK_ACCOUNTS, saveActiveSession, type MockUser } from '@/lib/mock-auth';
 import {
   Users,
@@ -17,7 +19,20 @@ import {
   ShieldCheck,
   CheckCircle2,
   Compass,
+  ArrowUpRight,
 } from 'lucide-react';
+
+const civicPillars = [
+  { eyebrow: '01 / Zero barrier intake', title: 'Every voice becomes a research brief.', description: 'Speak in Santhali or Hindi, send a photo, or use WhatsApp. JAGRIT turns lived experience into a location-verified problem statement.', accent: 'from-[#075985] via-[#0e7490] to-[#164e63]', icon: 'voice' as const, stat: '2', statLabel: 'languages at launch' },
+  { eyebrow: '02 / Autonomous R&D', title: 'The right campus for every challenge.', description: 'AI-assisted triage routes validated problems through three accountable hackathon rounds at BIT Mesra, IIT ISM and NIT Jamshedpur.', accent: 'from-[#9a3412] via-[#c2410c] to-[#7c2d12]', icon: 'research' as const, stat: '3', statLabel: 'round resolution loop' },
+  { eyebrow: '03 / Public trust', title: 'Progress is visible. Funding is earned.', description: 'Dual-lock citizen quorum and PESA Gram Sabha verification release milestone escrow in a clear 30% / 40% / 30% sequence.', accent: 'from-[#166534] via-[#15803d] to-[#14532d]', icon: 'quorum' as const, stat: '30·40·30', statLabel: 'escrow tranches' },
+];
+
+const civicProblems: FlipCardData[] = [
+  { title: 'Palamu Basin: Groundwater Fluoride 8.2 mg/L', location: 'Daltonganj, Palamu', urgency: 'Urgent', category: 'Safe water / verified', detail: 'Three hamlets report recurring dental fluorosis and no dependable filtration point.', institution: 'BIT Mesra · Civil Engineering Lab', solution: 'Solar-powered community defluoridation', tranche: '30% released', progress: 30, tint: 'from-[#0e7490] to-[#164e63]' },
+  { title: 'Khunti Lac Cultivation Spoilage', location: 'Murhu, Khunti', urgency: 'Active', category: 'Livelihood / field signal', detail: 'Monsoon humidity is reducing lac shelf life before producer collectives reach market.', institution: 'IIT (ISM) Dhanbad · Materials Lab', solution: 'Low-energy lac drying and storage kit', tranche: '40% in review', progress: 62, tint: 'from-[#b45309] to-[#7c2d12]' },
+  { title: 'Chaibasa Tribal Solar Grid Fault', location: 'Tantnagar, West Singhbhum', urgency: 'Urgent', category: 'Clean energy / quorum', detail: 'A last-mile solar micro-grid is offline after repeated inverter faults.', institution: 'NIT Jamshedpur · Power Systems Cell', solution: 'Modular fault telemetry for micro-grids', tranche: '30% released', progress: 30, tint: 'from-[#166534] to-[#365314]' },
+];
 
 export default function EntryPage() {
   const { language, setLanguage, t } = useLanguage();
@@ -336,8 +351,30 @@ export default function EntryPage() {
         {/* MAIN CENTER HERO CONTAINER */}
         <main className="w-full max-w-6xl mx-auto my-auto py-8 sm:py-12 flex flex-col items-center text-center">
           {!showLogin ? (
-            /* STEP 1: Hero Identity, CTAs & 4 Role-Selection Cards */
-            <div className="w-full flex flex-col items-center space-y-8 sm:space-y-10">
+            <>
+              <div className="w-full space-y-10 text-left">
+                <div className="grid items-end gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+                  <div className="max-w-3xl">
+                    <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-cyan-100"><span className="h-2 w-2 rounded-full bg-cyan-300" /> DHTE · Smart Education / DPI</div>
+                    <h1 className="text-5xl font-black leading-[0.92] tracking-[-0.06em] text-white sm:text-7xl lg:text-8xl">JAGRIT<span className="text-cyan-300">.</span></h1>
+                    <p className="mt-5 max-w-2xl text-xl font-bold leading-tight text-white sm:text-2xl">Jharkhand Academia-Industry Gateway for Research, Innovation &amp; Transformation of Society</p>
+                    <p className="mt-3 max-w-2xl text-lg font-semibold leading-8 text-amber-200">झारखण्ड जन-समस्या नवाचार, शोध एवं सामाजिक परिवर्तन सेतु</p>
+                    <p className="mt-5 max-w-xl text-sm leading-6 text-slate-200">A public innovation loop for village voices, university research, accountable funding, and solutions that return to the people who shaped them.</p>
+                    <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                      <Link href="/report" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-5 text-sm font-black text-slate-950 shadow-lg shadow-cyan-950/30 transition-colors hover:bg-cyan-200 focus:outline-none focus:ring-2 focus:ring-white">Report Village Problem <ArrowUpRight className="h-4 w-4" /></Link>
+                      <Link href="/whatsapp-simulator" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 text-sm font-black text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-300"><MessageSquare className="h-4 w-4" /> Test WhatsApp Seva Bot</Link>
+                      <Link href="/progress" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-amber-300/50 px-5 text-sm font-black text-amber-200 transition-colors hover:bg-amber-300/10 focus:outline-none focus:ring-2 focus:ring-amber-200">View Live State Progress <ArrowRight className="h-4 w-4" /></Link>
+                    </div>
+                  </div>
+                  <div className="hidden justify-end pb-2 lg:flex"><div className="max-w-xs border-l-2 border-amber-300/60 pl-5 text-sm leading-6 text-slate-300"><span className="font-black text-white">A civic operating system for Jharkhand.</span><br />Built around NEP 2020 research credits, local language access, and Gram Sabha verified trust.</div></div>
+                </div>
+                <HeroCarousel pillars={civicPillars} />
+                <section aria-labelledby="live-challenges-heading" className="space-y-5">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">Live challenge board</p><h2 id="live-challenges-heading" className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">Problems with a pathway forward.</h2></div><Link href="/progress" className="inline-flex items-center gap-1 text-sm font-bold text-amber-200 hover:text-amber-100">See all state progress <ArrowRight className="h-4 w-4" /></Link></div>
+                  <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{civicProblems.map((problem) => <FlipCard3D key={problem.title} problem={problem} />)}</div>
+                </section>
+              </div>
+              <div className="hidden">
               {/* Primary Identity: JAGRIT Wordmark with WCAG AA Contrast on Deep Navy */}
               <div className="space-y-3 max-w-3xl">
                 {/* Authentic Sohrai/Khovar Earth Palette Johar Badge */}
@@ -457,7 +494,8 @@ export default function EntryPage() {
                   </div>
                 </div>
               </div>
-            </div>
+              </div>
+            </>
           ) : (
             /* STEP 2: 4-ROLE CREDENTIAL LOGIN & DISTINCT DEMO FAST-PASS PANEL WITH FULL MULTILINGUAL FIDELITY */
             <div className="w-full max-w-md mx-auto space-y-4 animate-in fade-in zoom-in-95 duration-200">
