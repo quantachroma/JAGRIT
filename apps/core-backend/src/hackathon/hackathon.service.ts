@@ -1,4 +1,15 @@
 import { query } from '../db/client';
+import { startStageOneEscalation } from './escalation.service';
+
+export interface HackathonDeliverableMock {
+	projectId: string;
+	round: 1 | 2 | 3;
+	status: 'DELIVERABLE_RECEIVED';
+}
+
+export function submitDeliverableMock(projectId: string, round: 1 | 2 | 3): HackathonDeliverableMock {
+	return { projectId, round, status: 'DELIVERABLE_RECEIVED' };
+}
 
 export async function placeBid(
 	challengeId: string,
@@ -60,17 +71,11 @@ export async function evaluateBids(challengeId: string) {
 		};
 	}
 
-	await query(
-		`UPDATE public.challenges
-		 SET allocated_pool_inr = allocated_pool_inr * 1.20,
-			 bidding_deadline = NOW() + INTERVAL '7 days'
-		 WHERE id = $1;`,
-		[challengeId],
-	);
+	await startStageOneEscalation(challengeId);
 
 	return {
-		status: 'EXTENDED',
+		status: 'ESCALATION',
 		bids_count: bidsCount,
-		message: 'Zero bids logged. Incentive pool increased by 20% and deadline extended by 7 days.',
+		message: 'Zero bids logged. Challenge escalated under ADR-011.',
 	};
 }

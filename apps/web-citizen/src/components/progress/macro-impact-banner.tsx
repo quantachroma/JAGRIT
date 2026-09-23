@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { StatewideLanguage } from './statewide-types';
-import { STATEWIDE_MACRO_METRICS } from './statewide-data';
+import { MacroMetrics } from './statewide-types';
 import {
   CheckCircle2,
   Activity,
@@ -16,10 +16,11 @@ import {
 
 interface MacroImpactBannerProps {
   language: StatewideLanguage;
+  metrics: MacroMetrics;
 }
 
-export default function MacroImpactBanner({ language }: MacroImpactBannerProps) {
-  const m = STATEWIDE_MACRO_METRICS;
+export default function MacroImpactBanner({ language, metrics }: MacroImpactBannerProps) {
+  const m = metrics;
 
   const getHeadline = () => {
     if (language === 'hi') return 'झारखंड सामाजिक नवाचार एवं समाधान प्रगति निगरानी प्रणाली';

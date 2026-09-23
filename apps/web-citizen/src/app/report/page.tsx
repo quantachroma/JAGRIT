@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type { ChallengeSubmissionPayload, GeoLocation } from '@jagrit/contracts';
 import { useCitizen } from '@/context/CitizenContext';
+import { supabase } from "@/lib/supabase";
 import AudioWaveformRecorder from '@/components/AudioWaveformRecorder';
 import LaserScannerPreview, { type ScannerDefect } from '@/components/LaserScannerPreview';
 import type { ReportLocation } from '@/components/ReportLocationMap';
@@ -311,7 +312,7 @@ export default function ProblemSubmissionStudio() {
     });
   };
 
-  const sendQueuedReport = async (report: QueuedReport) => {
+const sendQueuedReport = async (report: QueuedReport) => {
     const formData = new FormData();
     formData.append('title', report.title);
     formData.append('description', report.description);
@@ -360,27 +361,110 @@ export default function ProblemSubmissionStudio() {
     void syncQueue();
     return () => { unregisterApiSync(); window.removeEventListener('online', syncQueue); window.removeEventListener('online', refreshConnectivity); window.removeEventListener('offline', refreshConnectivity); };
   }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setErrorMsg(null);
     try {
-      const locationPayload: ReportLocation = { lat: mapCoords.lat, lon: mapCoords.lon, district: activeDistrict, block: activeBlock, panchayat: currentLocation.panchayat || `${activeBlock} Ward` };
+const locationPayload: ReportLocation = { 
+        lat: mapCoords.lat, 
+        lon: mapCoords.lon, 
+        district: activeDistrict, 
+        block: activeBlock, 
+        panchayat: currentLocation.panchayat || `${activeBlock} Ward` 
+      };
+
+      // 1. Offline Mode Handling (PRD USP 10: 5-Tier Weak Connectivity)
       const imageData = compressedFile ? await blobToDataUrl(compressedFile) : undefined;
-      const report: QueuedReport = { title: title.trim() || 'Rural Infrastructure Problem', description: description.trim(), category, language: (language as 'hi' | 'sat' | 'en') || 'hi', imageData, audioData: recordedAudioUrl || undefined, location: locationPayload, defects: detectedDefects };
-      const challengePayload: ChallengeSubmissionPayload = { title: report.title, description: report.description, mediaUrls: compressedFile ? [compressedFile.name] : [], location: locationPayload, preferredLanguage: report.language as 'hi' | 'sat' | 'en', rawAudioUrl: recordedAudioUrl || undefined };
-      void challengePayload;
+      const report: QueuedReport = { 
+        title: title.trim() || 'Grassroots Civic Challenge', 
+        description: description.trim(), 
+        category, 
+        language: (language as 'hi' | 'sat' | 'en') || 'hi', 
+        imageData, 
+        audioData: typeof recordedAudioUrl !== 'undefined' ? (recordedAudioUrl || undefined) : undefined, 
+        location: locationPayload, 
+        defects: detectedDefects 
+      };
+
       if (!navigator.onLine) {
         queueReport(report);
         setIsOffline(true);
-        setSubmitResult({ ticketNumber: `OFFLINE-${Date.now().toString(36).toUpperCase()}`, queued: true, upvotes: 1 });
-      } else {
+        setSubmitResult({ 
+          ticketNumber: `OFFLINE-${Date.now().toString(36).toUpperCase()}`, 
+          queued: true, 
+          upvotes: 1 
+        });
+        return;
+      }
+
+      // 2. Online Mode: Direct Supabase Cloud Storage & Database Insertion
+      try {
+        const mediaUrls: string[] = [];
+        let rawAudioUrl: string | undefined;
+
+        if (compressedFile) {
+          const imagePath = `reports/${Date.now()}_${Math.random().toString(36).substring(7)}.webp`;
+          const { error: imageUploadError } = await supabase.storage
+            .from('challenge-media')
+            .upload(imagePath, compressedFile);
+
+          if (!imageUploadError) {
+            const { data: imageUrlData } = supabase.storage
+              .from('challenge-media')
+              .getPublicUrl(imagePath);
+            mediaUrls.push(imageUrlData.publicUrl);
+          }
+        }
+
+        // Handle Audio Upload if blob or url is present
+        const audioToUpload = typeof recordedAudioBlob !== 'undefined' ? recordedAudioBlob : null;
+        if (audioToUpload) {
+          const audioPath = `audio/${Date.now()}_voice.ogg`;
+          const { error: audioUploadError } = await supabase.storage
+            .from('challenge-media')
+            .upload(audioPath, audioToUpload);
+
+          if (!audioUploadError) {
+            const { data: audioUrlData } = supabase.storage
+              .from('challenge-media')
+              .getPublicUrl(audioPath);
+            rawAudioUrl = audioUrlData.publicUrl;
+          }
+        }
+
+        const ticketNumber = `JAG-${new Date().getFullYear()}-${(activeDistrict || 'RAN')
+          .substring(0, 3)
+          .toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+        const { error: insertError } = await supabase.from('challenges').insert({
+          ticket_number: ticketNumber,
+          title: title.trim() || 'Grassroots Civic Challenge',
+          description: description.trim(),
+          location: `POINT(${mapCoords.lon || 85.3096} ${mapCoords.lat || 23.3441})`,
+          district: activeDistrict || 'Ranchi',
+          block: activeBlock || 'Kanke',
+          panchayat: currentLocation.panchayat || 'Chianki',
+          media_urls: mediaUrls,
+          raw_audio_url: rawAudioUrl,
+          submission_channel: 'APP',
+          status: 'OPEN_FOR_PRIORITIZATION',
+          upvotes_count: 1,
+        });
+
+        if (insertError) throw insertError;
+
+        setSubmitResult({ ticketNumber, upvotes: 1 });
+      } catch (supabaseErr) {
+        console.warn('Direct Supabase insert failed, attempting backend fallback:', supabaseErr);
+        // Fallback to API queue handler
         setSubmitResult(await sendQueuedReport(report));
       }
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : 'Error occurred during problem submission.');
-    } finally { setSubmitting(false); }
+    } finally { 
+      setSubmitting(false); 
+    }
   };
 
   return (

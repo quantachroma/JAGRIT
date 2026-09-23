@@ -1,10 +1,17 @@
 # ==========================================
 # JAGRIT AI Microservice — Core Web Engine
+# JAGRIT AI Microservice — Dependencies
 # ==========================================
 fastapi>=0.115.0
 uvicorn[standard]>=0.30.0
 pydantic>=2.8.0
 pydantic-settings>=2.4.0
+
+# --- Core Web Engine ---
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+pydantic>=2.6.0
+pydantic-settings>=2.2.0
 python-multipart>=0.0.9
 python-dotenv>=1.0.1
 httpx>=0.27.0
@@ -13,14 +20,25 @@ requests>=2.32.0
 # ==========================================
 # AI / ML Inference Core
 # ==========================================
+# --- Async Task Queue ---
+redis>=5.0.2
+celery>=5.3.6
+
+# --- Security / Encryption ---
+cryptography>=42.0.0
+
+# --- AI / ML Inference Core ---
 torch>=2.2.0
 torchvision>=0.17.0
 torchaudio>=2.2.0
 transformers>=4.44.0
 sentence-transformers>=3.0.0
 accelerate>=0.33.0
+transformers>=4.38.0
+sentence-transformers>=2.5.0
 numpy>=1.26.0,<2.0.0
 scipy>=1.13.0
+scipy>=1.12.0
 
 # ==========================================
 # Audio & Speech-to-Text (Whisper / Santhali & Hindi ASR)
@@ -28,10 +46,16 @@ scipy>=1.13.0
 faster-whisper>=1.0.3
 librosa>=0.10.2
 soundfile>=0.12.1
+# --- Audio & Speech-to-Text ---
+# (Whisper / Santhali & Hindi ASR)
+# faster-whisper>=1.0.3  # optional — only needed for CTranslate2 backend
+# librosa>=0.10.2        # optional — only needed for audio preprocessing
+# soundfile>=0.12.1      # optional — only needed for WAV file I/O
 
 # ==========================================
 # Vision Transformer (ViT) & Image Processing
 # ==========================================
+# --- Vision Transformer (ViT) & Image Processing ---
 Pillow>=10.4.0
 
 # ==========================================
@@ -44,3 +68,26 @@ openai>=1.40.0
 # ==========================================
 psycopg2-binary>=2.9.9
 pgvector>=0.3.2
+fastapi==0.110.0
+uvicorn[standard]==0.28.0
+pydantic==2.6.4
+pydantic-settings==2.2.1
+redis==5.0.2
+celery==5.3.6
+httpx==0.27.0
+torch==2.2.1
+transformers==4.38.2
+ctranslate2==4.1.0
+sentence-transformers==2.5.1
+opencv-python-headless==4.9.0.80
+pydub==0.25.1
+numpy==1.26.4
+scipy==1.12.0
+shapely==2.0.3
+python-multipart==0.0.9
+python-dotenv==1.0.1
+pytest==8.1.1
+pytest-asyncio==0.23.6
+# --- Testing ---
+pytest>=8.1.0
+pytest-asyncio>=0.23.0

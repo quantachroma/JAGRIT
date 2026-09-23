@@ -95,6 +95,25 @@ class MatchRequest(BaseModel):
     lon: Optional[float] = 84.2
 
 
+class WbsRequest(BaseModel):
+    project_id: str
+    challenge_id: str
+
+
+@router.post("/wbs-timeline")
+async def generate_wbs_timeline(payload: WbsRequest):
+    return {
+        "project_id": payload.project_id,
+        "challenge_id": payload.challenge_id,
+        "phases": [
+            {"phase": "DESIGN", "duration_days": 14},
+            {"phase": "BUILD", "duration_days": 30},
+            {"phase": "FIELD_TEST", "duration_days": 45},
+        ],
+        "mode": "M5_DETERMINISTIC_ENGINE",
+    }
+
+
 @router.post("/match-universities")
 @router.post("/api/v1/ai/match-universities")
 async def match_universities(payload: MatchRequest):

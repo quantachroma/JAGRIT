@@ -1,40 +1,47 @@
-from fastapi import APIRouter, UploadFile, File
-from typing import Optional
+from io import BytesIO
+
+from fastapi import APIRouter, File, UploadFile
+from PIL import Image
+
+from models.loader import get_model
+from schemas.triage import DefectDetection, DefectScanResponse
+
 
 router = APIRouter(tags=["Vision Transformer Defect Scanner"])
 
-@router.post("/defect-scan")
-@router.post("/api/v1/ai/defect-scan")
-async def scan_defects(
-    file: Optional[UploadFile] = File(None),
-    image: Optional[UploadFile] = File(None)
-):
-    active_file = file or image
-    filename = active_file.filename if active_file else "palamu-groundwater.jpg"
+DEFECT_CLASSES = [
+    "Corroded_Pump_Base",
+    "Fluorosis_Sediment",
+    "Dry_Well",
+    "Lac_Pest_Infestation",
+    "Fungal_Leaf_Blight",
+    "Storage_Rot",
+    "Ruptured_Culvert",
+    "Pothole_Erosion",
+    "Exposed_Rebar",
+    # TODO: confirm remaining classes against PRD Appendix.
+    *[f"UNLISTED_DEFECT_{index:02d}" for index in range(1, 32)],
+]
 
-    defect_items = [
-        {
-            "label": "Iron Effluent",
-            "confidence": 0.94,
-            "bounding_box": [0.35, 0.22, 0.78, 0.68],
-            "box_2d": [0.35, 0.22, 0.78, 0.68],
-            "severity": "HIGH",
-            "recommended_domain": "Water Sanitation / Arsenic & Iron Filtration"
-        },
-        {
-            "label": "Corroded Pump Base Flange",
-            "confidence": 0.88,
-            "bounding_box": [0.72, 0.15, 0.95, 0.85],
-            "box_2d": [0.72, 0.15, 0.95, 0.85],
-            "severity": "MEDIUM",
-            "recommended_domain": "Mechanical Infrastructure"
-        }
-    ]
 
-    return {
-        "image_name": filename,
-        "scan_status": "COMPLETED",
-        "defects_detected_count": len(defect_items),
-        "detections": defect_items,
-        "defects": defect_items
-    }
+@router.post("/defect-scan", response_model=DefectScanResponse)
+async def scan_defects(image_file: UploadFile = File(...)) -> DefectScanResponse:
+    image = Image.open(BytesIO(await image_file.read())).convert("RGB")
+    resized_image = image.resize((224, 224))
+    result = get_model("vit").predict(resized_image)
+
+    detections = []
+    for detection in result.get("defects", []):
+        bbox = detection.get("bbox", detection.get("bounding_box", [0.0] * 4))
+        detections.append(
+            DefectDetection(
+                class_name=detection.get("class_name", detection.get("label", "unknown")),
+                confidence=float(detection.get("confidence", 0.0)),
+                bbox=[float(value) for value in bbox],
+            )
+        )
+
+    return DefectScanResponse(
+        defects_detected_count=len(detections),
+        detections=detections,
+    )
