@@ -6,7 +6,7 @@ export interface AIServiceResult<T> {
 	fallback: boolean;
 }
 
-async function callAi<T>(path: string, payload: Record<string, unknown>): Promise<AIServiceResult<T>> {
+async function callAi<T>(path: string, payload: Record<string, unknown>, fallbackData: T): Promise<AIServiceResult<T>> {
 	const controller = new AbortController();
 	const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
 	try {
@@ -19,14 +19,24 @@ async function callAi<T>(path: string, payload: Record<string, unknown>): Promis
 		if (!response.ok) throw new Error(`AI service returned ${response.status}.`);
 		return { data: await response.json() as T, fallback: false };
 	} catch {
-		return { data: null, fallback: true };
+		return { data: fallbackData, fallback: true };
 	} finally {
 		clearTimeout(timeout);
 	}
 }
 
-export const triageClassify = (payload: Record<string, unknown>) => callAi('triage-classify', payload);
-export const embed = (payload: Record<string, unknown>) => callAi('embed', payload);
-export const dedupScore = (payload: Record<string, unknown>) => callAi('dedup-score', payload);
-export const matchUniversities = (payload: Record<string, unknown>) => callAi('match-universities', payload);
-export const wbsTimeline = (payload: Record<string, unknown>) => callAi('wbs-timeline', payload);
+export const triageClassify = (payload: Record<string, unknown>) => callAi('triage-classify', payload, { category_type: 'CIVIC_ROUTINE', resolution_tier: 'TIER_2_STANDARD_ENGINEERING', suggested_action: 'ROUTE_TO_ULB_JHARSEWA_API' });
+export const embed = (payload: Record<string, unknown>) => callAi('embed', payload, { model: 'local-deterministic-fallback', dimension: 0, vector: [] });
+export const dedupScore = (payload: Record<string, unknown>) => callAi('dedup-score', payload, { duplicate: false, score: 0 });
+export const matchUniversities = (payload: Record<string, unknown>) => callAi('match-universities', payload, {
+	matched_universities: [],
+	mode: 'DETERMINISTIC_FALLBACK',
+});
+export const wbsTimeline = (payload: Record<string, unknown>) => callAi('wbs-timeline', payload, {
+	phases: [
+		{ phase: 'DESIGN', duration_days: 14 },
+		{ phase: 'BUILD', duration_days: 30 },
+		{ phase: 'FIELD_TEST', duration_days: 45 },
+	],
+	mode: 'DETERMINISTIC_FALLBACK',
+});

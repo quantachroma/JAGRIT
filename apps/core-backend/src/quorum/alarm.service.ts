@@ -1,3 +1,5 @@
+import { query } from '../db/client';
+
 export interface BreakdownReport {
 	citizenId: string;
 	verified: boolean;
@@ -15,6 +17,45 @@ export type AlarmResult = 'OUTSIDE_FIELD_TEST' | 'MONITORING' | 'CLOCK_FROZEN';
 const FIELD_TEST_DAYS = 45;
 const REPORT_WINDOW_MS = 24 * 60 * 60 * 1000;
 export const REPAIR_SLA_DAYS = 7;
+
+interface AlarmStateRow {
+	clock_started_at: Date | string;
+	frozen_at: Date | string | null;
+	repair_deadline: Date | string | null;
+	reports: BreakdownReport[];
+}
+
+export async function loadAlarmState(projectId: string, initialClockStartedAt: Date): Promise<AlarmState> {
+	const result = await query<AlarmStateRow>(
+		`SELECT clock_started_at, frozen_at, repair_deadline, reports
+		 FROM public.project_alarm_states WHERE project_id = $1;`,
+		[projectId],
+	);
+	const row = result.rows[0];
+	if (!row) return { clockStartedAt: initialClockStartedAt, reports: [] };
+	return {
+		clockStartedAt: new Date(row.clock_started_at),
+		frozenAt: row.frozen_at ? new Date(row.frozen_at) : undefined,
+		reports: (row.reports || []).map((report) => ({ ...report, reportedAt: new Date(report.reportedAt) })),
+	};
+}
+
+export async function persistAlarmState(projectId: string, state: AlarmState, repairedAt?: Date): Promise<void> {
+	const repairDeadline = state.frozenAt ? getRepairDeadline(state) : null;
+	await query(
+		`INSERT INTO public.project_alarm_states
+			(project_id, clock_started_at, frozen_at, repair_deadline, reports, repaired_at)
+		 VALUES ($1, $2, $3, $4, $5::jsonb, $6)
+		 ON CONFLICT (project_id) DO UPDATE SET
+			clock_started_at = EXCLUDED.clock_started_at,
+			frozen_at = EXCLUDED.frozen_at,
+			repair_deadline = EXCLUDED.repair_deadline,
+			reports = EXCLUDED.reports,
+			repaired_at = COALESCE(EXCLUDED.repaired_at, public.project_alarm_states.repaired_at),
+			updated_at = NOW();`,
+		[projectId, state.clockStartedAt, state.frozenAt || null, repairDeadline, JSON.stringify(state.reports), repairedAt || null],
+	);
+}
 
 function uniqueVerifiedReportsInLast24Hours(reports: BreakdownReport[], now: Date): number {
 	const cutoff = now.getTime() - REPORT_WINDOW_MS;

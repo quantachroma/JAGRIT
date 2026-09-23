@@ -51,7 +51,7 @@ export async function cloneBlueprint(input: BlueprintCloneInput) {
 
 	const project = projectInsert.data as Record<string, unknown>;
 	const [universityMatch, timeline] = await Promise.all([
-		matchUniversities({ project_id: project.id, challenge_id: clonedChallenge.id }),
+		matchUniversities({ project_id: project.id, challenge_id: clonedChallenge.id, description: sourceChallenge.description, domain: sourceChallenge.category_type || 'general' }),
 		wbsTimeline({ project_id: project.id, challenge_id: clonedChallenge.id }),
 	]);
 	return {

@@ -60,6 +60,8 @@ async function resolveProjectId(targetId: string): Promise<string> {
 export async function releaseTranche1(targetId: string, kickoffConfirmed: boolean) {
 	if (!kickoffConfirmed) throw new Error('Tranche 1 requires confirmed kickoff.');
 	const projectId = await resolveProjectId(targetId);
+	const state = await query<{ tranche_1_disbursed: boolean }>('SELECT tranche_1_disbursed FROM public.projects WHERE id = $1;', [projectId]);
+	if (state.rows[0].tranche_1_disbursed) throw new Error('Tranche 1 is already disbursed.');
 	const result = await query<{ id: string; tranche_1_disbursed: boolean }>(
 		'UPDATE public.projects SET tranche_1_disbursed = TRUE WHERE id = $1 RETURNING id, tranche_1_disbursed;',
 		[projectId],
@@ -70,8 +72,9 @@ export async function releaseTranche1(targetId: string, kickoffConfirmed: boolea
 export async function releaseTranche2(targetId: string, nablCertUrl: string, evaluatorApproved: boolean) {
 	validateTranche2Requirements(nablCertUrl, evaluatorApproved);
 	const projectId = await resolveProjectId(targetId);
-	const state = await query<{ tranche_1_disbursed: boolean; created_at: Date | string }>('SELECT tranche_1_disbursed, created_at FROM public.projects WHERE id = $1;', [projectId]);
+	const state = await query<{ tranche_1_disbursed: boolean; tranche_2_disbursed?: boolean; created_at: Date | string }>('SELECT tranche_1_disbursed, tranche_2_disbursed, created_at FROM public.projects WHERE id = $1;', [projectId]);
 	if (!state.rows[0].tranche_1_disbursed) throw new Error('Tranche 1 must be disbursed before Tranche 2');
+	if ((state.rows[0] as { tranche_2_disbursed?: boolean }).tranche_2_disbursed) throw new Error('Tranche 2 is already disbursed.');
 	assertNotFrozen(state.rows[0].created_at);
 	const result = await query<{ id: string; tranche_2_disbursed: boolean }>(
 		`UPDATE public.projects SET tranche_2_disbursed = TRUE, nabl_cert_url = $2 WHERE id = $1 RETURNING id, tranche_2_disbursed;`,
@@ -83,8 +86,9 @@ export async function releaseTranche2(targetId: string, nablCertUrl: string, eva
 export async function releaseTranche3(targetId: string, evidence: Tranche3Evidence) {
 	validateTranche3Requirements(evidence);
 	const projectId = await resolveProjectId(targetId);
-	const state = await query<{ tranche_2_disbursed: boolean; created_at: Date | string }>('SELECT tranche_2_disbursed, created_at FROM public.projects WHERE id = $1;', [projectId]);
+	const state = await query<{ tranche_2_disbursed: boolean; tranche_3_disbursed?: boolean; created_at: Date | string }>('SELECT tranche_2_disbursed, tranche_3_disbursed, created_at FROM public.projects WHERE id = $1;', [projectId]);
 	if (!state.rows[0].tranche_2_disbursed) throw new Error('Tranche 2 must be disbursed before Tranche 3');
+	if (state.rows[0].tranche_3_disbursed) throw new Error('Tranche 3 is already disbursed.');
 	assertNotFrozen(state.rows[0].created_at);
 	const result = await query<{ id: string; tranche_3_disbursed: boolean; maturation_ends_at: Date | string }>(
 		`UPDATE public.projects
