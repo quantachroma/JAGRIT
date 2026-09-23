@@ -10,31 +10,30 @@ import {
 } from "recharts";
 import { STRINGS, num, type Lang } from "./i18n";
 
-/**
- * Local 5-axis shape. `packages/contracts` XAISpiderChartData has only 4 axes (no faculty axis)
- * and is frozen, so this component defines its own type until the team agrees a contract change.
- */
 export interface UniversityXAIData {
-  labs: number; // 0-100
-  patents: number;
-  proximity: number;
-  trackRecord: number;
-  faculty: number;
-  overall: number; // headline compatibility %
+  domainExpertise?: number;
+  facultyAvailability?: number;
+  nablLab?: number;
+  proximity?: number;
+  campusCapacity?: number;
+  trackRecord?: number;
+  labs?: number;
+  patents?: number;
+  faculty?: number;
+  overall: number;
 }
 
-// Demo values for BIT Mesra ↔ #JAG-PLM-0082 (from the Stage 1 brief).
 export const BIT_MESRA_XAI: UniversityXAIData = {
-  labs: 95,
-  patents: 90,
+  domainExpertise: 95,
+  facultyAvailability: 90,
+  nablLab: 100,
   proximity: 85,
-  trackRecord: 88,
-  faculty: 92,
+  campusCapacity: 88,
+  trackRecord: 94,
   overall: 94,
 };
 
-// w1..w5 — sums to 1.00
-export const XAI_WEIGHTS = [0.35, 0.3, 0.15, 0.14, 0.06] as const;
+export const XAI_WEIGHTS = [0.25, 0.2, 0.2, 0.15, 0.1, 0.1] as const;
 
 interface Row {
   short: string;
@@ -72,9 +71,25 @@ interface Props {
 
 export default function XAISpiderChart({ lang, data = BIT_MESRA_XAI }: Props) {
   const t = STRINGS[lang].xai;
-  const values = [data.labs, data.patents, data.proximity, data.trackRecord, data.faculty];
+  const values = [
+    data.domainExpertise ?? data.labs ?? 95,
+    data.facultyAvailability ?? data.faculty ?? 90,
+    data.nablLab ?? 100,
+    data.proximity ?? 85,
+    data.campusCapacity ?? 88,
+    data.trackRecord ?? 94,
+  ];
 
-  const rows: Row[] = t.axes.map((axis, i) => ({
+  const axisMeta = [
+    { short: "E", label: "Domain Expertise", detail: "NABL certified water lab & sorbent patents" },
+    { short: "F", label: "Faculty Availability", detail: "Faculty load verified and active for challenge" },
+    { short: "I", label: "NABL Lab", detail: "Accredited facility with testing capacity" },
+    { short: "G", label: "Proximity", detail: "Palamu Basin <140 km" },
+    { short: "C", label: "Campus Capacity", detail: "Departmental bandwidth available" },
+    { short: "H", label: "Track Record", detail: "94% historical success on deployed pilots" },
+  ];
+
+  const rows: Row[] = axisMeta.map((axis, i) => ({
     short: axis.short,
     label: axis.label,
     detail: axis.detail,
@@ -134,7 +149,8 @@ export default function XAISpiderChart({ lang, data = BIT_MESRA_XAI }: Props) {
 
       <div className="mt-4 rounded-xl bg-[#F8FAFC] p-4">
         <h3 className="text-sm font-semibold text-[#0F172A]">{t.explainTitle}</h3>
-        <p className="mt-1 text-sm leading-relaxed text-slate-700">{t.explain}</p>
+        <p className="mt-1 text-sm font-medium text-[#1D4ED8]">Score(U, P) = 0.25E + 0.20F + 0.20I + 0.15G + 0.10C + 0.10H</p>
+        <p className="mt-2 text-sm leading-relaxed text-slate-700">{t.explain}</p>
       </div>
     </section>
   );
