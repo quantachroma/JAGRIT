@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import type { GeoLocation } from '@jagrit/contracts';
+import dynamic from 'next/dynamic';
+import type { ChallengeSubmissionPayload, GeoLocation } from '@jagrit/contracts';
 import { useCitizen } from '@/context/CitizenContext';
 import { supabase } from "@/lib/supabase";
-import AudioRecorder from '@/components/audio-recorder';
-import CVLaserScanner, { DetectedDefect } from '@/components/cv-laser-scanner';
-import SpatialRadarMap from '@/components/spatial-radar-map';
+import AudioWaveformRecorder from '@/components/AudioWaveformRecorder';
+import LaserScannerPreview, { type ScannerDefect } from '@/components/LaserScannerPreview';
+import type { ReportLocation } from '@/components/ReportLocationMap';
+import { registerOfflineReportSync, submitCitizenReport, type QueuedReport as ApiQueuedReport } from '@/services/api';
 import {
   AlertCircle,
   MapPin,
@@ -17,6 +19,32 @@ import {
   Sparkles,
   Navigation,
 } from 'lucide-react';
+
+const ReportLocationMap = dynamic(() => import('@/components/ReportLocationMap'), { ssr: false });
+const OFFLINE_QUEUE_KEY = 'jagrit_offline_reports';
+
+type QueuedReport = ApiQueuedReport & {
+  title: string;
+  description: string;
+  category: string;
+  language: string;
+  imageData?: string;
+  audioData?: string;
+  location: ReportLocation;
+  defects: ScannerDefect[];
+};
+
+const blobToDataUrl = (blob: Blob) => new Promise<string>((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onloadend = () => resolve(String(reader.result));
+  reader.onerror = reject;
+  reader.readAsDataURL(blob);
+});
+
+const dataUrlToFile = async (dataUrl: string, name: string) => {
+  const response = await fetch(dataUrl);
+  return new File([await response.blob()], name, { type: response.headers.get('content-type') || 'application/octet-stream' });
+};
 
 const JHARKHAND_DISTRICTS = [
   { name: 'Ranchi', block: 'Kanke', lat: 23.3441, lon: 85.3096 },
@@ -63,7 +91,9 @@ export default function ProblemSubmissionStudio() {
   const mapSvgRef = useRef<SVGSVGElement | null>(null);
 
   // Component D: CV Laser Scanner Defect metadata
-  const [detectedDefects, setDetectedDefects] = useState<DetectedDefect[]>([]);
+  const [detectedDefects, setDetectedDefects] = useState<ScannerDefect[]>([]);
+  const [isOffline, setIsOffline] = useState(false);
+  const [queuedCount, setQueuedCount] = useState(0);
 
   // Submission Status
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -282,76 +312,158 @@ export default function ProblemSubmissionStudio() {
     });
   };
 
+const sendQueuedReport = async (report: QueuedReport) => {
+    const formData = new FormData();
+    formData.append('title', report.title);
+    formData.append('description', report.description);
+    formData.append('category', report.category);
+    formData.append('language', report.language);
+    formData.append('latitude', String(report.location.lat));
+    formData.append('longitude', String(report.location.lon));
+    formData.append('district', report.location.district);
+    formData.append('block', report.location.block);
+    formData.append('panchayat', report.location.panchayat);
+    formData.append('cvDefects', JSON.stringify(report.defects));
+    if (report.imageData) formData.append('evidence', await dataUrlToFile(report.imageData, 'jagrit-evidence.webp'));
+    if (report.audioData) formData.append('audioData', report.audioData);
+
+    return submitCitizenReport(formData);
+  };
+
+  const queueReport = (report: QueuedReport) => {
+    const existing: QueuedReport[] = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+    existing.push(report);
+    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(existing));
+    setQueuedCount(existing.length);
+  };
+
+  useEffect(() => {
+    const refreshConnectivity = () => {
+      setIsOffline(!navigator.onLine);
+      setQueuedCount(JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]').length);
+    };
+    const syncQueue = async () => {
+      if (!navigator.onLine) return;
+      const queued: QueuedReport[] = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+      if (!queued.length) return;
+      const remaining: QueuedReport[] = [];
+      for (const report of queued) {
+        try { await sendQueuedReport(report); } catch { remaining.push(report); }
+      }
+      localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(remaining));
+      setQueuedCount(remaining.length);
+    };
+    refreshConnectivity();
+    window.addEventListener('online', syncQueue);
+    window.addEventListener('online', refreshConnectivity);
+    window.addEventListener('offline', refreshConnectivity);
+    const unregisterApiSync = registerOfflineReportSync();
+    void syncQueue();
+    return () => { unregisterApiSync(); window.removeEventListener('online', syncQueue); window.removeEventListener('online', refreshConnectivity); window.removeEventListener('offline', refreshConnectivity); };
+  }, []);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setErrorMsg(null);
-
     try {
-      const locationPayload: GeoLocation = {
-        lat: mapCoords.lat,
-        lon: mapCoords.lon,
-        district: activeDistrict,
-        block: activeBlock,
-        panchayat: currentLocation.panchayat || `${activeBlock} Ward`,
+const locationPayload: ReportLocation = { 
+        lat: mapCoords.lat, 
+        lon: mapCoords.lon, 
+        district: activeDistrict, 
+        block: activeBlock, 
+        panchayat: currentLocation.panchayat || `${activeBlock} Ward` 
       };
 
-      const mediaUrls: string[] = [];
-      let rawAudioUrl: string | undefined;
+      // 1. Offline Mode Handling (PRD USP 10: 5-Tier Weak Connectivity)
+      const imageData = compressedFile ? await blobToDataUrl(compressedFile) : undefined;
+      const report: QueuedReport = { 
+        title: title.trim() || 'Grassroots Civic Challenge', 
+        description: description.trim(), 
+        category, 
+        language: (language as 'hi' | 'sat' | 'en') || 'hi', 
+        imageData, 
+        audioData: typeof recordedAudioUrl !== 'undefined' ? (recordedAudioUrl || undefined) : undefined, 
+        location: locationPayload, 
+        defects: detectedDefects 
+      };
 
-      if (compressedFile) {
-        const imagePath = `reports/${Date.now()}_${Math.random().toString(36).substring(7)}.webp`;
-        const { error: imageUploadError } = await supabase.storage
-          .from('challenge-media')
-          .upload(imagePath, compressedFile);
-
-        if (imageUploadError) throw imageUploadError;
-
-        const { data: imageUrlData } = supabase.storage
-          .from('challenge-media')
-          .getPublicUrl(imagePath);
-        mediaUrls.push(imageUrlData.publicUrl);
+      if (!navigator.onLine) {
+        queueReport(report);
+        setIsOffline(true);
+        setSubmitResult({ 
+          ticketNumber: `OFFLINE-${Date.now().toString(36).toUpperCase()}`, 
+          queued: true, 
+          upvotes: 1 
+        });
+        return;
       }
 
-      if (recordedAudioBlob) {
-        const audioPath = `audio/${Date.now()}_voice.ogg`;
-        const { error: audioUploadError } = await supabase.storage
-          .from('challenge-media')
-          .upload(audioPath, recordedAudioBlob);
+      // 2. Online Mode: Direct Supabase Cloud Storage & Database Insertion
+      try {
+        const mediaUrls: string[] = [];
+        let rawAudioUrl: string | undefined;
 
-        if (audioUploadError) throw audioUploadError;
+        if (compressedFile) {
+          const imagePath = `reports/${Date.now()}_${Math.random().toString(36).substring(7)}.webp`;
+          const { error: imageUploadError } = await supabase.storage
+            .from('challenge-media')
+            .upload(imagePath, compressedFile);
 
-        const { data: audioUrlData } = supabase.storage
-          .from('challenge-media')
-          .getPublicUrl(audioPath);
-        rawAudioUrl = audioUrlData.publicUrl;
+          if (!imageUploadError) {
+            const { data: imageUrlData } = supabase.storage
+              .from('challenge-media')
+              .getPublicUrl(imagePath);
+            mediaUrls.push(imageUrlData.publicUrl);
+          }
+        }
+
+        // Handle Audio Upload if blob or url is present
+        const audioToUpload = typeof recordedAudioBlob !== 'undefined' ? recordedAudioBlob : null;
+        if (audioToUpload) {
+          const audioPath = `audio/${Date.now()}_voice.ogg`;
+          const { error: audioUploadError } = await supabase.storage
+            .from('challenge-media')
+            .upload(audioPath, audioToUpload);
+
+          if (!audioUploadError) {
+            const { data: audioUrlData } = supabase.storage
+              .from('challenge-media')
+              .getPublicUrl(audioPath);
+            rawAudioUrl = audioUrlData.publicUrl;
+          }
+        }
+
+        const ticketNumber = `JAG-${new Date().getFullYear()}-${(activeDistrict || 'RAN')
+          .substring(0, 3)
+          .toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+        const { error: insertError } = await supabase.from('challenges').insert({
+          ticket_number: ticketNumber,
+          title: title.trim() || 'Grassroots Civic Challenge',
+          description: description.trim(),
+          location: `POINT(${mapCoords.lon || 85.3096} ${mapCoords.lat || 23.3441})`,
+          district: activeDistrict || 'Ranchi',
+          block: activeBlock || 'Kanke',
+          panchayat: currentLocation.panchayat || 'Chianki',
+          media_urls: mediaUrls,
+          raw_audio_url: rawAudioUrl,
+          submission_channel: 'APP',
+          status: 'OPEN_FOR_PRIORITIZATION',
+          upvotes_count: 1,
+        });
+
+        if (insertError) throw insertError;
+
+        setSubmitResult({ ticketNumber, upvotes: 1 });
+      } catch (supabaseErr) {
+        console.warn('Direct Supabase insert failed, attempting backend fallback:', supabaseErr);
+        // Fallback to API queue handler
+        setSubmitResult(await sendQueuedReport(report));
       }
-
-      const ticketNumber = `JAG-${new Date().getFullYear()}-${(activeDistrict || 'RAN')
-        .substring(0, 3)
-        .toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
-      const { error: insertError } = await supabase.from('challenges').insert({
-        ticket_number: ticketNumber,
-        title: title.trim() || 'Grassroots Civic Challenge',
-        description: description.trim(),
-        location: `POINT(${mapCoords.lon || 85.3096} ${mapCoords.lat || 23.3441})`,
-        district: activeDistrict || 'Ranchi',
-        block: activeBlock || 'Kanke',
-        panchayat: currentLocation.panchayat || 'Chianki',
-        media_urls: mediaUrls,
-        raw_audio_url: rawAudioUrl,
-        submission_channel: 'APP',
-        status: 'OPEN_FOR_PRIORITIZATION',
-        upvotes_count: 1,
-      });
-
-      if (insertError) throw insertError;
-
-      setSubmitResult({ ticketNumber, upvotes: 1 });
-    } catch (err: any) {
-      setErrorMsg(err?.message || 'Error occurred during problem submission.');
-    } finally {
-      setSubmitting(false);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Error occurred during problem submission.');
+    } finally { 
+      setSubmitting(false); 
     }
   };
 
@@ -382,6 +494,13 @@ export default function ProblemSubmissionStudio() {
           )}
         </p>
       </div>
+
+      {isOffline && (
+        <div role="status" className="flex items-start gap-3 rounded-2xl border-2 border-amber-400 bg-amber-50 p-4 text-sm font-bold text-amber-950 shadow-sm">
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+          <div>Offline mode active. Submission queued and will sync automatically upon connectivity.{queuedCount > 0 && <span className="ml-1">({queuedCount} queued)</span>}</div>
+        </div>
+      )}
 
       {submitResult ? (
         /* Submission Success Ticket View */
@@ -514,7 +633,7 @@ export default function ProblemSubmissionStudio() {
               </span>
               <span>{language === 'hi' ? 'आवाज़ में विवरण रिकॉर्ड करें' : language === 'sat' ? 'ᱟᱲᱟᱝ ᱨᱮᱠᱚᱨᱰᱤᱝ' : 'Voice Note Ingestion'}</span>
             </div>
-            <AudioRecorder
+            <AudioWaveformRecorder
               lang={language}
               onAudioRecorded={(blob, url, duration) => {
                 setRecordedAudioBlob(blob);
@@ -587,7 +706,7 @@ export default function ProblemSubmissionStudio() {
             </div>
 
             {/* Drag & Drop or File Upload Box */}
-            <div className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl p-6 text-center transition-colors bg-slate-50/50">
+            <div className="hidden border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl p-6 text-center transition-colors bg-slate-50/50">
               <input
                 type="file"
                 accept="image/*"
@@ -668,8 +787,7 @@ export default function ProblemSubmissionStudio() {
             )}
 
             {/* Embedded CV Laser Scanner */}
-            {compressedPreviewUrl && (
-              <div className="pt-2 space-y-2">
+            <div className="pt-2 space-y-2">
                 <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                   <span>
@@ -680,15 +798,18 @@ export default function ProblemSubmissionStudio() {
                       : 'Integrated CV Laser Scanner Verification:'}
                   </span>
                 </div>
-                <CVLaserScanner
-                  imageUrl={compressedPreviewUrl}
-                  autoScan={true}
+                <LaserScannerPreview
                   onScanComplete={(data) => {
                     setDetectedDefects(data.defects);
                   }}
+                  onFileReady={(file, previewUrl, stats) => {
+                    setOriginalFile(file);
+                    setCompressedFile(file);
+                    setCompressedPreviewUrl(previewUrl);
+                    setCompressionStats(stats);
+                  }}
                 />
-              </div>
-            )}
+            </div>
           </div>
 
           {/* Section 5: Interactive Map Picker */}
@@ -796,19 +917,16 @@ export default function ProblemSubmissionStudio() {
               </button>
             </div>
 
-            {mapTab === 'radar' ? (
-              <SpatialRadarMap
-                centerLocation={{
-                  lat: mapCoords.lat,
-                  lon: mapCoords.lon,
-                  district: activeDistrict,
-                  block: activeBlock,
-                }}
-                nearbyRadiusMeters={500}
-                currentPhotoPreview={compressedPreviewUrl || undefined}
-                compact
-              />
-            ) : (
+            <ReportLocationMap
+              value={{ lat: mapCoords.lat, lon: mapCoords.lon, district: activeDistrict, block: activeBlock, panchayat: currentLocation.panchayat || `${activeBlock} Panchayat` }}
+              onChange={(location) => {
+                setMapCoords({ lat: location.lat, lon: location.lon });
+                setActiveDistrict(location.district);
+                setActiveBlock(location.block);
+                setCurrentLocation(location);
+              }}
+            />
+            <div className="hidden">
               <div className="relative rounded-2xl overflow-hidden border border-slate-300 bg-slate-900 aspect-[16/9] max-h-[300px] select-none">
                 <svg
                   ref={mapSvgRef}
@@ -883,7 +1001,7 @@ export default function ProblemSubmissionStudio() {
                     : 'Click or drag pin anywhere to calibrate coordinates'}
                 </div>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Section 6: Primary Submission CTA */}

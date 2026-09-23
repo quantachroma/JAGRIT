@@ -1,0 +1,13 @@
+'use client';
+
+import { useState } from 'react';
+import { Check, MapPin, ThumbsUp } from 'lucide-react';
+
+type FeedItem = { id: string; titleEn: string; titleHi: string; titleSat: string; category: string; location: string; distanceKm: number; upvotes: number; thumbnailEmoji: string };
+
+const labels: Record<string, string> = { drinking_water: 'Water', agriculture: 'Agriculture', electricity: 'Energy', road_drainage: 'Roads', education: 'Education' };
+
+export default function HotChallengesFeed({ challenges, language = 'en', onUpvote }: { challenges: FeedItem[]; language?: 'en' | 'hi' | 'sat'; onUpvote?: (ticketId: string) => void }) {
+  const [votes, setVotes] = useState<Record<string, boolean>>({});
+  return <div className="grid grid-cols-1 gap-4 md:grid-cols-2">{challenges.map((item) => { const voted = Boolean(votes[item.id]); const title = language === 'hi' ? item.titleHi : language === 'sat' ? item.titleSat : item.titleEn; return <article key={item.id} className="flex flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div className="flex gap-3"><div className="flex h-16 w-20 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-br from-emerald-50 to-sky-100 text-3xl" role="img" aria-label="Challenge photo thumbnail">{item.thumbnailEmoji}</div><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-sky-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-sky-800">{labels[item.category] || item.category}</span><span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500"><MapPin className="h-3 w-3" />{item.distanceKm} km away</span></div><h3 className="mt-2 line-clamp-2 text-sm font-black leading-5 text-slate-950">{title}</h3><p className="mt-1 text-[11px] text-slate-500">{item.location}</p></div></div><button type="button" disabled={voted} onClick={() => { setVotes((current) => ({ ...current, [item.id]: true })); onUpvote?.(item.id); }} className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-xs font-black transition-colors ${voted ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-800 hover:bg-emerald-100 hover:text-emerald-800'}`}>{voted ? <Check className="h-4 w-4" /> : <ThumbsUp className="h-4 w-4" />} {voted ? 'Vote Recorded' : '+1 Upvote'} <span className="font-mono">{item.upvotes + (voted ? 1 : 0)}</span></button></article>; })}</div>;
+}
