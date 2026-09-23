@@ -52,7 +52,12 @@ const handleEvaluate = async (request: Request, response: Response) => {
 	const populationValue = body.settlement_population ?? body.settlementPopulation ?? request.query.population;
 	const population = populationValue == null || populationValue === '' ? 850 : Number(populationValue);
 	try {
-		response.json(await evaluateQuorum(String(request.params.id), Number.isFinite(population) && population > 0 ? population : 850));
+		const targetId = String(request.params.id || body.project_id || body.projectId || body.challenge_id || body.challengeId || '').trim();
+		if (!targetId) {
+			response.status(400).json({ error: 'A project/challenge ID is required.' });
+			return;
+		}
+		response.json(await evaluateQuorum(targetId, Number.isFinite(population) && population > 0 ? population : 850));
 	} catch (error) {
 		response.status(errorStatus(error)).json({ error: error instanceof Error ? error.message : 'Unable to evaluate citizen quorum.' });
 	}
@@ -60,6 +65,7 @@ const handleEvaluate = async (request: Request, response: Response) => {
 
 quorumRouter.post('/evaluate/:id', handleEvaluate);
 quorumRouter.get('/evaluate/:id', handleEvaluate);
+quorumRouter.post('/evaluate', handleEvaluate);
 
 quorumRouter.post('/pesa-noc', async (request: Request, response: Response) => {
 	const body = request.body as Record<string, unknown>;
