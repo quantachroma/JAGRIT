@@ -1,5 +1,6 @@
 import { query } from '../db/client';
 import { createHmac, randomBytes } from 'crypto';
+import { shouldAutoCloseUpvoteWindow, VerifiedUpvote } from './window.service';
 
 export interface ChallengeSubmission {
 	title: string;
@@ -48,6 +49,8 @@ interface ChallengeSupportResult {
 	upvotes: number;
 	vote_recorded: boolean;
 	geofence_ok: boolean;
+	window_closed: boolean;
+	challenge_exists: boolean;
 }
 
 /**
@@ -60,12 +63,14 @@ export async function recordChallengeSupport(ticketId: string, phoneHash: string
 	const result = await query<ChallengeSupportResult>(
 		`WITH eligible_ticket AS (
 			 SELECT id,
-				ST_DWithin(location::geography, ST_SetSRID(ST_Point($3, $4), 4326)::geography, 30000) AS is_local
+				ST_DWithin(location::geography, ST_SetSRID(ST_Point($3, $4), 4326)::geography, 30000) AS is_local,
+				location,
+				(accelerated_deadline IS NOT NULL AND accelerated_deadline <= NOW()) AS window_closed
 			 FROM public.challenges WHERE id = $1
 		), inserted_vote AS (
 			 INSERT INTO public.challenge_upvotes (ticket_id, phone_hash, voter_location)
 			 SELECT id, $2, ST_SetSRID(ST_Point($3, $4), 4326)
-			 FROM eligible_ticket WHERE is_local
+			 FROM eligible_ticket WHERE is_local AND NOT window_closed
 			 ON CONFLICT (ticket_id, phone_hash) DO NOTHING
 			 RETURNING ticket_id
 		), incremented AS (
@@ -77,10 +82,32 @@ export async function recordChallengeSupport(ticketId: string, phoneHash: string
 		SELECT
 			COALESCE((SELECT upvotes_count FROM incremented), (SELECT upvotes_count FROM public.challenges WHERE id = $1)) AS upvotes,
 			EXISTS(SELECT 1 FROM inserted_vote) AS vote_recorded,
-			COALESCE((SELECT is_local FROM eligible_ticket), FALSE) AS geofence_ok;`,
+			COALESCE((SELECT is_local FROM eligible_ticket), FALSE) AS geofence_ok,
+			COALESCE((SELECT window_closed FROM eligible_ticket), FALSE) AS window_closed,
+			EXISTS(SELECT 1 FROM eligible_ticket) AS challenge_exists;`,
 		[ticketId, phoneHash, lon, lat],
 	);
-	if (!result.rows[0]) throw new Error('Challenge not found.');
+	if (!result.rows[0]?.challenge_exists) throw new Error('Challenge not found.');
+	if (result.rows[0].vote_recorded) {
+		const voteResult = await query<VerifiedUpvote & { challenge_lat: number; challenge_lon: number }>(
+			`SELECT c.location, ST_Y(c.location::geometry) AS challenge_lat, ST_X(c.location::geometry) AS challenge_lon,
+				cu.phone_hash AS "phoneHash", TRUE AS verified, ST_Y(cu.voter_location::geometry) AS lat,
+				ST_X(cu.voter_location::geometry) AS lon, cu.created_at AS "createdAt"
+			 FROM public.challenges c
+			 JOIN public.challenge_upvotes cu ON cu.ticket_id = c.id
+			 WHERE c.id = $1;`,
+			[ticketId],
+		);
+		const firstVote = voteResult.rows[0];
+		if (firstVote && shouldAutoCloseUpvoteWindow(voteResult.rows, { lat: firstVote.challenge_lat, lon: firstVote.challenge_lon })) {
+			await query(
+				`UPDATE public.challenges
+				 SET accelerated_deadline = COALESCE(accelerated_deadline, NOW())
+				 WHERE id = $1 AND accelerated_deadline IS NULL;`,
+				[ticketId],
+			);
+		}
+	}
 	return result.rows[0];
 }
 

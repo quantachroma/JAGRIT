@@ -42,7 +42,7 @@ export async function updateProject<T extends Record<string, unknown> = Record<s
 }
 
 export async function countUpvotes(challengeId: string): Promise<number> {
-	const result = await getSupabaseClient().from('upvotes').select('id').eq('challenge_id', challengeId);
+	const result = await getSupabaseClient().from('challenge_upvotes').select('id').eq('ticket_id', challengeId);
 	throwSupabaseError(result.error);
 	return Array.isArray(result.data) ? result.data.length : 0;
 }

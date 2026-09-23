@@ -23,7 +23,10 @@ export async function cloneBlueprint(input: BlueprintCloneInput) {
 		throw new Error(`Unable to load source challenge: ${sourceChallengeResult.error?.message || 'not found'}.`);
 	}
 	const sourceChallenge = sourceChallengeResult.data as Record<string, unknown>;
+	const districtCode = (input.targetDistrict || 'JHK').substring(0, 3).toUpperCase();
+	const ticketNumber = `JAG-2026-${districtCode}-${Math.floor(1000 + Math.random() * 9000)}`;
 	const challengeInsert = await supabase.from('challenges').insert({
+		ticket_number: ticketNumber,
 		title: sourceChallenge.title,
 		description: sourceChallenge.description,
 		location: sourceChallenge.location,

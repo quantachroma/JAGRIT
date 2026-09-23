@@ -114,12 +114,21 @@ challengesRouter.post('/:id/upvote', async (request, response) => {
 			response.status(400).json({ error: 'Verified support must be submitted within 30 km of the ticket.' });
 			return;
 		}
+		if (support.window_closed) {
+			response.status(400).json({ error: 'The upvote window is closed.' });
+			return;
+		}
 		if (!support.vote_recorded) {
 			response.json({ is_duplicate: true, already_voted: true, upvotes: support.upvotes, message: 'You have already supported this ticket.' });
 			return;
 		}
 		response.json({ upvotes: support.upvotes, message: 'Upvote recorded.' });
 	} catch (error) {
+		console.error('Upvote failed:', error);
+		if (error instanceof Error && error.message === 'Challenge not found.') {
+			response.status(404).json({ error: 'Challenge not found.' });
+			return;
+		}
 		response.status(500).json({ error: 'Unable to upvote challenge.' });
 	}
 });

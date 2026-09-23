@@ -1,8 +1,26 @@
+import { query } from '../db/client';
+
 export interface HScorePenaltyInput {
 	baseHScore: number;
 	matchScore: number;
 	ignoredBids: number;
 	hasValidTechnicalReason: boolean;
+}
+
+export type EscalationStage = 1 | 2 | 3 | 4;
+
+export interface EscalationStageResult {
+	stage: EscalationStage;
+	status: 'BIDDING_PHASE_2' | 'ITI_POLYTECHNIC_ESCALATION' | 'DHTE_JCSTI_DIRECTIVE' | 'ESCALATED_PAN_INDIA_PRIORITY';
+}
+
+export function applyIgnoredBidPenalty(collegeMatchScore: number, hBase: number, ignoredBids: number): number {
+	return calculateHScoreAfterIgnoredBids({
+		baseHScore: hBase,
+		matchScore: collegeMatchScore,
+		ignoredBids,
+		hasValidTechnicalReason: false,
+	});
 }
 
 export interface StageOneEscalation {
@@ -35,4 +53,59 @@ export function createStageOneEscalation(baseBudgetInr: number, budgetIncreasePe
 		nepCredits: 6,
 		stage: 'ESCALATION_STAGE_1',
 	};
+}
+
+export function calculateExpandedBudget(currentBudget: number): number {
+	if (!Number.isFinite(currentBudget) || currentBudget < 0) throw new Error('currentBudget must be non-negative.');
+	return currentBudget * 1.25;
+}
+
+export async function applyScopeExpansion(challengeId: string, currentBudget: number) {
+	const newBudget = calculateExpandedBudget(currentBudget);
+	await query(
+		`UPDATE public.challenges
+		 SET allocated_pool_inr = $2
+		 WHERE id = $1;`,
+		[challengeId, newBudget],
+	);
+	await query(
+		`UPDATE public.projects
+		 SET total_budget_inr = $2,
+				nep_credits = 6,
+				deliverables_expanded = TRUE,
+				spares_kit_months = 24
+		 WHERE challenge_id = $1;`,
+		[challengeId, newBudget],
+	);
+	return {
+		challengeId,
+		newBudget,
+		nepCredits: 6,
+		deliverablesExpanded: true,
+		sparesKitMonths: 24,
+	};
+}
+
+export function advanceEscalationStage(daysSinceWindowClosed: number): EscalationStageResult {
+	if (!Number.isFinite(daysSinceWindowClosed) || daysSinceWindowClosed < 0) {
+		throw new Error('daysSinceWindowClosed must be non-negative.');
+	}
+	if (daysSinceWindowClosed <= 5) return { stage: 1, status: 'BIDDING_PHASE_2' };
+	if (daysSinceWindowClosed <= 10) return { stage: 2, status: 'ITI_POLYTECHNIC_ESCALATION' };
+	if (daysSinceWindowClosed < 12) return { stage: 3, status: 'DHTE_JCSTI_DIRECTIVE' };
+	return { stage: 4, status: 'ESCALATED_PAN_INDIA_PRIORITY' };
+}
+
+export async function startStageOneEscalation(challengeId: string) {
+	const stage = advanceEscalationStage(1);
+	await query(
+		`UPDATE public.challenges
+		 SET escalation_stage = $2,
+				escalation_status = $3,
+				statewide_bidding_open = TRUE,
+				statewide_bidding_geofence_removed = TRUE
+		 WHERE id = $1;`,
+		[challengeId, stage.stage, stage.status],
+	);
+	return stage;
 }

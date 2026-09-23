@@ -1,12 +1,17 @@
 import { Request, Response, Router } from 'express';
-import { getProjectMock } from './projects.service';
+import { getProjectById } from './projects.service';
 import { AlarmState, BreakdownReport, completeRepair, getRepairDeadline, recordBreakdownReport, REPAIR_SLA_DAYS } from '../quorum/alarm.service';
 
 export const projectsRouter = Router();
 const alarmStates = new Map<string, AlarmState>();
 
-projectsRouter.get('/:id', (request: Request, response: Response) => {
-	response.json(getProjectMock(String(request.params.id)));
+projectsRouter.get('/:id', async (request: Request, response: Response) => {
+	const project = await getProjectById(String(request.params.id));
+	if (!project) {
+		response.status(404).json({ error: 'Project not found.' });
+		return;
+	}
+	response.json(project);
 });
 
 /** [MOCK] Runtime-only state until the alarm ledger is added to the database schema. */
