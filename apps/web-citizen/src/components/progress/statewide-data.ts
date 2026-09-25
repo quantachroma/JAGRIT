@@ -30,14 +30,14 @@ export const STATEWIDE_MACRO_METRICS: MacroMetrics = {
     sat: 'ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱞᱮᱵᱽ ᱟᱨ ᱴᱷᱟᱶ ᱯᱟᱹᱨᱠᱷᱟᱹᱣ ᱨᱮ',
   },
 
-  institutionsCount: '42',
+  institutionsCount: '42+',
   institutionsLabel: {
-    en: 'Higher Education Institutions Engaged',
+    en: 'State HEIs & Universities Empanelled',
     hi: 'संबद्ध उच्च शिक्षण संस्थान',
     sat: 'ᱥᱮᱞᱮᱫ ᱪᱮᱛᱟᱱ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱠᱚ',
   },
   institutionsSub: {
-    en: 'Across 24 Districts of Jharkhand',
+    en: 'Across all 24 Districts of Jharkhand (BIT Mesra, NIT Jsr, BAU & Colleges)',
     hi: 'झारखंड के २४ ज़िलों में विस्तृत',
     sat: 'ᱡᱷᱟᱨᱠᱷᱚᱸᱰ ᱨᱮᱱᱟᱜ ᱒᱔ ᱡᱤᱞᱟᱹ ᱨᱮ',
   },

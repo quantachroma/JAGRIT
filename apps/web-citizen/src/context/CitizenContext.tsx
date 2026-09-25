@@ -8,6 +8,7 @@ import enLocale from '../../public/locales/en.json';
 export type Language = 'hi' | 'sat' | 'en';
 
 export interface CitizenUser {
+  id?: string;
   phone?: string;
   name?: string;
   isAuthenticated: boolean;
@@ -51,7 +52,9 @@ const CitizenContext = createContext<CitizenContextType | undefined>(undefined);
 export function CitizenProvider({ children }: { children: ReactNode }) {
   const { language, setLanguage } = useLanguage();
   const [user, setUser] = useState<CitizenUser>({
+    id: 'anonymous-citizen',
     isAuthenticated: false,
+    role: 'CITIZEN',
   });
   const [currentLocation, setCurrentLocation] = useState<GeoLocation>(DEFAULT_RANCHI_LOCATION);
   const [isDetectingLocation, setIsDetectingLocation] = useState<boolean>(false);
@@ -103,7 +106,11 @@ export function CitizenProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    const emptyUser: CitizenUser = { isAuthenticated: false };
+    const emptyUser: CitizenUser = {
+      id: 'anonymous-citizen',
+      isAuthenticated: false,
+      role: 'CITIZEN',
+    };
     setUser(emptyUser);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('jagrit_citizen_user');

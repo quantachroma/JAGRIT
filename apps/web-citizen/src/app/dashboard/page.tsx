@@ -1,16 +1,18 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { useCitizen } from '@/context/CitizenContext';
 import { useLanguage } from '@/context/LanguageContext';
 import type { Language } from '@/lib/translations';
 import GrievanceStepper from '@/components/GrievanceStepper';
 import BreakdownAlarmModal from '@/components/BreakdownAlarmModal';
-import HotChallengesFeed from '@/components/HotChallengesFeed';
+import HotChallengesFeed, { challengeFeedTranslations } from '@/components/HotChallengesFeed';
 import { triggerBreakdownAlarm, upvoteChallenge } from '@/services/api';
 import {
+  ArrowRight,
   Search,
   CheckCircle2,
   Clock,
@@ -25,6 +27,10 @@ import {
   Radio,
   ChevronRight,
   TrendingUp,
+  Mic,
+  Camera,
+  MessageCircle,
+  BadgeCheck,
 } from 'lucide-react';
 
 const SpatialRadarMap = dynamic(() => import('@/components/spatial-radar-map'), { ssr: false });
@@ -161,11 +167,35 @@ const getLocalizedGrant = (grantStr: string, lang: Language): string => {
 };
 
 export default function CitizenDashboardPage() {
-  const { currentLocation } = useCitizen();
+  const { currentLocation, user } = useCitizen();
   const { language, t } = useLanguage();
+  const router = useRouter();
+  const [reportedTickets, setReportedTickets] = useState<string[]>(['JAG-2026-PAL-7763']);
+
+  useEffect(() => {
+    const storedTickets = localStorage.getItem('jagrit_my_reported_tickets');
+    if (!storedTickets) return;
+
+    try {
+      const parsedTickets = JSON.parse(storedTickets);
+      if (Array.isArray(parsedTickets) && parsedTickets.every((ticket) => typeof ticket === 'string') && parsedTickets.length > 0) {
+        setReportedTickets(parsedTickets);
+      }
+    } catch {
+      localStorage.removeItem('jagrit_my_reported_tickets');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user.role === 'UNIVERSITY' || user.role === 'STUDENT' || user.role === 'FACULTY_PI') {
+      router.replace('/university/dashboard');
+    } else if (user.role === 'EVALUATOR' || user.role === 'ADMIN' || user.role === 'GOVERNMENT') {
+      router.replace('/admin');
+    }
+  }, [router, user.role]);
 
   // Filter States
-  const [proximityFilter, setProximityFilter] = useState<'<5km' | '<15km' | 'district'>('<5km');
+  const [proximityFilter, setProximityFilter] = useState<'<5km' | '<15km' | 'district' | 'state'>('state');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [viewMode, setViewMode] = useState<'cards' | 'radar'>('cards');
@@ -312,17 +342,14 @@ export default function CitizenDashboardPage() {
   };
 
   const getLocalizedLocation = (loc: string) => {
-    if (language === 'hi') {
-      const map: Record<string, string> = {
-        'Palamu, Satbarwa Block': 'पलामू, सतबरवा प्रखंड',
-        'Khunti, Murhu Block': 'खूंटी, मुरहू प्रखंड',
-        'West Singhbhum, Chaibasa': 'पश्चिमी सिंहभूम, चाईबासा',
-        'Ranchi, Kanke Panchayat': 'राँची, कांके पंचायत',
-        'Ranchi, Angara Block': 'राँची, अनगड़ा प्रखंड',
+      const map: Record<string, Record<Language, string>> = {
+        'Palamu, Satbarwa Block': { en: 'Palamu, Satbarwa Block', hi: 'पलामू, सतबरवा प्रखंड', sat: 'ᱯᱟᱞᱟᱢᱩ, ᱥᱟᱛᱵᱟᱨᱣᱟ ᱵᱞᱚᱠ' },
+        'Khunti, Murhu Block': { en: 'Khunti, Murhu Block', hi: 'खूंटी, मुरहू प्रखंड', sat: 'ᱠᱷᱩᱸᱴᱤ, ᱢᱩᱨᱦᱩ ᱵᱞᱚᱠ' },
+        'West Singhbhum, Chaibasa': { en: 'West Singhbhum, Chaibasa', hi: 'पश्चिमी सिंहभूम, चाईबासा', sat: 'ᱯᱟᱹᱪᱷᱤᱢ ᱥᱤᱝᱵᱷᱩᱢ, ᱪᱟᱭᱵᱟᱥᱟ' },
+        'Ranchi, Kanke Panchayat': { en: 'Ranchi, Kanke Panchayat', hi: 'राँची, कांके पंचायत', sat: 'ᱨᱟᱸᱪᱤ, ᱠᱟᱸᱠᱮ ᱯᱟᱧᱪᱟᱭᱟᱛ' },
+        'Ranchi, Angara Block': { en: 'Ranchi, Angara Block', hi: 'राँची, अनगड़ा प्रखंड', sat: 'ᱨᱟᱸᱪᱤ, ᱟᱝᱜᱟᱲᱟ ᱵᱞᱚᱠ' },
       };
-      return map[loc] || loc;
-    }
-    return loc;
+      return map[loc]?.[language] || loc;
   };
 
   const getLocalizedHei = (hei?: string) => {
@@ -343,52 +370,23 @@ export default function CitizenDashboardPage() {
   const categories = [
     {
       id: 'ALL',
-      label: t.allCategories,
+      label: { en: 'All Categories', hi: 'सभी श्रेणियाँ', sat: 'ᱡᱚᱛᱚ ᱥᱨᱮᱬᱤ' },
     },
     {
-      id: 'drinking_water',
-      label:
-        language === 'hi'
-          ? 'पेयजल एवं चापाकल'
-          : language === 'sat'
-          ? 'ᱪᱟᱯᱟᱠᱚᱞ ᱟᱨ ᱫᱟᱜ'
-          : 'Drinking Water & Handpumps',
+      id: 'WATER',
+      label: { en: 'Water Resources', hi: 'पेयजल एवं चापाकल', sat: 'ᱫᱟᱜ ᱥᱚᱢᱯᱟᱛ' },
     },
     {
-      id: 'electricity',
-      label:
-        language === 'hi'
-          ? 'विद्युत एवं सौर ऊर्जा'
-          : language === 'sat'
-          ? 'ᱟᱹᱛᱩ ᱵᱤᱡᱞᱤ'
-          : 'Electricity & Solar',
+      id: 'AGRICULTURE',
+      label: { en: 'Agriculture & Lac', hi: 'कृषि एवं वनोपज', sat: 'ᱠᱨᱤᱥᱤ ᱟᱨ ᱞᱟᱦᱟ' },
     },
     {
-      id: 'agriculture',
-      label:
-        language === 'hi'
-          ? 'सिंचाई एवं कृषि तकनीक'
-          : language === 'sat'
-          ? 'ᱪᱟᱥ-ᱵᱟᱥ'
-          : 'Agriculture & Irrigation',
+      id: 'ENERGY',
+      label: { en: 'Clean Energy & Solar', hi: 'सौर एवं विद्युत', sat: 'ᱥᱟᱯᱷᱟ ᱥᱮᱸᱜᱮᱞ ᱟᱨ ᱥᱳᱞᱟᱨ' },
     },
     {
-      id: 'road_drainage',
-      label:
-        language === 'hi'
-          ? 'ग्रामीण सड़क एवं नाली'
-          : language === 'sat'
-          ? 'ᱟᱹᱛᱩ ᱦᱚᱨ'
-          : 'Roads & Drainage',
-    },
-    {
-      id: 'education',
-      label:
-        language === 'hi'
-          ? 'विद्यालय अधोसंरचना'
-          : language === 'sat'
-          ? 'ᱤᱥᱠᱩᱞ ᱚᱲᱟᱜ'
-          : 'School Infrastructure',
+      id: 'HEALTH',
+      label: { en: 'Health & Sanitation', hi: 'स्वास्थ्य एवं स्वच्छता', sat: 'ᱦᱟᱥᱯᱟᱛᱟᱞ ᱟᱨ ᱥᱟᱯᱷᱟᱭ' },
     },
   ];
 
@@ -409,36 +407,52 @@ export default function CitizenDashboardPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          <Link
-            href="/dashboard/progress/JAG-4102"
-            className="inline-flex items-center justify-center space-x-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-3 min-h-[48px] rounded-2xl text-xs sm:text-sm font-bold border border-blue-200 shadow-2xs transition-all active:scale-95"
-          >
-            <TrendingUp className="w-4 h-4 text-blue-700" />
-            <span>
-              {language === 'hi'
-                ? 'राज्य प्रगति ट्रैकर'
-                : language === 'sat'
-                ? 'ᱨᱟᱡᱽ ᱞᱟᱦᱟᱱᱛᱤ'
-                : 'Statewide Progress'}
-            </span>
-          </Link>
-
-          <Link
-            href="/report"
-            className="inline-flex items-center justify-center space-x-2 bg-[#1E3A8A] hover:bg-[#2563EB] text-white px-5 py-3 min-h-[48px] rounded-2xl text-xs sm:text-sm font-bold shadow-sm hover:shadow transition-all active:scale-95"
-          >
-            <span>Report New Problem (Voice/Photo)</span>
-          </Link>
-
-          <Link
-            href="/whatsapp-simulator"
-            className="inline-flex items-center justify-center space-x-2 bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-3 min-h-[48px] rounded-2xl text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95"
-          >
-            <span>Open WhatsApp Seva Bot</span>
-          </Link>
-        </div>
       </div>
+
+      {/* Primary citizen intake actions */}
+      <section aria-labelledby="primary-intake-heading" className="grid gap-5 lg:grid-cols-2">
+        <article className="group relative overflow-hidden rounded-3xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 p-6 text-white shadow-xl shadow-emerald-950/20 sm:p-8">
+          <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full border-8 border-emerald-300/20 ring-8 ring-emerald-300/10 animate-pulse" />
+          <div className="relative flex min-h-[330px] flex-col">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-300 text-emerald-950 shadow-lg shadow-emerald-950/30 ring-8 ring-emerald-300/20">
+                  <Mic className="h-8 w-8" aria-hidden="true" />
+                </div>
+                <Camera className="h-9 w-9 text-emerald-200" aria-hidden="true" />
+              </div>
+              <span className="rounded-full border border-emerald-200/30 bg-emerald-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-emerald-100">Voice + photo</span>
+            </div>
+            <div className="mt-8 flex-1">
+              <h2 id="primary-intake-heading" className="max-w-xl text-2xl font-black leading-tight sm:text-3xl">Report a Village Problem (आवाज़ या फोटो से समस्या दर्ज करें)</h2>
+              <p className="mt-4 max-w-xl text-sm leading-6 text-emerald-50/85">Speak a 20-second voice note in Hindi/Santhali or upload photo evidence. System extracts GPS coordinates and creates an instant tracking ticket.</p>
+            </div>
+            <Link href="/report" className="relative inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-base font-black text-emerald-950 shadow-lg transition hover:bg-emerald-50 focus:outline-none focus:ring-4 focus:ring-emerald-200/50 active:scale-[.99]">
+              📢 Start Problem Submission <ArrowRight className="h-5 w-5" />
+            </Link>
+          </div>
+        </article>
+
+        <article className="group relative overflow-hidden rounded-3xl border-2 border-[#25D366] bg-gradient-to-br from-[#064e3b] via-[#075e54] to-[#052e2b] p-6 text-white shadow-xl shadow-emerald-950/20 sm:p-8">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full border-8 border-[#25D366]/20 ring-8 ring-[#25D366]/10 animate-pulse" />
+          <div className="relative flex min-h-[330px] flex-col">
+            <div className="flex items-start justify-between gap-4">
+              <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[#25D366] text-white shadow-lg shadow-emerald-950/30 ring-8 ring-[#25D366]/20">
+                <MessageCircle className="h-9 w-9 fill-white" aria-hidden="true" />
+                <BadgeCheck className="absolute -right-2 -top-2 h-6 w-6 rounded-full bg-white text-[#128C7E]" aria-label="Verified WhatsApp service" />
+              </div>
+              <span className="rounded-full border border-[#25D366]/40 bg-[#25D366]/10 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-emerald-100">Verified Seva</span>
+            </div>
+            <div className="mt-8 flex-1">
+              <h2 className="text-2xl font-black leading-tight sm:text-3xl">Zero-Barrier WhatsApp Bot (व्हाट्सएप सेवा बॉट)</h2>
+              <p className="mt-4 max-w-xl text-sm leading-6 text-emerald-50/85">Submit grievances directly through WhatsApp without installing an app. Experience the live conversational state machine with Santhali/Hindi ASR.</p>
+            </div>
+            <Link href="/whatsapp-simulator" className="relative inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 text-base font-black text-emerald-950 shadow-lg transition hover:bg-[#54df82] focus:outline-none focus:ring-4 focus:ring-emerald-200/50 active:scale-[.99]">
+              💬 Open WhatsApp Seva Bot <ArrowRight className="h-5 w-5" />
+            </Link>
+          </div>
+        </article>
+      </section>
 
       {/* 1. Metric Strip: Clean White Cards with Large Bold Numbers */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -512,11 +526,10 @@ export default function CitizenDashboardPage() {
         </div>
       </div>
 
-      <GrievanceStepper paused={pilotPaused} />
+      <GrievanceStepper ticketId={reportedTickets[reportedTickets.length - 1]} paused={pilotPaused} />
 
       <section className="flex flex-col items-start justify-between gap-4 rounded-3xl border-2 border-red-200 bg-red-50 p-5 shadow-sm sm:flex-row sm:items-center sm:p-6">
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-red-700">USP 5 · Days 1-45 breakdown protocol</p>
           <h2 className="mt-1 text-lg font-black text-red-950">Is the field pilot not working?</h2>
           <p className="mt-1 max-w-2xl text-xs leading-5 text-red-900/80">Report a machine breakdown immediately so verified citizen signals can freeze the resolution clock.</p>
         </div>
@@ -552,7 +565,7 @@ export default function CitizenDashboardPage() {
               }`}
             >
               <Layers className="w-4 h-4" />
-              <span>{t.cardsFeed}</span>
+              <span>{challengeFeedTranslations.filters.cards[language]}</span>
             </button>
             <button
               type="button"
@@ -564,7 +577,7 @@ export default function CitizenDashboardPage() {
               }`}
             >
               <Compass className="w-4 h-4" />
-              <span>{t.radarMap}</span>
+              <span>{challengeFeedTranslations.filters.radar[language]}</span>
             </button>
           </div>
         </div>
@@ -586,7 +599,7 @@ export default function CitizenDashboardPage() {
                   : 'text-slate-700 hover:bg-slate-200/60'
               }`}
             >
-              {language === 'hi' ? '< ५ किमी' : '< 5 km'}
+              {challengeFeedTranslations.filters.under5[language]}
             </button>
             <button
               type="button"
@@ -597,7 +610,7 @@ export default function CitizenDashboardPage() {
                   : 'text-slate-700 hover:bg-slate-200/60'
               }`}
             >
-              {language === 'hi' ? '< १५ किमी' : '< 15 km'}
+              {challengeFeedTranslations.filters.under15[language]}
             </button>
             <button
               type="button"
@@ -608,7 +621,18 @@ export default function CitizenDashboardPage() {
                   : 'text-slate-700 hover:bg-slate-200/60'
               }`}
             >
-              {language === 'hi' ? 'पूरा ज़िला' : language === 'sat' ? 'Joto Honot' : 'Whole District'}
+              {challengeFeedTranslations.filters.district[language]}
+            </button>
+            <button
+              type="button"
+              onClick={() => setProximityFilter('state')}
+              className={`px-4 py-2 min-h-[48px] rounded-xl text-xs font-bold whitespace-nowrap transition-all active:scale-95 ${
+                proximityFilter === 'state'
+                  ? 'bg-blue-700 text-white shadow-sm font-black'
+                  : 'text-slate-700 hover:bg-slate-200/60'
+              }`}
+            >
+              {challengeFeedTranslations.filters.state[language]}
             </button>
           </div>
 
@@ -634,7 +658,7 @@ export default function CitizenDashboardPage() {
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.label}
+                  {c.label[language]}
                 </option>
               ))}
             </select>
@@ -655,7 +679,12 @@ export default function CitizenDashboardPage() {
         {/* Cards Feed View */}
         {viewMode === 'cards' && (
           <>
-            <HotChallengesFeed challenges={filteredChallenges} language={language} onUpvote={(ticketId) => { void upvoteChallenge(ticketId, getCitizenUserHash()); }} />
+            <HotChallengesFeed
+              activeRange={proximityFilter === '<5km' ? '5' : proximityFilter === '<15km' ? '15' : proximityFilter === 'district' ? 'district' : 'all'}
+              selectedCategory={selectedCategory}
+              searchQuery={searchQuery}
+              onUpvote={(ticketId) => { void upvoteChallenge(ticketId, getCitizenUserHash()); }}
+            />
             <div className="hidden">
             {filteredChallenges.length === 0 ? (
               <div className="col-span-full text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">

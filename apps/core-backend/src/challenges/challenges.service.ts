@@ -41,6 +41,8 @@ export function blurPublicLocation(lat: number, lon: number): PublicLocation {
 interface NearbyChallenge {
 	id: string;
 	ticket_number: string;
+	title: string;
+	description: string;
 	upvotes_count: number;
 	dist_meters: number;
 }
@@ -113,38 +115,47 @@ export async function recordChallengeSupport(ticketId: string, phoneHash: string
 
 export async function createOrDeduplicateChallenge(data: ChallengeSubmission) {
 	const nearbyResult = await query<NearbyChallenge>(
-		`SELECT id, ticket_number, upvotes_count,
+		`SELECT id, ticket_number, title, description, upvotes_count,
 				ST_Distance(location::geography, ST_SetSRID(ST_Point($1, $2), 4326)::geography) as dist_meters
 		 FROM public.challenges
 		 WHERE ST_DWithin(location::geography, ST_SetSRID(ST_Point($1, $2), 4326)::geography, 500)
-		 ORDER BY dist_meters ASC LIMIT 1;`,
+			AND status != 'SOLVED'
+		 ORDER BY dist_meters ASC LIMIT 5;`,
 		[data.lon, data.lat],
 	);
 
-	const nearbyChallenge = nearbyResult.rows[0];
-	if (nearbyChallenge && Number(nearbyChallenge.dist_meters) <= 500) {
-		const support = await recordChallengeSupport(nearbyChallenge.id, data.phoneHash || '', data.lat, data.lon);
-		if (!support.geofence_ok) {
-			return {
-				is_duplicate: true,
-				upvotes: support.upvotes,
-				message: 'Verified support must be submitted within 30 km of the ticket.',
-			};
-		}
-		if (!support.vote_recorded) {
-			return {
-				is_duplicate: true,
-				already_voted: true,
-				upvotes: support.upvotes,
-				message: 'You have already supported this ticket.',
-			};
-		}
+	const normalizedWords = (text: string) => new Set(text.toLocaleLowerCase('en-IN').match(/[\p{L}\p{N}]+/gu) || []);
+	const incomingWords = normalizedWords(`${data.title} ${data.description}`);
+	const textSimilarity = (candidate: NearbyChallenge) => {
+		const candidateWords = normalizedWords(`${candidate.title} ${candidate.description}`);
+		const intersection = [...incomingWords].filter((word) => candidateWords.has(word)).length;
+		const union = new Set([...incomingWords, ...candidateWords]).size;
+		return union === 0 ? 0 : intersection / union;
+	};
 
+	const duplicate = nearbyResult.rows
+		.map((candidate) => ({ candidate, textScore: textSimilarity(candidate), geoScore: Math.exp(-(Number(candidate.dist_meters) ** 2) / (2 * 75 ** 2)) }))
+		.find(({ textScore, geoScore }) => (0.30 * textScore) + (0.25 * geoScore) + (0.45 * textScore) >= 0.72 || textScore >= 0.70);
+
+	if (duplicate) {
+		const { candidate } = duplicate;
+		const updated = await query<{ upvotes_count: number }>(
+			`UPDATE public.challenges
+			 SET upvotes_count = upvotes_count + 1
+			 WHERE id = $1
+			 RETURNING upvotes_count;`,
+			[candidate.id],
+		);
+		const upvotes = Number(updated.rows[0]?.upvotes_count ?? candidate.upvotes_count) ;
 		return {
+			success: true,
 			is_duplicate: true,
-			ticket_number: nearbyChallenge.ticket_number,
-			upvotes: support.upvotes,
-			message: 'Matched to existing ticket within 500m. Upvote incremented.',
+			deduplicated: true,
+			ticket_number: candidate.ticket_number,
+			masterTicketNumber: candidate.ticket_number,
+			upvotes,
+			distanceMetres: Math.round(Number(candidate.dist_meters)),
+			message: 'Formula 1 Match (D >= 0.72): Merged into Master Incident Cluster (+1 upvote).',
 		};
 	}
 

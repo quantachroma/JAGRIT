@@ -68,7 +68,7 @@ export default function UniversityLeaderboard({ language }: UniversityLeaderboar
   const getSectionTitle = () => {
     if (language === 'hi') return 'किस विश्वविद्यालय ने समाधान किया — संस्थागत लीडरबोर्ड';
     if (language === 'sat') return 'ᱚᱠᱟ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱥᱚᱞᱦᱮ ᱠᱮᱫᱟ — ᱥᱤᱨᱟᱹ ᱞᱤᱥᱴᱤ ᱟᱨ ᱠᱟᱹᱢᱤ';
-    return '“Kis University Ne Ki” — Institutional Leaderboard & Portfolios';
+    return 'Higher Education Institutions Leaderboard & Resolution Portfolios';
   };
 
   const getSectionSubtitle = () => {

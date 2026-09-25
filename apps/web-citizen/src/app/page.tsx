@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import HeroBackgroundSvg from '@/components/hero/hero-background-svg';
 import HeroCarousel from '@/components/HeroCarousel';
-import FlipCard3D, { type FlipCardData } from '@/components/FlipCard3D';
 import { MOCK_ACCOUNTS, saveActiveSession, type MockUser } from '@/lib/mock-auth';
 import {
   Users,
@@ -13,6 +12,7 @@ import {
   Building2,
   Landmark,
   ArrowRight,
+  ArrowDown,
   ArrowLeft,
   MessageSquare,
   Sparkles,
@@ -20,18 +20,16 @@ import {
   CheckCircle2,
   Compass,
   ArrowUpRight,
+  MessageSquareText,
+  BrainCircuit,
+  Vote,
+  LockKeyhole,
 } from 'lucide-react';
 
 const civicPillars = [
-  { eyebrow: '01 / Zero barrier intake', title: 'Every voice becomes a research brief.', description: 'Speak in Santhali or Hindi, send a photo, or use WhatsApp. JAGRIT turns lived experience into a location-verified problem statement.', accent: 'from-[#075985] via-[#0e7490] to-[#164e63]', icon: 'voice' as const, stat: '2', statLabel: 'languages at launch' },
-  { eyebrow: '02 / Autonomous R&D', title: 'The right campus for every challenge.', description: 'AI-assisted triage routes validated problems through three accountable hackathon rounds at BIT Mesra, IIT ISM and NIT Jamshedpur.', accent: 'from-[#9a3412] via-[#c2410c] to-[#7c2d12]', icon: 'research' as const, stat: '3', statLabel: 'round resolution loop' },
+  { eyebrow: '3 LANGUAGES AT LAUNCH (English, Hindi, Santhali)', title: 'Every voice becomes a research brief.', description: 'Speak in Santhali or Hindi, send a photo, or use WhatsApp. JAGRIT turns lived experience into a location-verified problem statement.', accent: 'from-[#075985] via-[#0e7490] to-[#164e63]', icon: 'voice' as const, stat: '3', statLabel: 'languages at launch' },
+  { eyebrow: 'STATEWIDE HEI INNOVATION NETWORK', title: 'The right campus for every challenge.', description: 'AI-assisted capability matching connects validated village problems to researchers across all 42+ universities, engineering colleges, polytechnics, and ITIs across Jharkhand.', accent: 'from-[#9a3412] via-[#c2410c] to-[#7c2d12]', icon: 'research' as const, stat: '42+', statLabel: 'higher education institutions' },
   { eyebrow: '03 / Public trust', title: 'Progress is visible. Funding is earned.', description: 'Dual-lock citizen quorum and PESA Gram Sabha verification release milestone escrow in a clear 30% / 40% / 30% sequence.', accent: 'from-[#166534] via-[#15803d] to-[#14532d]', icon: 'quorum' as const, stat: '30·40·30', statLabel: 'escrow tranches' },
-];
-
-const civicProblems: FlipCardData[] = [
-  { title: 'Palamu Basin: Groundwater Fluoride 8.2 mg/L', location: 'Daltonganj, Palamu', urgency: 'Urgent', category: 'Safe water / verified', detail: 'Three hamlets report recurring dental fluorosis and no dependable filtration point.', institution: 'BIT Mesra · Civil Engineering Lab', solution: 'Solar-powered community defluoridation', tranche: '30% released', progress: 30, tint: 'from-[#0e7490] to-[#164e63]' },
-  { title: 'Khunti Lac Cultivation Spoilage', location: 'Murhu, Khunti', urgency: 'Active', category: 'Livelihood / field signal', detail: 'Monsoon humidity is reducing lac shelf life before producer collectives reach market.', institution: 'IIT (ISM) Dhanbad · Materials Lab', solution: 'Low-energy lac drying and storage kit', tranche: '40% in review', progress: 62, tint: 'from-[#b45309] to-[#7c2d12]' },
-  { title: 'Chaibasa Tribal Solar Grid Fault', location: 'Tantnagar, West Singhbhum', urgency: 'Urgent', category: 'Clean energy / quorum', detail: 'A last-mile solar micro-grid is offline after repeated inverter faults.', institution: 'NIT Jamshedpur · Power Systems Cell', solution: 'Modular fault telemetry for micro-grids', tranche: '30% released', progress: 30, tint: 'from-[#166534] to-[#365314]' },
 ];
 
 export default function EntryPage() {
@@ -46,6 +44,71 @@ export default function EntryPage() {
   const [regOtp, setRegOtp] = useState('');
   const [regError, setRegError] = useState('');
   const [password, setPassword] = useState('');
+
+  const lifecycleSteps = [
+    {
+      number: '01',
+      timing: 'VILLAGE VOICE',
+      title: '1. Report the Problem (Day 0)',
+      description:
+        'A villager speaks a short voice note or takes a photo on WhatsApp or Web in Hindi, Santhali, or English. No app download needed.',
+      icon: MessageSquareText,
+      accent: 'border-cyan-300/40 bg-cyan-300/[0.07] text-cyan-200',
+      detail: 'Voice, photo, local language',
+    },
+    {
+      number: '02',
+      timing: 'INSTANT AI CHECK',
+      title: '2. AI Filters & Sorts (In 2 Minutes)',
+      description:
+        'AI removes duplicate reports from nearby areas. Simple tasks (like potholes or garbage) go to the municipal office, while real engineering challenges go to universities.',
+      icon: BrainCircuit,
+      accent: 'border-blue-300/40 bg-blue-300/[0.07] text-blue-200',
+      detail: 'Quick local sorting',
+    },
+    {
+      number: '03',
+      timing: 'VILLAGE PRIORITY',
+      title: '3. Community Votes & Budget Set (Days 1–3)',
+      description:
+        'Local residents upvote the issue. The government approves research grant funds, doubled with 1:1 Corporate CSR matching money.',
+      icon: Vote,
+      accent: 'border-amber-300/40 bg-amber-300/[0.07] text-amber-200',
+      detail: 'Community choice and funding',
+    },
+    {
+      number: '04',
+      timing: 'UNIVERSITY TEAMS',
+      title: '4. Colleges Compete to Solve It',
+      description:
+        'Colleges across Jharkhand with the right labs bid on the problem. Teams compete in a short hackathon to design the best working solution.',
+      icon: GraduationCap,
+      accent: 'border-orange-300/40 bg-orange-300/[0.07] text-orange-200',
+      detail: 'Teams build and compete',
+    },
+    {
+      number: '05',
+      timing: 'SAFE 3-STEP ESCROW',
+      title: '5. Lab Certified & Installed in Village',
+      description:
+        'Funds release safely in 3 steps: 30% for parts, 40% after an independent government lab tests it, and 30% once installed in the village with Gram Sabha permission.',
+      icon: LockKeyhole,
+      accent: 'border-emerald-300/40 bg-emerald-300/[0.07] text-emerald-200',
+      detail: 'Checked, funded, installed',
+    },
+    {
+      number: '06',
+      timing: '45-DAY VILLAGE TEST',
+      title: '6. 45-Day Test & Final Approval (Day 46)',
+      description:
+        'The machine runs for 45 days. If it works without breaking, local village trustees vote to approve it, and university students earn NEP 2020 degree credits.',
+      icon: ShieldCheck,
+      accent: 'border-violet-300/40 bg-violet-300/[0.07] text-violet-200',
+      detail: 'Tested and approved locally',
+    },
+  ];
+
+  const statutoryConcordats = ['NEP 2020', 'Companies Act 2013 · Sec 135', 'PESA Act 1996', 'DPDP Act 2023'];
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -304,6 +367,7 @@ export default function EntryPage() {
               <span className="text-lg sm:text-xl" role="img" aria-label="Govt of Jharkhand">🏛️</span>
             </div>
             <div className="text-left">
+              <p className="text-sm font-black tracking-tight text-white sm:text-base">JAGRIT (जाग्रत)</p>
               <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-900/60 to-[#7C2D12]/40 border border-[#EA580C]/40 px-2 py-0.5 rounded-md backdrop-blur-sm">
                 <ShieldCheck className="w-3 h-3 text-amber-300" />
                 <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-amber-200">
@@ -326,6 +390,7 @@ export default function EntryPage() {
 
           {/* High-Contrast WCAG AA Language Toggle Capsule */}
           <nav aria-label="Language selector">
+            <div className="flex items-center gap-2">
             <div className="bg-[#061933]/90 border border-blue-400/40 shadow-xl p-1 rounded-xl flex space-x-1 text-xs font-bold backdrop-blur-md">
               {(['en', 'hi', 'sat'] as const).map((l) => {
                 const isActive = language === l;
@@ -345,35 +410,41 @@ export default function EntryPage() {
                 );
               })}
             </div>
+            <Link href="/?login=true" className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-amber-300 px-3 text-xs font-black text-slate-950 shadow-lg shadow-amber-950/30 transition-colors hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-white sm:px-4 sm:text-sm">
+              <LockKeyhole className="h-4 w-4" /> Login / Sign Up
+            </Link>
+            </div>
           </nav>
         </header>
 
         {/* MAIN CENTER HERO CONTAINER */}
         <main className="w-full max-w-6xl mx-auto my-auto py-8 sm:py-12 flex flex-col items-center text-center">
-          {!showLogin ? (
             <>
               <div className="w-full space-y-10 text-left">
                 <div className="grid items-end gap-8 lg:grid-cols-[1.05fr_0.95fr]">
                   <div className="max-w-3xl">
-                    <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-cyan-100"><span className="h-2 w-2 rounded-full bg-cyan-300" /> DHTE · Smart Education / DPI</div>
                     <h1 className="text-5xl font-black leading-[0.92] tracking-[-0.06em] text-white sm:text-7xl lg:text-8xl">JAGRIT<span className="text-cyan-300">.</span></h1>
+                    <p className="mt-5 text-xl font-black leading-tight text-amber-200 sm:text-2xl">समस्या से समाधान तक — Problem se Samadhaan tak</p>
                     <p className="mt-5 max-w-2xl text-xl font-bold leading-tight text-white sm:text-2xl">Jharkhand Academia-Industry Gateway for Research, Innovation &amp; Transformation of Society</p>
                     <p className="mt-3 max-w-2xl text-lg font-semibold leading-8 text-amber-200">झारखण्ड जन-समस्या नवाचार, शोध एवं सामाजिक परिवर्तन सेतु</p>
                     <p className="mt-5 max-w-xl text-sm leading-6 text-slate-200">A public innovation loop for village voices, university research, accountable funding, and solutions that return to the people who shaped them.</p>
                     <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                      <Link href="/report" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-cyan-300 px-5 text-sm font-black text-slate-950 shadow-lg shadow-cyan-950/30 transition-colors hover:bg-cyan-200 focus:outline-none focus:ring-2 focus:ring-white">Report Village Problem <ArrowUpRight className="h-4 w-4" /></Link>
-                      <Link href="/whatsapp-simulator" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 text-sm font-black text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-300"><MessageSquare className="h-4 w-4" /> Test WhatsApp Seva Bot</Link>
-                      <Link href="/progress" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-amber-300/50 px-5 text-sm font-black text-amber-200 transition-colors hover:bg-amber-300/10 focus:outline-none focus:ring-2 focus:ring-amber-200">View Live State Progress <ArrowRight className="h-4 w-4" /></Link>
+                      <Link href="/progress" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-amber-300/50 px-5 text-sm font-black text-amber-200 transition-colors hover:bg-amber-300/10 focus:outline-none focus:ring-2 focus:ring-amber-200">🗺️ Explore Statewide Progress <ArrowRight className="h-4 w-4" /></Link>
+                      <a href="#lifecycle" onClick={(event) => { event.preventDefault(); document.getElementById('lifecycle')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 text-sm font-black text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-300">📜 View 6-Step Lifecycle (Scroll) <ArrowDown className="h-4 w-4" /></a>
                     </div>
                   </div>
                   <div className="hidden justify-end pb-2 lg:flex"><div className="max-w-xs border-l-2 border-amber-300/60 pl-5 text-sm leading-6 text-slate-300"><span className="font-black text-white">A civic operating system for Jharkhand.</span><br />Built around NEP 2020 research credits, local language access, and Gram Sabha verified trust.</div></div>
                 </div>
                 <HeroCarousel pillars={civicPillars} />
-                <section aria-labelledby="live-challenges-heading" className="space-y-5">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">Live challenge board</p><h2 id="live-challenges-heading" className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">Problems with a pathway forward.</h2></div><Link href="/progress" className="inline-flex items-center gap-1 text-sm font-bold text-amber-200 hover:text-amber-100">See all state progress <ArrowRight className="h-4 w-4" /></Link></div>
-                  <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{civicProblems.map((problem) => <FlipCard3D key={problem.title} problem={problem} />)}</div>
-                </section>
               </div>
+              <section id="lifecycle" aria-labelledby="lifecycle-heading" className="mt-20 w-full scroll-mt-8 text-left">
+                <div className="max-w-3xl"><p className="text-xs font-black uppercase tracking-[0.2em] text-cyan-300">Public process · PRD Section 5</p><h2 id="lifecycle-heading" className="mt-2 text-3xl font-black tracking-tight text-white sm:text-5xl">A problem should never disappear into a queue.</h2><p className="mt-4 text-sm leading-7 text-slate-300 sm:text-base">Every challenge moves through a visible chain of evidence, decisions, and community consent, from first report to field verification.</p></div>
+                <div className="relative mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  <div className="pointer-events-none absolute left-6 right-6 top-8 hidden h-px bg-gradient-to-r from-cyan-300/40 via-amber-300/30 to-violet-300/40 xl:block" />
+                  {lifecycleSteps.map((step) => { const Icon = step.icon; return <article key={step.number} className={`relative rounded-2xl border p-6 shadow-xl shadow-black/10 backdrop-blur-sm ${step.accent}`}><div className="flex items-start justify-between gap-4"><span className="font-mono text-3xl font-black text-white/30">{step.number}</span><span className="rounded-full border border-white/10 bg-black/10 px-2.5 py-1 text-[10px] font-black tracking-wider text-white/70">{step.timing}</span></div><div className="mt-5 flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-black/10"><Icon className="h-5 w-5" /></div><h3 className="mt-5 text-xl font-black leading-tight text-white">{step.title}</h3><p className="mt-3 text-sm leading-6 text-slate-200">{step.description}</p><div className="mt-5 border-t border-white/10 pt-4 text-xs font-black uppercase tracking-[0.12em] text-white/65">{step.detail}</div></article>; })}
+                </div>
+              </section>
+              <div className="mt-16 w-full border-t border-white/10 pt-8 text-left"><p className="text-xs font-black uppercase tracking-[0.18em] text-amber-200">Statutory concordats</p><div className="mt-4 flex flex-wrap gap-2">{statutoryConcordats.map((item) => <span key={item} className="rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-bold text-slate-300">{item}</span>)}</div></div>
               <div className="hidden">
               {/* Primary Identity: JAGRIT Wordmark with WCAG AA Contrast on Deep Navy */}
               <div className="space-y-3 max-w-3xl">
@@ -496,9 +567,9 @@ export default function EntryPage() {
               </div>
               </div>
             </>
-          ) : (
-            /* STEP 2: 4-ROLE CREDENTIAL LOGIN & DISTINCT DEMO FAST-PASS PANEL WITH FULL MULTILINGUAL FIDELITY */
-            <div className="w-full max-w-md mx-auto space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            {showLogin ? (
+            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/70 px-4 py-8 backdrop-blur-sm animate-in fade-in duration-200">
+              <div className="w-full max-w-md space-y-4 animate-in zoom-in-95 duration-200">
               <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-blue-300 shadow-2xl text-left space-y-5 w-full backdrop-blur-md">
                 <div className="flex items-center justify-between">
                   <button
@@ -791,8 +862,9 @@ export default function EntryPage() {
                   </button>
                 </div>
               </div>
+              </div>
             </div>
-          )}
+            ) : null}
         </main>
 
         {/* OFFICIAL FOOTER: Clear Civic Attribution with High Contrast */}

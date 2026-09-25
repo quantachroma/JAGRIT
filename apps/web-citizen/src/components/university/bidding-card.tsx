@@ -165,7 +165,7 @@ function ConsortiumForm({ lang, onClose }: { lang: Lang; onClose: () => void }) 
       <fieldset className="mt-4">
         <legend className="text-sm font-medium text-[#0F172A]">{t.partnerLabel}</legend>
         <div className="mt-2 space-y-2">
-          {t.partners.map((name, i) => (
+          {t.partners.map((name: string, i: number) => (
             <label
               key={name}
               className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 text-sm ${

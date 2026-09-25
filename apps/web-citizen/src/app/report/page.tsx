@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import type { ChallengeSubmissionPayload, GeoLocation } from '@jagrit/contracts';
 import { useCitizen } from '@/context/CitizenContext';
-import { supabase } from "@/lib/supabase";
 import AudioWaveformRecorder from '@/components/AudioWaveformRecorder';
 import LaserScannerPreview, { type ScannerDefect } from '@/components/LaserScannerPreview';
 import type { ReportLocation } from '@/components/ReportLocationMap';
@@ -22,6 +21,7 @@ import {
 
 const ReportLocationMap = dynamic(() => import('@/components/ReportLocationMap'), { ssr: false });
 const OFFLINE_QUEUE_KEY = 'jagrit_offline_reports';
+const REPORTED_TICKETS_KEY = 'jagrit_my_reported_tickets';
 
 type QueuedReport = ApiQueuedReport & {
   title: string;
@@ -46,6 +46,23 @@ const dataUrlToFile = async (dataUrl: string, name: string) => {
   return new File([await response.blob()], name, { type: response.headers.get('content-type') || 'application/octet-stream' });
 };
 
+const rememberReportedTicket = (ticketNumber: string) => {
+  if (typeof window === 'undefined' || !ticketNumber.startsWith('JAG-')) return;
+
+  const storedTickets = localStorage.getItem(REPORTED_TICKETS_KEY);
+  let reportedTickets: string[] = [];
+  try {
+    const parsedTickets = storedTickets ? JSON.parse(storedTickets) : [];
+    if (Array.isArray(parsedTickets)) {
+      reportedTickets = parsedTickets.filter((ticket): ticket is string => typeof ticket === 'string');
+    }
+  } catch {
+    reportedTickets = [];
+  }
+
+  localStorage.setItem(REPORTED_TICKETS_KEY, JSON.stringify([...reportedTickets.filter((ticket) => ticket !== ticketNumber), ticketNumber]));
+};
+
 const JHARKHAND_DISTRICTS = [
   { name: 'Ranchi', block: 'Kanke', lat: 23.3441, lon: 85.3096 },
   { name: 'Dhanbad', block: 'Govindpur', lat: 23.7957, lon: 86.4304 },
@@ -67,6 +84,7 @@ export default function ProblemSubmissionStudio() {
   const [recordedAudioBlob, setRecordedAudioBlob] = useState<Blob | null>(null);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
   const [audioDuration, setAudioDuration] = useState<number>(0);
+  const [speechLang, setSpeechLang] = useState<'hi' | 'en' | 'sat'>('hi');
 
   // Component A: Image upload with client-side canvas compression (<= 500 KB)
   const [originalFile, setOriginalFile] = useState<File | null>(null);
@@ -318,6 +336,10 @@ const sendQueuedReport = async (report: QueuedReport) => {
     formData.append('description', report.description);
     formData.append('category', report.category);
     formData.append('language', report.language);
+    if (report.language === 'hi') {
+      formData.append('whisperLanguage', 'hi');
+      formData.append('whisperPrompt', 'झारखंड के ग्रामीण नागरिक पेयजल, चापाकल, बिजली, सड़क, स्वास्थ्य की समस्या की शिकायत दर्ज कर रहे हैं।');
+    }
     formData.append('latitude', String(report.location.lat));
     formData.append('longitude', String(report.location.lon));
     formData.append('district', report.location.district);
@@ -380,7 +402,7 @@ const locationPayload: ReportLocation = {
         title: title.trim() || 'Grassroots Civic Challenge', 
         description: description.trim(), 
         category, 
-        language: (language as 'hi' | 'sat' | 'en') || 'hi', 
+        language: speechLang,
         imageData, 
         audioData: typeof recordedAudioUrl !== 'undefined' ? (recordedAudioUrl || undefined) : undefined, 
         location: locationPayload, 
@@ -398,68 +420,24 @@ const locationPayload: ReportLocation = {
         return;
       }
 
-      // 2. Online Mode: Direct Supabase Cloud Storage & Database Insertion
-      try {
-        const mediaUrls: string[] = [];
-        let rawAudioUrl: string | undefined;
-
-        if (compressedFile) {
-          const imagePath = `reports/${Date.now()}_${Math.random().toString(36).substring(7)}.webp`;
-          const { error: imageUploadError } = await supabase.storage
-            .from('challenge-media')
-            .upload(imagePath, compressedFile);
-
-          if (!imageUploadError) {
-            const { data: imageUrlData } = supabase.storage
-              .from('challenge-media')
-              .getPublicUrl(imagePath);
-            mediaUrls.push(imageUrlData.publicUrl);
-          }
-        }
-
-        // Handle Audio Upload if blob or url is present
-        const audioToUpload = typeof recordedAudioBlob !== 'undefined' ? recordedAudioBlob : null;
-        if (audioToUpload) {
-          const audioPath = `audio/${Date.now()}_voice.ogg`;
-          const { error: audioUploadError } = await supabase.storage
-            .from('challenge-media')
-            .upload(audioPath, audioToUpload);
-
-          if (!audioUploadError) {
-            const { data: audioUrlData } = supabase.storage
-              .from('challenge-media')
-              .getPublicUrl(audioPath);
-            rawAudioUrl = audioUrlData.publicUrl;
-          }
-        }
-
-        const ticketNumber = `JAG-${new Date().getFullYear()}-${(activeDistrict || 'RAN')
-          .substring(0, 3)
-          .toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
-
-        const { error: insertError } = await supabase.from('challenges').insert({
-          ticket_number: ticketNumber,
-          title: title.trim() || 'Grassroots Civic Challenge',
-          description: description.trim(),
-          location: `POINT(${mapCoords.lon || 85.3096} ${mapCoords.lat || 23.3441})`,
-          district: activeDistrict || 'Ranchi',
-          block: activeBlock || 'Kanke',
-          panchayat: currentLocation.panchayat || 'Chianki',
-          media_urls: mediaUrls,
-          raw_audio_url: rawAudioUrl,
-          submission_channel: 'APP',
-          status: 'OPEN_FOR_PRIORITIZATION',
-          upvotes_count: 1,
-        });
-
-        if (insertError) throw insertError;
-
-        setSubmitResult({ ticketNumber, upvotes: 1 });
-      } catch (supabaseErr) {
-        console.warn('Direct Supabase insert failed, attempting backend fallback:', supabaseErr);
-        // Fallback to API queue handler
-        setSubmitResult(await sendQueuedReport(report));
-      }
+      // Online submissions go through the backend so PostGIS and Formula 1 deduplication run first.
+      const backendResult = await sendQueuedReport(report);
+      const ticketNumber = String(backendResult.masterTicketNumber || backendResult.ticket_number || backendResult.ticketNumber || '');
+      if (ticketNumber) rememberReportedTicket(ticketNumber);
+      setSubmitResult({ ...backendResult, ticketNumber, deduplicated: backendResult.deduplicated === true });
+      const newGrievance = {
+        ticketNumber,
+        title: title.trim() || 'Civic Infrastructure Grievance',
+        description: description.trim(),
+        district: activeDistrict || 'Palamu',
+        block: activeBlock || 'Daltonganj',
+        status: 'SUBMITTED',
+        stage: 1,
+        submissionDate: new Date().toISOString(),
+        upvotes: 1,
+      };
+      const stored = JSON.parse(localStorage.getItem('jagrit_my_grievances') || '[]');
+      localStorage.setItem('jagrit_my_grievances', JSON.stringify([newGrievance, ...stored]));
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : 'Error occurred during problem submission.');
     } finally { 
@@ -505,6 +483,11 @@ const locationPayload: ReportLocation = {
       {submitResult ? (
         /* Submission Success Ticket View */
         <div className="bg-white border-2 border-blue-600 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 animate-in fade-in duration-300">
+          {submitResult.deduplicated && (
+            <div role="alert" className="rounded-2xl border-2 border-amber-400 bg-amber-50 p-4 text-sm font-bold text-amber-950">
+              🔄 डुप्लीकेट समस्या की पहचान हुई! PostGIS 500m दायरे और PRD Formula 1 (D ≥ 0.72) के आधार पर इसे मास्टर टिकट #{submitResult.masterTicketNumber || submitResult.ticketNumber} में मिला दिया गया है। (+1 अपवोट जोड़ा गया)।
+            </div>
+          )}
           <div className="flex items-center space-x-3.5 text-blue-700">
             <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-700 shadow-inner">
               <CheckCircle2 className="w-7 h-7" />
@@ -633,8 +616,20 @@ const locationPayload: ReportLocation = {
               </span>
               <span>{language === 'hi' ? 'आवाज़ में विवरण रिकॉर्ड करें' : language === 'sat' ? 'ᱟᱲᱟᱝ ᱨᱮᱠᱚᱨᱰᱤᱝ' : 'Voice Note Ingestion'}</span>
             </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label="Spoken voice language">
+              <button type="button" onClick={() => setSpeechLang('hi')} aria-pressed={speechLang === 'hi'} className={`rounded-xl border px-3 py-3 text-sm font-black transition-colors ${speechLang === 'hi' ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-slate-300 bg-white text-slate-800 hover:bg-emerald-50'}`}>
+                🇮🇳 हिन्दी (देवनागरी)
+              </button>
+              <button type="button" onClick={() => setSpeechLang('en')} aria-pressed={speechLang === 'en'} className={`rounded-xl border px-3 py-3 text-sm font-black transition-colors ${speechLang === 'en' ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-slate-300 bg-white text-slate-800 hover:bg-emerald-50'}`}>
+                English
+              </button>
+              <button type="button" onClick={() => setSpeechLang('sat')} aria-pressed={speechLang === 'sat'} className={`rounded-xl border px-3 py-3 text-sm font-black transition-colors ${speechLang === 'sat' ? 'border-emerald-700 bg-emerald-700 text-white' : 'border-slate-300 bg-white text-slate-800 hover:bg-emerald-50'}`}>
+                ᱥᱟᱱᱛᱟᱲᱤ (Ol Chiki)
+              </button>
+            </div>
             <AudioWaveformRecorder
               lang={language}
+              speechLang={speechLang}
               onAudioRecorded={(blob, url, duration) => {
                 setRecordedAudioBlob(blob);
                 setRecordedAudioUrl(url);
@@ -643,6 +638,10 @@ const locationPayload: ReportLocation = {
               onTranscriptionGenerated={(transcription) => {
                 setTitle(transcription.title);
                 setDescription(transcription.description);
+              }}
+              onTranscription={(transcript) => {
+                setDescription(transcript);
+                setTitle(`जल समस्या: ${transcript.split(/\s+/u).slice(0, 5).join(' ')}`);
               }}
             />
           </div>

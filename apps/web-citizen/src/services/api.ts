@@ -1,6 +1,6 @@
 'use client';
 
-const API_ROOT = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+const API_ROOT = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 export const OFFLINE_REPORT_QUEUE_KEY = 'jagrit_offline_reports';
 
 export type ApiFixture = {
@@ -35,7 +35,7 @@ async function postJson<T>(path: string, payload: unknown, fallback: T): Promise
 
 export async function submitCitizenReport(formData: FormData): Promise<ApiFixture & Record<string, unknown>> {
   try {
-    const response = await fetch(`${API_ROOT}/api/v1/reports/submit`, { method: 'POST', body: formData });
+    const response = await fetch(`${API_ROOT}/api/v1/challenges/submit`, { method: 'POST', body: formData });
     if (!response.ok) throw new Error(`API ${response.status}`);
     return await response.json() as ApiFixture & Record<string, unknown>;
   } catch {
@@ -78,6 +78,10 @@ export async function queuedReportToFormData(report: QueuedReport) {
   formData.append('description', report.description);
   formData.append('category', report.category);
   formData.append('language', report.language);
+  if (report.language === 'hi') {
+    formData.append('whisperLanguage', 'hi');
+    formData.append('whisperPrompt', 'झारखंड के ग्रामीण नागरिक पेयजल, चापाकल, बिजली, सड़क, स्वास्थ्य की समस्या की शिकायत दर्ज कर रहे हैं।');
+  }
   formData.append('latitude', String(report.location.lat));
   formData.append('longitude', String(report.location.lon));
   formData.append('district', report.location.district);

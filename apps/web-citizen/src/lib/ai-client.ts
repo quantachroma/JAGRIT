@@ -23,11 +23,23 @@ export interface UniversitySpiderData {
   student_pool: number;
 }
 
+export interface UniversityMatchingBreakdown {
+  domain_expertise: number;
+  faculty_patents?: number;
+  faculty_availability: number;
+  nabl_accreditation: number;
+  geographic_proximity: number;
+  campus_capacity: number;
+  student_rd_pool?: number;
+  track_record: number;
+}
+
 export interface MatchedUniversity {
   university_id: string;
   name: string;
   overall_match_score: number;
   spider_data: UniversitySpiderData;
+  matching_breakdown?: UniversityMatchingBreakdown;
   explainability_reasons: string[];
 }
 
@@ -131,7 +143,7 @@ export class AIClient {
   }
 
   /**
-   * Match universities and generate 5-axis radar chart institutional capability fit.
+  * Match universities and generate the six-axis XAI institutional capability fit.
    */
   async matchUniversities(challengeId: string, description: string, domain: string = 'Water & Public Health'): Promise<UniversityMatchResult> {
     try {
@@ -161,7 +173,7 @@ export class AIClient {
       // Fallback below
     }
 
-    // 5-axis spider chart data (labs, patents, proximity, track record, student pool)
+    // Formula 4 canonical six-axis XAI scorecard fallback.
     return {
       challenge_id: challengeId,
       matched_universities: [
@@ -175,6 +187,14 @@ export class AIClient {
             geographic_proximity: 85,
             track_record: 98,
             student_pool: 92,
+          },
+          matching_breakdown: {
+            domain_expertise: 96,
+            faculty_availability: 88,
+            nabl_accreditation: 100,
+            geographic_proximity: 85,
+            campus_capacity: 78,
+            track_record: 98,
           },
           explainability_reasons: [
             'NABL Accredited Environmental Chemistry & AAS Assay Lab (+35%)',
@@ -194,6 +214,14 @@ export class AIClient {
             track_record: 88,
             student_pool: 94,
           },
+          matching_breakdown: {
+            domain_expertise: 86,
+            faculty_availability: 82,
+            nabl_accreditation: 92,
+            geographic_proximity: 78,
+            campus_capacity: 80,
+            track_record: 88,
+          },
           explainability_reasons: [
             'National Hydro-Geology Center of Excellence (+32%)',
             'Membrane Filtration & Heavy Metal Separation Pilot Cell (+28%)',
@@ -210,6 +238,14 @@ export class AIClient {
             geographic_proximity: 72,
             track_record: 82,
             student_pool: 88,
+          },
+          matching_breakdown: {
+            domain_expertise: 78,
+            faculty_availability: 76,
+            nabl_accreditation: 84,
+            geographic_proximity: 72,
+            campus_capacity: 74,
+            track_record: 82,
           },
           explainability_reasons: [
             'Advanced Materials Synthesis & Nano-adsorbent Lab (+26%)',

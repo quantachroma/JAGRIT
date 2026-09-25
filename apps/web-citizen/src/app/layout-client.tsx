@@ -34,7 +34,6 @@ const PROTECTED_ROUTES = [
   '/industry',
   '/government',
   '/feedback',
-  '/report',
   '/samvaad',
   '/repository',
   '/time-machine',
@@ -46,7 +45,6 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const { language, setLanguage, t } = useLanguage();
   const { user, logout } = useCitizen();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const isLandingPage = pathname === '/';
 
   const isProtected = PROTECTED_ROUTES.some(
@@ -55,7 +53,6 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isProtected) {
-      setIsCheckingAuth(false);
       return;
     }
 
@@ -69,24 +66,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       else if (pathname.startsWith('/government')) impliedRole = 'govt';
 
       router.replace(`/?login=true&role=${impliedRole}&redirect=${encodeURIComponent(pathname)}`);
-    } else {
-      setIsCheckingAuth(false);
     }
   }, [pathname, isProtected, user.isAuthenticated, router]);
 
   if (isLandingPage) {
     return <main>{children}</main>;
-  }
-
-  if (isProtected && isCheckingAuth) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#051120] text-sky-100 p-4">
-        <div className="w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-xs font-black uppercase tracking-wider text-amber-200">
-          Verifying JAGRIT Single Sign-On session...
-        </p>
-      </div>
-    );
   }
 
   const role: NavRole = user.role

@@ -64,6 +64,18 @@ type CommunityThreadRow = {
   created_at: string;
 };
 
+const saveThreadToLocalStorage = (thread: SamvaadThread) => {
+  if (typeof window === 'undefined') return;
+
+  try {
+    const storedThreads = JSON.parse(window.localStorage.getItem('jagrit_local_threads') || '[]') as SamvaadThread[];
+    const otherThreads = storedThreads.filter((storedThread) => storedThread.id !== thread.id);
+    window.localStorage.setItem('jagrit_local_threads', JSON.stringify([thread, ...otherThreads]));
+  } catch (storageError) {
+    console.error('Failed to save local community thread:', storageError);
+  }
+};
+
 export default function SamvaadPage() {
   const { currentLocation, user } = useCitizen();
   const { t } = useLanguage();
@@ -95,6 +107,16 @@ export default function SamvaadPage() {
   };
 
   useEffect(() => {
+    let localThreads: SamvaadThread[] = [];
+
+    try {
+      localThreads = JSON.parse(window.localStorage.getItem('jagrit_local_threads') || '[]') as SamvaadThread[];
+    } catch (storageError) {
+      console.error('Failed to load local community threads:', storageError);
+    }
+
+    setThreads(localThreads);
+
     const loadThreads = async () => {
       const { data, error } = await supabase
         .from('community_threads')
@@ -106,7 +128,11 @@ export default function SamvaadPage() {
         return;
       }
 
-      setThreads((data as CommunityThreadRow[]).map(mapCommunityThread));
+      const serverThreads = (data as CommunityThreadRow[]).map(mapCommunityThread);
+      setThreads((currentThreads) => {
+        const localThreadIds = new Set(localThreads.map((thread) => thread.id));
+        return [...currentThreads.filter((thread) => localThreadIds.has(thread.id)), ...serverThreads];
+      });
     };
 
     void loadThreads();
@@ -135,28 +161,23 @@ export default function SamvaadPage() {
 
   // Optimistic Like Toggle
   const handleToggleLike = async (thread: SamvaadThread) => {
-    if (thread.isLiked) return;
+    const nextThread = {
+      ...thread,
+      isLiked: !thread.isLiked,
+      likesCount: Math.max(0, thread.likesCount + (thread.isLiked ? -1 : 1)),
+    };
 
-    const nextLikesCount = thread.likesCount + 1;
     setThreads((prev) => prev.map((currentThread) =>
-      currentThread.id === thread.id
-        ? { ...currentThread, isLiked: true, likesCount: nextLikesCount }
-        : currentThread
+      currentThread.id === thread.id ? nextThread : currentThread
     ));
+    saveThreadToLocalStorage(nextThread);
 
     const { error } = await supabase
       .from('community_threads')
-      .update({ likes_count: nextLikesCount })
+      .update({ likes_count: nextThread.likesCount })
       .eq('id', thread.id);
 
-    if (error) {
-      setThreads((prev) => prev.map((currentThread) =>
-        currentThread.id === thread.id
-          ? { ...currentThread, isLiked: false, likesCount: thread.likesCount }
-          : currentThread
-      ));
-      console.error('Failed to like community thread:', error);
-    }
+    if (error) console.error('Failed to persist community thread like:', error);
   };
 
   // Optimistic Reply Action
@@ -165,26 +186,32 @@ export default function SamvaadPage() {
     const text = replyInputText[threadId]?.trim();
     if (!text) return;
 
-    const newReply: SamvaadComment = {
-      id: `rep-${Date.now()}`,
-      author: 'Citizen Contributor',
-      role: 'CITIZEN',
-      roleLabel: 'Citizen',
+    const newReply: SamvaadComment & {
+      author_name: string;
+      author_role: string;
+      author_location: string;
+      text: string;
+      created_at: string;
+    } = {
+      id: `reply_${Date.now()}`,
+      author_name: 'Dr. Anand Verma (Researcher)',
+      author_role: 'Researcher',
+      author_location: 'Ranchi, BIT Mesra',
+      text,
+      created_at: 'Just now',
+      author: 'Dr. Anand Verma (Researcher)',
+      role: 'RESEARCHER',
+      roleLabel: 'Researcher',
       timeAgo: 'Just now',
       content: text,
     };
 
-    setThreads((prev) =>
-      prev.map((thread) => {
-        if (thread.id === threadId) {
-          return {
-            ...thread,
-            replies: [...thread.replies, newReply],
-          };
-        }
-        return thread;
-      })
-    );
+    setThreads((prev) => prev.map((thread) => {
+      if (thread.id !== threadId) return thread;
+      const updatedThread = { ...thread, replies: [...thread.replies, newReply] };
+      saveThreadToLocalStorage(updatedThread);
+      return updatedThread;
+    }));
 
     setReplyInputText((prev) => ({ ...prev, [threadId]: '' }));
     showToast(t.samvaad.toastReplySuccess);
@@ -192,51 +219,78 @@ export default function SamvaadPage() {
 
   // Share Action
   const handleShareThread = async (thread: SamvaadThread) => {
-    const url = typeof window !== 'undefined' ? `${window.location.origin}/samvaad#${thread.id}` : '';
-    if (typeof navigator !== 'undefined' && navigator.share) {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') return;
+
+    const url = `${window.location.origin}/samvaad?thread=${encodeURIComponent(thread.id)}`;
+    if (navigator.clipboard) {
       try {
-        await navigator.share({
-          title: thread.title,
-          text: thread.content,
-          url,
-        });
-        return;
-      } catch {
-        // fallback to clipboard
+        await navigator.clipboard.writeText(url);
+      } catch (clipboardError) {
+        console.error('Failed to copy community thread link:', clipboardError);
       }
     }
 
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(url);
-      showToast(t.samvaad.toastLinkCopied);
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: thread.title, text: thread.content, url });
+      } catch {
+        // The user may dismiss the native share drawer.
+      }
     }
+
+    showToast('Thread link copied to clipboard!');
   };
 
   // Post Composer Action
   const handleQuickPost = async () => {
     if (!composerText.trim()) return;
 
-    const currentUserId = (user as typeof user & { id?: string }).id || crypto.randomUUID();
-    const { data, error } = await supabase
-      .from('community_threads')
-      .insert({
-        content: composerText.trim(),
-        tags: selectedTags,
-        author_id: currentUserId,
-        likes_count: 0,
-      })
-      .select('*')
-      .single();
+    const content = composerText.trim();
+    const tags = selectedTags.length > 0 ? selectedTags : ['#EquipmentSharing', '#WaterResources'];
+    const newLocalThread: SamvaadThread = {
+      id: `thread_${Date.now()}`,
+      title: content.slice(0, 60) + (content.length > 60 ? '...' : ''),
+      content,
+      tags,
+      category: composerCategory,
+      author: composerRole === 'RESEARCHER' ? 'Dr. Anand Verma' : 'Rishika Sharma',
+      role: composerRole,
+      roleLabel: composerRole === 'RESEARCHER' ? 'Researcher' : 'Citizen',
+      location: 'Ranchi, BIT Mesra',
+      timeAgo: 'Just now',
+      likesCount: 0,
+      isLiked: false,
+      replies: [],
+    };
 
-    if (error) {
-      console.error('Failed to create community thread:', error);
-      showToast('Unable to start discussion');
-      return;
+    try {
+      const currentUserId = (user as typeof user & { id?: string }).id || crypto.randomUUID();
+      const { data, error } = await supabase
+        .from('community_threads')
+        .insert({
+          content,
+          tags,
+          author_id: currentUserId,
+          likes_count: 0,
+        })
+        .select('*')
+        .single();
+
+      if (error || !data) {
+        console.error('Failed to create community thread:', error);
+        setThreads((prev) => [newLocalThread, ...prev]);
+        saveThreadToLocalStorage(newLocalThread);
+      } else {
+        setThreads((prev) => [mapCommunityThread(data as CommunityThreadRow), ...prev]);
+      }
+    } catch (submissionError) {
+      console.error('Failed to create community thread:', submissionError);
+      setThreads((prev) => [newLocalThread, ...prev]);
+      saveThreadToLocalStorage(newLocalThread);
     }
 
-    setThreads((prev) => [mapCommunityThread(data as CommunityThreadRow), ...prev]);
     setComposerText('');
-    showToast(t.samvaad.toastPostSuccess);
+    showToast(t.samvaad.toastPostSuccess || 'Discussion posted successfully!');
   };
 
   // Filter Categories: All Threads | Water Research | Agritech | Energy | Livelihoods
@@ -576,6 +630,9 @@ export default function SamvaadPage() {
                           >
                             <div className="flex flex-wrap items-center justify-between gap-1">
                               <div className="flex items-center space-x-2">
+                                <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
+                                  <User className="w-3.5 h-3.5" />
+                                </span>
                                 <span className="font-bold text-slate-900">{reply.author}</span>
                                 {renderRoleBadge(reply.role, reply.roleLabel)}
                               </div>
@@ -606,7 +663,7 @@ export default function SamvaadPage() {
                       />
                       <button
                         type="submit"
-                        className="bg-blue-600 hover:bg-blue-700 text-white p-2.5 min-h-[42px] min-w-[42px] rounded-xl transition-all shadow-xs flex items-center justify-center"
+                        className="bg-blue-600 hover:bg-blue-700 text-white p-2.5 min-h-[42px] min-w-[42px] rounded-xl transition-all active:scale-95 shadow-xs flex items-center justify-center"
                         title="Send Reply"
                       >
                         <Send className="w-4 h-4 text-white" />

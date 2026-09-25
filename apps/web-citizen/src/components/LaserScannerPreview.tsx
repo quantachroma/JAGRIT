@@ -5,7 +5,7 @@ import { DragEvent, useEffect, useRef, useState } from 'react';
 import { Camera, CheckCircle2, FileImage, Loader2, ScanLine } from 'lucide-react';
 
 export interface ScannerDefect { id: string; label: string; category: string; confidence: number; box: { x: number; y: number; width: number; height: number }; details: string; }
-interface LaserScannerPreviewProps { onFileReady?: (file: File, previewUrl: string, stats: { originalSizeKb: number; compressedSizeKb: number; ratio: number }) => void; onScanComplete?: (data: { detected: boolean; defects: ScannerDefect[] }) => void; }
+interface LaserScannerPreviewProps { language?: 'en' | 'hi' | 'sat'; onFileReady?: (file: File, previewUrl: string, stats: { originalSizeKb: number; compressedSizeKb: number; ratio: number }) => void; onScanComplete?: (data: { detected: boolean; defects: ScannerDefect[] }) => void; }
 
 const defects: ScannerDefect[] = [
   { id: 'water', label: 'Water Contamination', category: 'Visual Defect Analysis', confidence: .94, box: { x: 46, y: 50, width: 42, height: 36 }, details: 'Possible sediment and contamination signature.' },
@@ -35,7 +35,7 @@ async function compressToWebp(file: File, limitBytes = 500 * 1024): Promise<File
   } finally { URL.revokeObjectURL(sourceUrl); }
 }
 
-export default function LaserScannerPreview({ onFileReady, onScanComplete }: LaserScannerPreviewProps) {
+export default function LaserScannerPreview({ language = 'en', onFileReady, onScanComplete }: LaserScannerPreviewProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
@@ -59,13 +59,14 @@ export default function LaserScannerPreview({ onFileReady, onScanComplete }: Las
   };
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => { event.preventDefault(); void handleFile(event.dataTransfer.files[0]); };
+  const labels = language === 'hi' ? { replace: 'स्थल फ़ोटो बदलें', upload: 'फ़ोटो लें या चित्र यहां डालें', hint: 'JPEG/PNG को WebP में बदला जाएगा, अधिकतम ५०० केबी', running: 'दृश्य विश्लेषण जारी', complete: 'विश्लेषण पूर्ण', ready: 'फ़ोटो ५०० केबी से कम अपलोड के लिए तैयार है', alt: 'स्थल प्रमाण फ़ोटो' } : language === 'sat' ? { replace: 'ᱴᱷᱟᱶ ᱪᱤᱛᱟᱹᱨ ᱵᱚᱫᱚᱞ ᱢᱮ', upload: 'ᱪᱤᱛᱟᱹᱨ ᱟᱹᱜᱩᱭ ᱢᱮ', hint: 'JPEG/PNG WebP ᱨᱮ ᱵᱚᱫᱚᱞ, ᱵᱟᱹᱲᱛᱤ ᱕᱐᱐ KB', running: 'ᱪᱤᱛᱟᱹᱨ ᱧᱮᱞ ᱪᱟᱞᱟᱜ', complete: 'ᱧᱮᱞ ᱥᱟᱹᱛ', ready: 'ᱪᱤᱛᱟᱹᱨ ᱕᱐᱐ KB ᱠᱷᱚᱱ ᱠᱟᱹᱴᱤᱡ ᱥᱮᱫ ᱟᱠᱟᱱᱟ', alt: 'ᱴᱷᱟᱶ ᱨᱮᱱᱟᱜ ᱪᱤᱛᱟᱹᱨ' } : { replace: 'Replace site photo', upload: 'Take a photo or drop an image here', hint: 'JPEG/PNG converted to WebP, maximum 500 KB', running: 'Visual analysis running', complete: 'Analysis complete', ready: 'Client compressed and ready for upload under 500 KB', alt: 'Uploaded site evidence' };
   return <div className="space-y-3">
     <div onDrop={handleDrop} onDragOver={(event) => event.preventDefault()} className="rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/50 p-5 text-center">
       <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/*" capture="environment" onChange={(event) => void handleFile(event.target.files?.[0])} className="hidden" />
-      <button type="button" onClick={() => inputRef.current?.click()} className="mx-auto flex flex-col items-center gap-2 text-sm font-black text-slate-800"><span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-700 text-white"><Camera className="h-6 w-6" /></span><span>{previewUrl ? 'Replace site photo' : 'Take a photo or drop an image here'}</span><span className="text-xs font-medium text-slate-500">JPEG/PNG converted to WebP, maximum 500 KB</span></button>
+      <button type="button" onClick={() => inputRef.current?.click()} className="mx-auto flex flex-col items-center gap-2 text-sm font-black text-slate-800"><span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-700 text-white"><Camera className="h-6 w-6" /></span><span>{previewUrl ? labels.replace : labels.upload}</span><span className="text-xs font-medium text-slate-500">{labels.hint}</span></button>
     </div>
     {error && <p role="alert" className="text-xs font-bold text-red-700">{error}</p>}
-    {previewUrl && <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-950"><img src={previewUrl} alt="Uploaded site evidence" className="h-full w-full object-cover" />{scanning && <div className="absolute left-0 right-0 z-20 h-1 bg-emerald-300 shadow-[0_0_20px_6px_#10b981]" style={{ top: `${laserPosition}%` }} />}<div className="absolute left-3 top-3 flex items-center gap-2 rounded-lg bg-slate-950/80 px-2.5 py-1.5 text-[11px] font-bold text-emerald-200">{scanning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />} {scanning ? 'Visual analysis running' : 'Analysis complete'}</div><svg className="absolute inset-0 h-full w-full">{!scanning && defects.map((defect) => <g key={defect.id}><rect x={`${defect.box.x}%`} y={`${defect.box.y}%`} width={`${defect.box.width}%`} height={`${defect.box.height}%`} fill="rgba(16,185,129,.14)" stroke="#34d399" strokeWidth="2" strokeDasharray="6 4" /><foreignObject x={`${defect.box.x}%`} y={`${Math.max(defect.box.y - 11, 2)}%`} width="220" height="30"><div className="rounded bg-emerald-950/90 px-2 py-1 text-[10px] font-bold text-emerald-200">{defect.label} · {(defect.confidence * 100).toFixed(0)}%</div></foreignObject></g>)}</svg></div>}
-    {previewUrl && <div className="flex items-center gap-2 text-xs font-bold text-emerald-800"><FileImage className="h-4 w-4" /> Client compressed and ready for upload under 500 KB <ScanLine className="ml-auto h-4 w-4" /></div>}
+    {previewUrl && <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-950"><img src={previewUrl} alt={labels.alt} className="h-full w-full object-cover" />{scanning && <div className="absolute left-0 right-0 z-20 h-1 bg-emerald-300 shadow-[0_0_20px_6px_#10b981]" style={{ top: `${laserPosition}%` }} />}<div className="absolute left-3 top-3 flex items-center gap-2 rounded-lg bg-slate-950/80 px-2.5 py-1.5 text-[11px] font-bold text-emerald-200">{scanning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />} {scanning ? labels.running : labels.complete}</div><svg className="absolute inset-0 h-full w-full">{!scanning && defects.map((defect) => <g key={defect.id}><rect x={`${defect.box.x}%`} y={`${defect.box.y}%`} width={`${defect.box.width}%`} height={`${defect.box.height}%`} fill="rgba(16,185,129,.14)" stroke="#34d399" strokeWidth="2" strokeDasharray="6 4" /><foreignObject x={`${defect.box.x}%`} y={`${Math.max(defect.box.y - 11, 2)}%`} width="220" height="30"><div className="rounded bg-emerald-950/90 px-2 py-1 text-[10px] font-bold text-emerald-200">{defect.label} · {(defect.confidence * 100).toFixed(0)}%</div></foreignObject></g>)}</svg></div>}
+    {previewUrl && <div className="flex items-center gap-2 text-xs font-bold text-emerald-800"><FileImage className="h-4 w-4" /> {labels.ready} <ScanLine className="ml-auto h-4 w-4" /></div>}
   </div>;
 }

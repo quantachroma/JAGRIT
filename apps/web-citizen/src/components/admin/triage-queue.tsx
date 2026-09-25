@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CheckCircle2,
   Building2,
@@ -25,6 +25,16 @@ type TriageRow = {
   district: string;
   status: "pending" | "approved" | "rerouted";
   approvedNote?: string;
+};
+
+type Challenge = {
+  id?: string;
+  ticket_number?: string;
+  description?: string;
+  title?: string;
+  district?: string;
+  status?: string;
+  category?: string;
 };
 
 const INITIAL_ROWS: TriageRow[] = [
@@ -124,27 +134,93 @@ function ULBModal({ ticket, onClose, onConfirm }: { ticket: TriageRow; onClose: 
 export function TriageQueue() {
   const [rows, setRows]           = useState<TriageRow[]>(INITIAL_ROWS);
   const [ulbTarget, setUlbTarget] = useState<TriageRow | null>(null);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
-  function handleApproveRD(id: string) {
-    setRows((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? { ...r, status: "approved", approvedNote: "Applied R&D approved. 7-day university bidding window opened. Budget ceiling: ₹3,50,000." }
-          : r
-      )
-    );
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadChallenges() {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const response = await fetch(`${apiUrl}/api/v1/challenges`, { signal: controller.signal });
+        if (!response.ok) throw new Error(`Challenge request failed: ${response.status}`);
+        const payload: unknown = await response.json();
+        const items = Array.isArray(payload)
+          ? payload
+          : payload && typeof payload === "object" && "data" in payload && Array.isArray(payload.data)
+            ? payload.data
+            : payload && typeof payload === "object" && "challenges" in payload && Array.isArray(payload.challenges)
+              ? payload.challenges
+              : [];
+        const pendingChallenges = items.filter((item): item is Challenge => (
+          item !== null && typeof item === "object" &&
+          (!("status" in item) || item.status === "PENDING_HITL")
+        ));
+
+        if (pendingChallenges.length > 0) {
+          setRows(pendingChallenges.map((challenge, index) => {
+            const description = challenge.description || challenge.title || "Citizen challenge awaiting review";
+            const isCritical = /काला पानी|fluoride|arsenic/i.test(description);
+            return {
+              id: challenge.id || challenge.ticket_number || `live-${index}`,
+              ticketId: challenge.ticket_number || challenge.id || "Unknown ticket",
+              description,
+              severity: isCritical ? 96 : 75,
+              domain: challenge.category || "Water Resources",
+              defectClass: "Contaminated Water Supply",
+              defectConfidence: 96,
+              aiLabel: "Applied R&D",
+              aiConfidence: 96,
+              district: challenge.district || "Palamu",
+              status: "pending",
+            };
+          }));
+        }
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+          console.warn("Could not load live triage challenges, using fallback:", error);
+        }
+      }
+    }
+
+    void loadChallenges();
+    return () => controller.abort();
+  }, []);
+
+  async function applyDecision(row: TriageRow, action: "approve" | "reroute") {
+    setBusyAction(`${action}:${row.id}`);
+    setNotice(null);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const response = await fetch(`${apiUrl}/api/v1/evaluator/${action}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ticket_id: row.id,
+          allocated_pool: action === "approve" ? 350000 : undefined,
+        }),
+      });
+      if (!response.ok) throw new Error(`Unable to ${action} ${row.ticketId}`);
+      setRows((prev) => prev.filter((item) => item.id !== row.id));
+      setNotice(action === "approve"
+        ? `${row.ticketId} approved as Applied R&D and opened for bids.`
+        : `${row.ticketId} rerouted to Municipal ULB.`);
+      if (ulbTarget?.id === row.id) setUlbTarget(null);
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Unable to update the challenge.");
+    } finally {
+      setBusyAction(null);
+    }
+  }
+
+  function handleApproveRD(row: TriageRow) {
+    void applyDecision(row, "approve");
   }
 
   function handleULBConfirm() {
     if (!ulbTarget) return;
-    setRows((prev) =>
-      prev.map((r) =>
-        r.id === ulbTarget.id
-          ? { ...r, status: "rerouted", approvedNote: "Dispatched to Ranchi Municipal Corporation via JharSewa API." }
-          : r
-      )
-    );
-    setUlbTarget(null);
+    void applyDecision(ulbTarget, "reroute");
   }
 
   return (
@@ -172,6 +248,7 @@ export function TriageQueue() {
           <p className="text-xs text-slate-500">
             Human-in-the-Loop (HITL) evaluator approval required before citizen problems proceed to HEI bidding or civic dispatch.
           </p>
+          {notice && <p role="status" className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">{notice}</p>}
         </div>
 
         {/* Table */}
@@ -257,7 +334,8 @@ export function TriageQueue() {
                       ) : isRD ? (
                         <button
                           type="button"
-                          onClick={() => handleApproveRD(row.id)}
+                          onClick={() => handleApproveRD(row)}
+                          disabled={busyAction !== null}
                           className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all active:scale-95 shadow-xs leading-snug text-left"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
@@ -267,6 +345,7 @@ export function TriageQueue() {
                         <button
                           type="button"
                           onClick={() => setUlbTarget(row)}
+                          disabled={busyAction !== null}
                           className="bg-slate-600 hover:bg-slate-700 text-white font-bold text-[11px] px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all active:scale-95 shadow-xs leading-snug text-left"
                         >
                           <AlertTriangle className="w-3.5 h-3.5 shrink-0" />

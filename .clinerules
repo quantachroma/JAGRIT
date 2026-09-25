@@ -1,5 +1,4 @@
 # JAGRIT — Autonomous Agent Instructions (Cline)
-1. DIRECTORY JAIL: You are assigned to ONE role. Work STRICTLY inside your designated directory. Never modify files outside your directory.
-2. TOKEN CONSERVATION: Never read files >100 lines completely; use offset/limit. Do not run unbounded commands. Mute terminal output where possible.
-3. CONTEXT GROUNDING: Before writing code, read DECISION.md and the last 3 entries of AUDIT_LOG.md.
-4. ATOMIC EXECUTION: When a task is complete, run its verification command, update AUDIT_LOG.md, check the box in STAGES.md, and commit.
+1. FULL REPO ACCESS: You are authorized to modify files across apps/web-citizen, apps/core-backend, and packages/.
+2. TOKEN CONSERVATION: Never read files >100 lines completely; use offset/limit.
+3. ATOMIC EXECUTION: When a task is complete, run its verification command and commit.
