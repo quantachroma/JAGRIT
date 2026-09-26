@@ -1,6 +1,10 @@
 'use client';
 
+import { Suspense } from 'react';
 import React, { useState } from 'react';
+
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -58,7 +62,7 @@ const HERO_STRINGS = {
   },
 } as const;
 
-export default function EntryPage() {
+function EntryPageContent() {
   const { language, setLanguage, t } = useLanguage();
   const searchParams = useSearchParams();
   const requestedLanguage = searchParams.get('lang');
@@ -911,5 +915,13 @@ export default function EntryPage() {
         </footer>
       </div>
     </div>
+  );
+}
+
+export default function EntryPage() {
+  return (
+    <Suspense>
+      <EntryPageContent />
+    </Suspense>
   );
 }
