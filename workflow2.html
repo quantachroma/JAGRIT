@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JAGRIT - Technical Approach & System Architecture</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=JetBrains+Mono:wght@600;700;800&family=Cinzel:wght@800;900&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #020617;
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* 16:9 Landscape Widescreen Presentation Canvas (Zero Scrollbar) */
+    .slide-canvas {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      background: #FAF7F2;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    }
+
+    /* Top Slide Header */
+    .slide-header {
+      height: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #E2DCD5;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: #044728;
+      letter-spacing: 0.5px;
+    }
+    .brand-title span {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      color: #D97706;
+      font-weight: 800;
+    }
+    .team-badge {
+      font-size: 10px;
+      font-weight: 800;
+      color: #7C2D12;
+      background: #FFEDD5;
+      border: 1px solid #FDBA74;
+      padding: 2px 9px;
+      border-radius: 20px;
+    }
+    .header-center {
+      text-align: center;
+    }
+    .main-heading {
+      font-size: 18px;
+      font-weight: 900;
+      color: #0F2137;
+      letter-spacing: 0.6px;
+    }
+    .sub-heading {
+      font-size: 9.5px;
+      font-weight: 600;
+      color: #1B4965;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sih-tag {
+      font-size: 10px;
+      font-weight: 800;
+      color: #044728;
+      background: #E8F5EE;
+      border: 1px solid #A3D4B9;
+      padding: 3px 8px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .sih-tag span {
+      width: 6px;
+      height: 6px;
+      background: #16A34A;
+      border-radius: 50%;
+    }
+
+    /* Main Grid: Left Tech Column + Right Flow Architecture */
+    .body-grid {
+      display: grid;
+      grid-template-columns: 14% 86%;
+      gap: 12px;
+      height: calc(100% - 56px);
+    }
+
+    /* Left Tech Stack Column */
+    .tech-col {
+      background: #FFFFFF;
+      border: 1.5px solid #E5DFD5;
+      border-radius: 9px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .tech-header {
+      font-size: 9.5px;
+      font-weight: 900;
+      color: #0F2137;
+      text-transform: uppercase;
+      padding-bottom: 4px;
+      border-bottom: 1.5px solid #F0EAE1;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tech-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 6px;
+      background: #F9F6F0;
+      border: 1px solid #E6DFD5;
+      border-radius: 5px;
+    }
+    .tech-badge svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .tech-text b { display: block; font-size: 8.5px; color: #0F2137; line-height: 1.15; }
+    .tech-text span { font-size: 7.2px; color: #64748B; font-weight: 600; }
+
+    /* Flow Layout Container */
+    .flow-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+    }
+
+    /* Common Card Styling */
+    .node-card {
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 7px;
+      padding: 6px 8px;
+      position: relative;
+      box-shadow: 0 1px 3px rgba(15, 33, 55, 0.04);
+    }
+    .node-badge {
+      font-size: 7.2px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: #fff;
+      display: inline-block;
+      margin-bottom: 2px;
+    }
+    .node-title {
+      font-size: 9.5px;
+      font-weight: 900;
+      color: #0F2137;
+      line-height: 1.2;
+    }
+    .node-desc {
+      font-size: 7.8px;
+      color: #475569;
+      line-height: 1.3;
+      margin-top: 1.5px;
+    }
+
+    /* LEVEL 1: 4 STAKEHOLDER PORTALS */
+    .portals-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .p-citizen { border-color: #1D4ED8; border-width: 2px; background: #F8FBFE; }
+    .p-govt    { border-color: #044728; border-width: 2px; background: #F6FAF7; }
+    .p-univ    { border-color: #D97706; border-width: 2px; background: #FFFDF8; }
+    .p-csr     { border-color: #7C3AED; border-width: 2px; background: #FAF8FF; }
+
+    /* Clean Arrow Connector Bars */
+    .arrow-banner {
+      background: #F1F5F9;
+      border: 1px dashed #CBD5E1;
+      border-radius: 5px;
+      padding: 2.5px 8px;
+      font-size: 8px;
+      font-weight: 800;
+      color: #1B4965;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .arrow-banner span { color: #044728; font-weight: 900; }
+
+    /* LEVEL 2: CITIZEN JOURNEY */
+    .citizen-journey-row {
+      display: grid;
+      grid-template-columns: 28% 28% 20% 24%;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    /* LEVEL 3: GOVT APPROVAL & UNIVERSITY BIDDING */
+    .univ-routing-row {
+      display: grid;
+      grid-template-columns: 30% 70%;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .branch-split-grid {
+      display: grid;
+      grid-template-columns: 32% 68%;
+      gap: 8px;
+    }
+    .hackathon-rounds {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      background: #FFFDF8;
+      border: 1px solid #FDE68A;
+      border-radius: 6px;
+      padding: 5px;
+    }
+
+    /* LEVEL 4: ESCROW & FIELD DEPLOYMENT */
+    .escrow-deploy-row {
+      display: grid;
+      grid-template-columns: 34% 33% 33%;
+      gap: 8px;
+    }
+    .tranche-cols {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-top: 3px;
+    }
+
+    /* LEVEL 5: VALIDATION, QUORUM & 3-WAY OUTCOMES */
+    .outcomes-row {
+      display: grid;
+      grid-template-columns: 32% 68%;
+      gap: 8px;
+    }
+    .outcomes-3-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="slide-canvas">
+
+    <!-- HEADER -->
+    <div class="slide-header">
+      <div class="brand-group">
+        <div class="brand-title">JAGRIT <span>(जाग्रत)</span></div>
+        <div class="team-badge">TEAM AGENT SHE</div>
+      </div>
+      <div class="header-center">
+        <div class="main-heading">TECHNICAL APPROACH &amp; SYSTEM ARCHITECTURE</div>
+        <div class="sub-heading">End-to-End Problem Journey: Citizen &rarr; Government &rarr; University &rarr; Industry CSR &rarr; Verification</div>
+      </div>
+      <div class="header-right">
+        <div class="sih-tag"><span></span> SMART INDIA HACKATHON 2026</div>
+      </div>
+    </div>
+
+    <!-- MAIN BODY GRID -->
+    <div class="body-grid">
+
+      <!-- LEFT: TECH STACK -->
+      <div class="tech-col">
+        <div class="tech-header"><span>🛠️</span> TECH STACK</div>
+
+        <div class="tech-badge">
+          <svg viewBox="0 0 24 24" fill="#0284C7"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <div class="tech-text"><b>Next.js 15 (React 19)</b><span>SSR for HEI &amp; Govt</span></div>
+        </div>
+
+        <div class="tech-badge">
+          <svg viewBox="0 0 24 24" fill="#02569B"><path d="M14.314 0L2.3 12 6 15.7 21.684.013h-7.37zM6 19.3l3.7 3.7 11.986-12h-7.37z"/></svg>
+          <div class="tech-text"><b>Flutter 3.x (PWA)</b><span>Offline SQLite Queue</span></div>
+        </div>
+
+        <div class="tech-badge" style="border-left: 2px solid #25D366;">
+          <svg viewBox="0 0 24 24" fill="#25D366"><path d="M20.5 3.5C18.2 1.2 15.2 0 12 0 5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L.1 24l6.2-1.6c1.8 1 3.8 1.6 5.8 1.6 6.6 0 12-5.4 12-12 0-3.2-1.2-6.2-3.6-8.5z"/></svg>
+          <div class="tech-text"><b>WhatsApp Cloud API</b><span>Voice Bot (Santhali/Hindi)</span></div>
+        </div>
+
+        <div class="tech-badge">
+          <svg viewBox="0 0 24 24" fill="#044728"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+          <div class="tech-text"><b>HMAC-SHA-256</b><span>DPDP Act Phone Privacy</span></div>
+        </div>
+
+        <div class="tech-badge">
+          <svg viewBox="0 0 24 24" fill="#3ECF8E"><path d="M21.362 9.354H12V.312a.312.312 0 0 0-.533-.22L2.35 11.23a.625.625 0 0 0 .438 1.056H12v9.042a.312.312 0 0 0 .533.22l9.117-11.138a.625.625 0 0 0-.438-1.056z"/></svg>
+          <div class="tech-text"><b>Supabase Postgres 16</b><span>PostGIS 3.4 &amp; pgvector</span></div>
+        </div>
+
+        <div class="tech-badge">
+          <svg viewBox="0 0 24 24" fill="#DC2626"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V15a1 1 0 0 0-2 0v1.93A8 8 0 0 1 4.07 10H6a1 1 0 0 0 0-2H4.07A8 8 0 0 1 11 3.07V5a1 1 0 0 0 2 0V3.07A8 8 0 0 1 19.93 10H18a1 1 0 0 0 0 2h1.93A8 8 0 0 1 13 16.93z"/></svg>
+          <div class="tech-text"><b>FastAPI &amp; Celery</b><span>Redis Worker Task Queue</span></div>
+        </div>
+
+        <div class="tech-badge">
+          <svg viewBox="0 0 24 24" fill="#6366F1"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+          <div class="tech-text"><b>Whisper-v3 + Bhashini</b><span>Santhali &amp; Hindi ASR (&le;14%)</span></div>
+        </div>
+
+        <div class="tech-badge">
+          <svg viewBox="0 0 24 24" fill="#E11D48"><path d="M3 3h18v18H3z"/></svg>
+          <div class="tech-text"><b>ViT-H/14 Transformer</b><span>40 Defect Bounding Boxes</span></div>
+        </div>
+
+        <div class="tech-badge">
+          <svg viewBox="0 0 24 24" fill="#0D9488"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <div class="tech-text"><b>DeBERTa-v3 NLI Head</b><span>Zero-Shot Civic/R&amp;D Gate</span></div>
+        </div>
+      </div>
+
+      <!-- RIGHT FLOW CONTENT -->
+      <div class="flow-container">
+
+        <!-- ================================================================= -->
+        <!-- LEVEL 1: THE 4 DEDICATED STAKEHOLDER PORTALS                      -->
+        <!-- ================================================================= -->
+        <div class="portals-row">
+          <div class="node-card p-citizen">
+            <span class="node-badge" style="background:#1D4ED8;">PORTAL 1 &bull; CITIZEN</span>
+            <div class="node-title">Citizen &amp; Village Portal</div>
+            <div class="node-desc">Voice in Santhali/Hindi, photo upload, live GPS pin, and nearby +1 upvoting.</div>
+          </div>
+
+          <div class="node-card p-govt">
+            <span class="node-badge" style="background:#044728;">PORTAL 2 &bull; GOVERNMENT</span>
+            <div class="node-title">DHTE Evaluator Command</div>
+            <div class="node-desc">AI triage audit, grant ceiling approval, 30-40-30% escrow releases, 24-district heatmap.</div>
+          </div>
+
+          <div class="node-card p-univ">
+            <span class="node-badge" style="background:#D97706;">PORTAL 3 &bull; UNIVERSITY</span>
+            <div class="node-title">University (HEI) Workspace</div>
+            <div class="node-desc">7-day bidding window, 6-axis XAI spider chart, 3-round hackathon DPR &amp; NEP credits.</div>
+          </div>
+
+          <div class="node-card p-csr">
+            <span class="node-badge" style="background:#7C3AED;">PORTAL 4 &bull; INDUSTRY / CSR</span>
+            <div class="node-title">Industry &amp; CSR Console</div>
+            <div class="node-desc">Schedule VII 1:1 matching grant pledge, corporate mentors &amp; ROFR tech licensing.</div>
+          </div>
+        </div>
+
+        <!-- Clean Directional Transition -->
+        <div class="arrow-banner">
+          <span>&darr; STAGE 1: CITIZEN REPORTS PROBLEM &rarr; AI INGESTS, DEDUPLICATES &amp; PRIORITIZES &darr;</span>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- LEVEL 2: CITIZEN PROBLEM INTAKE & TRIAGE                          -->
+        <!-- ================================================================= -->
+        <div class="citizen-journey-row">
+          
+          <div class="node-card" style="border-left: 3px solid #1D4ED8;">
+            <span class="node-badge" style="background:#1D4ED8;">1. INTAKE</span>
+            <div class="node-title">Citizen Submits Problem</div>
+            <div class="node-desc">Voice in Santhali/Hindi or photo + GPS via WhatsApp/App. DPDP phone hash &amp; 50m jitter.</div>
+          </div>
+
+          <div class="node-card" style="border-left: 3px solid #0284C7;">
+            <span class="node-badge" style="background:#0284C7;">2. DEDUP GATE</span>
+            <div class="node-title">50m PostGIS &amp; Vector Dedup</div>
+            <div class="node-desc">PostGIS <b>50m</b> radius + cosine &ge;0.85. If matched: Merges into Master Cluster (+1 Vote).</div>
+          </div>
+
+          <div class="node-card" style="border-left: 3px solid #0F766E;">
+            <span class="node-badge" style="background:#0F766E;">3. PRIORITY</span>
+            <div class="node-title">72h Priority Window</div>
+            <div class="node-desc">MPS = 40% Severity + 35% Pop + 25% Votes. 0h bypass for toxic water.</div>
+          </div>
+
+          <div class="node-card" style="border-left: 3px solid #044728;">
+            <span class="node-badge" style="background:#044728;">4. TRIAGE GATE</span>
+            <div class="node-title">DeBERTa-v3 Civic vs R&amp;D</div>
+            <div class="node-desc"><b>Type A (Civic):</b> &rarr; Municipal ULB / JharSewa.<br><b>Type B (R&amp;D):</b> &rarr; Evaluator approves for HEIs.</div>
+          </div>
+
+        </div>
+
+        <!-- Clean Directional Transition -->
+        <div class="arrow-banner">
+          <span>&darr; STAGE 2: GOVERNMENT APPROVES &rarr; PROBLEM REACHES UNIVERSITY FOR BIDDING &rarr; SPLITS INTO 2 TRACKS &darr;</span>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- LEVEL 3: UNIVERSITY BIDDING & EXPLICIT DUAL-BRANCH HACKATHON      -->
+        <!-- ================================================================= -->
+        <div class="univ-routing-row">
+          
+          <div class="node-card" style="border-color:#D97706; background:#FFFDF8;">
+            <span class="node-badge" style="background:#D97706;">5. HEI BIDDING</span>
+            <div class="node-title">7-Day University Bidding Window</div>
+            <div class="node-desc">6-Axis XAI Matchmaker: Score(U,P) &ge; 70%. Matched colleges review problem and choose to bid. (If 0 bids &rarr; 4-Stage Zero-Bid Escalation).</div>
+          </div>
+
+          <div class="branch-split-grid">
+            
+            <!-- Branch 1: Solo Bid -->
+            <div class="node-card" style="border-left: 3px solid #15803D; background:#F6FAF7;">
+              <span class="node-badge" style="background:#15803D;">OPTION A: SOLO BID</span>
+              <div class="node-title">Direct R&amp;D Track</div>
+              <div class="node-desc">Exactly 1 HEI accepts: WBS locked directly, skips hackathon competition &rarr; straight to Escrow.</div>
+            </div>
+
+            <!-- Branch 2: 2+ Bids Hackathon -->
+            <div class="hackathon-rounds">
+              <div class="node-card" style="padding:4px 6px;">
+                <span class="node-badge" style="background:#D97706; font-size:6.8px;">ROUND 1: PITCH</span>
+                <div class="node-title" style="font-size:8.8px;">Ideation (10d)</div>
+                <div class="node-desc">5-Slide Deck + BOM. Govt Spend: ₹0. Top 3-5 advance.</div>
+              </div>
+
+              <div class="node-card" style="padding:4px 6px; border-left: 2px solid #7C3AED;">
+                <span class="node-badge" style="background:#7C3AED; font-size:6.8px;">ROUND 2: BUILD</span>
+                <div class="node-title" style="font-size:8.8px;">Prototype (20d)</div>
+                <div class="node-desc">CSR Mentors + Lab Demo. ₹20k Seed Cap. Top 2 advance.</div>
+              </div>
+
+              <div class="node-card" style="padding:4px 6px; border-left: 2px solid #044728;">
+                <span class="node-badge" style="background:#044728; font-size:6.8px;">ROUND 3: DEFEND</span>
+                <div class="node-title" style="font-size:8.8px;">Ranchi Demo (10d)</div>
+                <div class="node-desc">Physical Demo + Final DPR. Winning team selected!</div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Clean Directional Transition -->
+        <div class="arrow-banner">
+          <span>&darr; STAGE 3: WINNING HEI UNLOCKS 30-40-30% ESCROW &rarr; INSTALLS ON-SITE &rarr; 45-DAY VILLAGE DURABILITY TEST &darr;</span>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- LEVEL 4: ESCROW GOVERNANCE & FIELD DEPLOYMENT                     -->
+        <!-- ================================================================= -->
+        <div class="escrow-deploy-row">
+          
+          <div class="node-card" style="border-left: 3px solid #044728;">
+            <span class="node-badge" style="background:#044728;">6. ESCROW LEDGER</span>
+            <div class="node-title">Milestone Escrow (30%-40%-30%)</div>
+            <div class="tranche-cols">
+              <div style="background:#F0FDF4; padding:3px; border-radius:3px; font-size:7.5px;">
+                <b>T1 (30%)</b> Kickoff &amp; Parts
+              </div>
+              <div style="background:#F0FDF4; padding:3px; border-radius:3px; font-size:7.5px;">
+                <b>T2 (40%)</b> NABL Lab Cert
+              </div>
+              <div style="background:#F0FDF4; padding:3px; border-radius:3px; font-size:7.5px;">
+                <b>T3 (30%)</b> PESA NOC
+              </div>
+            </div>
+          </div>
+
+          <div class="node-card" style="border-left: 3px solid #0F766E;">
+            <span class="node-badge" style="background:#0F766E;">7. FIELD HANDOVER</span>
+            <div class="node-title">Installation &amp; Caretakers</div>
+            <div class="node-desc">Deployed in village &bull; 12-Month Spares Kit deposited &bull; 2 Jal Sahiyas trained with Vernacular SOP.</div>
+          </div>
+
+          <div class="node-card" style="border-left: 3px solid #B91C1C; background:#FEF2F2;">
+            <span class="node-badge" style="background:#B91C1C;">8. DURABILITY CHECK</span>
+            <div class="node-title">Early Breakdown Alarm (Days 1–44)</div>
+            <div class="node-desc">&ge;3 citizen alerts freeze clock &rarr; 48h inspect &rarr; 7d repair resets clock to Day 1 &bull; <b>Day 45:</b> Maturation complete.</div>
+          </div>
+
+        </div>
+
+        <!-- Clean Directional Transition -->
+        <div class="arrow-banner">
+          <span>&darr; STAGE 4: DAY 46 DUAL-LOCK CITIZEN QUORUM &rarr; 3 DEFINITIVE FINAL OUTCOMES &darr;</span>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- LEVEL 5: DAY 46 DUAL-LOCK QUORUM & 3-WAY OUTCOMES                 -->
+        <!-- ================================================================= -->
+        <div class="outcomes-row">
+          
+          <div class="node-card" style="border-color:#1D4ED8; background:#F8FBFE;">
+            <span class="node-badge" style="background:#1D4ED8;">9. CITIZEN QUORUM</span>
+            <div class="node-title">Day 46 Dual-Lock Quorum</div>
+            <div class="node-desc"><b>Key 1:</b> &ge;4/5 Community Trustees YES.<br><b>Key 2:</b> &ge;70% Public Quorum YES (max(15, ceil(1.45√N))).</div>
+          </div>
+
+          <div class="outcomes-3-grid">
+            
+            <div class="node-card" style="border-left: 3px solid #15803D; background:#ECFDF5;">
+              <span class="node-badge" style="background:#15803D;">OUTCOME 1: 100% SOLVED</span>
+              <div class="node-title" style="color:#15803D; font-size:9.5px;">Accreditation &amp; Clone</div>
+              <div class="node-desc">NEP Credits (30h=1cr) to APAAR &bull; ₹10L Seed Grant &bull; <b>1-Click Blueprint Clone</b> (14d, 60% lower cost).</div>
+            </div>
+
+            <div class="node-card" style="border-left: 3px solid #D97706; background:#FFFBEB;">
+              <span class="node-badge" style="background:#D97706; font-size:9.5px;">OUTCOME 2: PARTIAL (40-69%)</span>
+              <div class="node-title" style="color:#D97706; font-size:9.5px;">45-Day Repair Sprint</div>
+              <div class="node-desc">Assigned strictly to <b>SAME HEI team</b> &bull; Replaces parts &bull; Resets for 2nd quorum vote.</div>
+            </div>
+
+            <div class="node-card" style="border-left: 3px solid #B91C1C; background:#FEF2F2;">
+              <span class="node-badge" style="background:#B91C1C; font-size:9.5px;">OUTCOME 3: FAILED (&lt;40%)</span>
+              <div class="node-title" style="color:#B91C1C; font-size:9.5px;">AI Post-Mortem &amp; R&amp;D</div>
+              <div class="node-desc">Minor &rarr; <b>R&amp;D Failure Knowledge Base</b> &bull; Major &rarr; <b>Pan-India National Hackathon</b>.</div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>

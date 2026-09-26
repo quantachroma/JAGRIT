@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JAGRIT - Vertical Tech Stack Graphic</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #0b1120;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: 30px;
+    }
+
+    /* Vertical Tech Stack Container */
+    .stack-vertical-card {
+      width: 440px;
+      height: 920px;
+      background: #FAF7F2;
+      border: 3px solid #0F2137;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Top Half: FRONTEND */
+    .stack-half {
+      flex: 1;
+      padding: 24px 22px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .half-frontend {
+      background: #FFFFFF;
+    }
+
+    /* Dividing Center Ribbon */
+    .half-divider {
+      height: 38px;
+      background: #0F2137;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #FDFBF7;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 5;
+    }
+    .half-divider span {
+      color: #D97706;
+    }
+
+    /* Bottom Half: BACKEND */
+    .half-backend {
+      background: #F4F8FA;
+    }
+
+    /* Section Headers */
+    .half-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #E5DFD5;
+    }
+
+    .title-pill {
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 8px;
+      color: #FFFFFF;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .frontend-pill {
+      background: #1D4ED8; /* Civic Trust Blue */
+    }
+
+    .backend-pill {
+      background: #044728; /* Sal Forest Emerald */
+    }
+
+    .layer-count {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748B;
+      text-transform: uppercase;
+    }
+
+    /* Tech Stack Logo Items List */
+    .logo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .tech-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 9px 12px;
+      box-shadow: 0 2px 4px rgba(15, 33, 55, 0.03);
+    }
+
+    .half-frontend .tech-row {
+      background: #F8FBFE;
+      border-color: #DBEAFE;
+    }
+
+    .half-backend .tech-row {
+      background: #FFFFFF;
+      border-color: #CBD5E1;
+    }
+
+    .tech-logo-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .tech-row-info {
+      flex: 1;
+    }
+
+    .tech-name {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #0F2137;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      line-height: 1.2;
+    }
+
+    .tech-role {
+      font-size: 9px;
+      color: #64748B;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .tech-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #F1F5F9;
+      color: #1E293B;
+    }
+
+    .tag-blue { background: #EFF6FF; color: #1D4ED8; }
+    .tag-green { background: #ECFDF5; color: #044728; }
+    .tag-amber { background: #FFFBEB; color: #B45309; }
+  </style>
+</head>
+<body>
+
+  <!-- VERTICAL TECH STACK CARD (DIVIDED INTO TOP & BOTTOM HALVES) -->
+  <div class="stack-vertical-card">
+    
+    <!-- ========================================== -->
+    <!-- TOP HALF: FRONTEND TECH STACK              -->
+    <!-- ========================================== -->
+    <div class="stack-half half-frontend">
+      <div class="half-header">
+        <span class="title-pill frontend-pill">
+          <span>💻</span> FRONTEND
+        </span>
+        <span class="layer-count">Client &amp; Ingestion Layer</span>
+      </div>
+
+      <div class="logo-list">
+        
+        <!-- Next.js 15 -->
+        <div class="tech-row">
+          <div class="tech-logo-box" style="background: #000000;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="#FFFFFF">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div class="tech-row-info">
+            <div class="tech-name">
+              <span>Next.js 15 (React 19)</span>
+              <span class="tech-tag tag-blue">Web SSR</span>
+            </div>
+            <div class="tech-role">Desktop Portal for HEIs, CSR &amp; Govt DHTE</div>
+          </div>
+        </div>
+
+        <!-- Flutter 3.x -->
+        <div class="tech-row">
+          <div class="tech-logo-box" style="background: #02569B;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="#FFFFFF">
+              <path d="M14.314 0L2.3 12 6 15.7 21.684.013h-7.37zM6 19.3l3.7 3.7 11.986-12h-7.37z"/>
+            </svg>
+          </div>
+          <div class="tech-row-info">
+            <div class="tech-name">
+              <span>Flutter 3.x (Dart)</span>
+              <span class="tech-tag tag-blue">Mobile / PWA</span>
+            </div>
+            <div class="tech-role">Offline SQLite Queue for Rural Forest Belts</div>
+          </div>
+        </div>
+
+        <!-- WhatsApp Cloud API -->
+        <div class="tech-row" style="border-left: 3px solid #25D366;">
+          <div class="tech-logo-box" style="background: #25D366;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="#FFFFFF">
+              <path d="M20.5 3.5C18.2 1.2 15.2 0 12 0 5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L.1 24l6.2-1.6c1.8 1 3.8 1.6 5.8 1.6 6.6 0 12-5.4 12-12 0-3.2-1.2-6.2-3.6-8.5z"/>
+            </svg>
+          </div>
+          <div class="tech-row-info">
+            <div class="tech-name">
+              <span>WhatsApp Cloud API</span>
+              <span class="tech-tag tag-green">Zero-Install</span>
+            </div>
+            <div class="tech-role">Voice Notes in Santhali &amp; Hindi + GPS Pin</div>
+          </div>
+        </div>
+
+        <!-- Tailwind CSS & Shadcn -->
+        <div class="tech-row">
+          <div class="tech-logo-box" style="background: #06B6D4;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#FFFFFF">
+              <path d="M12 6c-4 0-6 2-6 6s2 6 6 6 6-2 6-6-2-6-6-6zm0 10c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"/>
+            </svg>
+          </div>
+          <div class="tech-row-info">
+            <div class="tech-name">
+              <span>Tailwind CSS &amp; Shadcn</span>
+              <span class="tech-tag">UI Design</span>
+            </div>
+            <div class="tech-role">Govt White &amp; Civic Blue Accessible Components</div>
+          </div>
+        </div>
+
+        <!-- Recharts & GIS -->
+        <div class="tech-row">
+          <div class="tech-logo-box" style="background: #D97706;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#FFFFFF">
+              <path d="M3 3v18h18v-2H5V3H3zm4 14h2v-4H7v4zm4 0h2V7h-2v10zm4 0h2v-7h-2v7zm4 0h2v-11h-2v11z"/>
+            </svg>
+          </div>
+          <div class="tech-row-info">
+            <div class="tech-name">
+              <span>Recharts &amp; Leaflet</span>
+              <span class="tech-tag tag-amber">Analytics</span>
+            </div>
+            <div class="tech-role">6-Axis XAI Spider Chart &amp; 24-District Heatmap</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- CENTER BOUNDARY: ASYNC API CONTRACT        -->
+    <!-- ========================================== -->
+    <div class="half-divider">
+      <span>REST &bull; WEBSOCKETS &bull; REDIS QUEUE</span>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- BOTTOM HALF: BACKEND TECH STACK            -->
+    <!-- ========================================== -->
+    <div class="stack-half half-backend">
+      <div class="half-header">
+        <span class="title-pill backend-pill">
+          <span>⚙️</span> BACKEND
+        </span>
+        <span class="layer-count">Engine, DB &amp; AI Pipeline</span>
+      </div>
+
+      <div class="logo-list">
+
+        <!-- FastAPI (Python 3.12) -->
+        <div class="tech-row">
+          <div class="tech-logo-box" style="background: #009688;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#FFFFFF">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.8a7.2 7.2 0 1 1 0 14.4 7.2 7.2 0 0 1 0-14.4z"/>
+            </svg>
+          </div>
+          <div class="tech-row-info">
+            <div class="tech-name">
+              <span>FastAPI (Python 3.12)</span>
+              <span class="tech-tag tag-green">ASGI Core</span>
+            </div>
+            <div class="tech-role">Escrow Ledger, State Machine &amp; Webhooks</div>
+          </div>
+        </div>
+
+        <!-- Celery & Redis -->
+        <div class="tech-row">
+          <div class="tech-logo-box" style="background: #DC2626;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#FFFFFF">
+              <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V15a1 1 0 0 0-2 0v1.93A8 8 0 0 1 4.07 10H6a1 1 0 0 0 0-2H4.07A8 8 0 0 1 11 3.07V5a1 1 0 0 0 2 0V3.07A8 8 0 0 1 19.93 10H18a1 1 0 0 0 0 2h1.93A8 8 0 0 1 13 16.93z"/>
+            </svg>
+          </div>
+          <div class="tech-row-info">
+            <div class="tech-name">
+              <span>Celery &amp; Redis Broker</span>
+              <span class="tech-tag tag-amber">Async Queue</span>
+            </div>
+            <div class="tech-role">Zero-Lag Background AI Speech &amp; Vision Tasks</div>
+          </div>
+        </div>
+
+        <!-- Supabase Cloud PostgreSQL 16 -->
+        <div class="tech-row" style="border-left: 3px solid #3ECF8E;">
+          <div class="tech-logo-box" style="background: #3ECF8E;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#FFFFFF">
+              <path d="M21.362 9.354H12V.312a.312.312 0 0 0-.533-.22L2.35 11.23a.625.625 0 0 0 .438 1.056H12v9.042a.312.312 0 0 0 .533.22l9.117-11.138a.625.625 0 0 0-.438-1.056z"/>
+            </svg>
+          </div>
+          <div class="tech-row-info">
+            <div class="tech-name">
+              <span>Supabase Postgres 16</span>
+              <span class="tech-tag tag-green">Cloud BaaS</span>
+            </div>
+            <div class="tech-role">Auth (OTP/SSO), Storage &amp; Master Ledger</div>
+          </div>
+        </div>
+
+        <!-- PostGIS 3.4 & pgvector -->
+        <div class="tech-row">
+          <div class="tech-logo-box" style="background: #0284C7;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#FFFFFF">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            </svg>
+          </div>
+          <div class="tech-row-info">
+            <div class="tech-name">
+              <span>PostGIS 3.4 + pgvector</span>
+              <span class="tech-tag tag-blue">Spatial + AI</span>
+            </div>
+            <div class="tech-role">50m Spatial Radar + 1536-dim Vector Embeddings</div>
+          </div>
+        </div>
+
+        <!-- Whisper, ViT & DeBERTa -->
+        <div class="tech-row">
+          <div class="tech-logo-box" style="background: #6366F1;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#FFFFFF">
+              <path d="M12 2a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4zm6 9a1 1 0 0 0-2 0 4 4 0 0 1-8 0 1 1 0 0 0-2 0 6 6 0 0 0 5 5.91V20H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-3.09A6 6 0 0 0 18 11z"/>
+            </svg>
+          </div>
+          <div class="tech-row-info">
+            <div class="tech-name">
+              <span>Whisper-v3 / ViT / DeBERTa</span>
+              <span class="tech-tag tag-blue">ML Suite</span>
+            </div>
+            <div class="tech-role">Vernacular ASR, Defect Vision &amp; Zero-Shot Triage</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
