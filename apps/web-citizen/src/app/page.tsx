@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import HeroBackgroundSvg from '@/components/hero/hero-background-svg';
 import HeroCarousel from '@/components/HeroCarousel';
@@ -127,13 +128,16 @@ export default function EntryPage() {
     }
   }, []);
 
-  const handleOpenLogin = () => {
-    setShowLogin(true);
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href);
-      url.searchParams.set('login', 'true');
-      window.history.replaceState({}, '', url.toString());
-    }
+  React.useEffect(() => {
+    const handleOpen = () => setShowLogin(true);
+    window.addEventListener('open-login-modal', handleOpen);
+    return () => window.removeEventListener('open-login-modal', handleOpen);
+  }, []);
+
+  const handleOpenLogin = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    window.dispatchEvent(new CustomEvent('open-login-modal'));
+    window.history.pushState({}, '', '?login=true');
   };
 
   const handleSelectRolePortal = (selectedRole: 'citizen' | 'university' | 'industry' | 'govt') => {
@@ -153,14 +157,7 @@ export default function EntryPage() {
     setOtpSent(false);
     setRegOtp('');
     setRegError('');
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('login');
-      url.searchParams.delete('auth');
-      url.searchParams.delete('role');
-      url.searchParams.delete('redirect');
-      window.history.replaceState({}, '', url.toString());
-    }
+    window.history.pushState({}, '', window.location.pathname);
   };
 
   const greetings = {
@@ -410,9 +407,9 @@ export default function EntryPage() {
                 );
               })}
             </div>
-            <Link href="/?login=true" className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-amber-300 px-3 text-xs font-black text-slate-950 shadow-lg shadow-amber-950/30 transition-colors hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-white sm:px-4 sm:text-sm">
+            <button type="button" onClick={handleOpenLogin} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-amber-300 px-3 text-xs font-black text-slate-950 shadow-lg shadow-amber-950/30 transition-colors hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-white sm:px-4 sm:text-sm">
               <LockKeyhole className="h-4 w-4" /> Login / Sign Up
-            </Link>
+            </button>
             </div>
           </nav>
         </header>
@@ -568,8 +565,14 @@ export default function EntryPage() {
               </div>
             </>
             {showLogin ? (
-            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/70 px-4 py-8 backdrop-blur-sm animate-in fade-in duration-200">
-              <div className="w-full max-w-md space-y-4 animate-in zoom-in-95 duration-200">
+            <div onClick={handleCloseLogin} className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-slate-950/70 px-4 py-8 backdrop-blur-sm transition-opacity duration-150">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: -8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.12, ease: 'easeOut' }}
+                onClick={(event) => event.stopPropagation()}
+                className="w-full max-w-md space-y-4"
+              >
               <div className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-blue-300 shadow-2xl text-left space-y-5 w-full backdrop-blur-md">
                 <div className="flex items-center justify-between">
                   <button
@@ -862,7 +865,7 @@ export default function EntryPage() {
                   </button>
                 </div>
               </div>
-              </div>
+              </motion.div>
             </div>
             ) : null}
         </main>

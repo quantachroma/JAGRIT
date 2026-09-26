@@ -267,7 +267,7 @@ async function ingestWhatsAppMessage(value: Record<string, any>): Promise<void> 
 		`INSERT INTO public.challenges
 			(ticket_number, title, description, location, district, block, status, submission_channel)
 		 VALUES ($1, $2, $3, ST_SetSRID(ST_Point($4, $5), 4326), $6, $7, $8, $9);`,
-		[ticketNumber, title, description, longitude, latitude, 'Palamu', null, 'PENDING_HITL', 'WHATSAPP'],
+		[ticketNumber, title, description, longitude, latitude, 'Palamu', null, 'PENDING_TRIAGE', 'WHATSAPP'],
 	);
 
 	const replyText = `जोहार! आपकी समस्या JAGRIT पोर्टल पर दर्ज कर ली गई है।\n\n📌 टिकट संख्या: ${ticketNumber}\n📍 जिला: पलामू\n🏛️ स्थिति: ए.आई. सत्यापन एवं विश्वविद्यालय आवंटन प्रगति पर है।\n\n🔗 स्टेटस ट्रैक करें: http://localhost:3000/progress`;

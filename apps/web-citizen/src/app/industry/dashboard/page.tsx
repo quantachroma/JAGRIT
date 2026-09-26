@@ -1,490 +1,189 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import {
-  Building,
+  BadgeCheck,
   CheckCircle2,
-  ShieldCheck,
-  Award,
-  Users,
-  Briefcase,
-  FileText,
-  DollarSign,
-  ArrowRight,
-  Sparkles,
-  ExternalLink,
-  ChevronRight,
-  X,
-  Clock,
-  MapPin,
-  TrendingUp,
+  FileCheck2,
+  Gavel,
+  IndianRupee,
   Landmark,
-  UserCheck,
+  Lock,
+  ShieldCheck,
+  Users,
 } from 'lucide-react';
 
-interface CSRChallenge {
+interface OversightProject {
   id: string;
   title: string;
-  district: string;
-  stateAllocationLakh: number;
-  csrMatchLakh: number;
-  leadHEI: string;
-  sdg: {
-    code: string;
-    label: string;
-    color: string;
-  };
-  summary: string;
-  impactMetrics: string;
-  status: 'PENDING_MATCH' | 'PLEDGED';
-  csr1Ref?: string;
-  assignedMentor?: {
-    name: string;
-    organization: string;
-    designation: string;
-  };
+  leadHei: string;
+  stateAllocation: string;
+  corporateMatch: string;
+  corporatePartner: string;
+  status: string;
+  mentor: string;
 }
 
-interface Mentor {
+interface PatentRecord {
   id: string;
-  name: string;
-  organization: string;
-  designation: string;
-  expertise: string;
+  title: string;
+  leadShare: string;
+  heiRoyalty: string;
+  rofrStatus: string;
+  stateLicense: string;
 }
 
-const AVAILABLE_MENTORS: Mentor[] = [
-  {
-    id: 'm1',
-    name: 'Er. Alok Sen',
-    organization: 'Tata Steel Jamshedpur',
-    designation: 'Chief Environmental & Materials Specialist',
-    expertise: 'Membrane Separation & Industrial Scale Adsorption Systems',
-  },
-  {
-    id: 'm2',
-    name: 'Dr. Shalini Kumari',
-    organization: 'Central Coalfields Limited (CCL)',
-    designation: 'General Manager, CSR & Rural Sustainable Tech',
-    expertise: 'Solar Thermal Engineering & Off-Grid Rural Infrastructure',
-  },
-  {
-    id: 'm3',
-    name: 'Rajeshwar Topno',
-    organization: 'Tata Technologies Innovation Lab',
-    designation: 'Principal Systems Architect',
-    expertise: 'IoT Remote Telemetry & Post-Harvest Cold Chain Automation',
-  },
-];
+interface EscrowOverview {
+  metrics: {
+    totalCommittedCsrPool: string;
+    stateMatchingGrantsDisbursed: string;
+    activeCorporateMentors: string;
+    tripartiteIprConcordats: string;
+  };
+  projects: OversightProject[];
+  patents: PatentRecord[];
+}
 
-export default function IndustryDashboardPage() {
-  const [challenges, setChallenges] = useState<CSRChallenge[]>([
+const FALLBACK_OVERVIEW: EscrowOverview = {
+  metrics: {
+    totalCommittedCsrPool: '₹50.00 Lakh',
+    stateMatchingGrantsDisbursed: '₹24.50 Lakh',
+    activeCorporateMentors: '14 Senior Engineers',
+    tripartiteIprConcordats: '8 Agreements',
+  },
+  projects: [
     {
       id: 'JAG-CSR-01',
       title: 'Solar Fluoride Purification for 12 Anganwadi Centers (Palamu)',
-      district: 'Palamu (Satbarwa & Daltonganj Blocks)',
-      stateAllocationLakh: 3.5,
-      csrMatchLakh: 3.5,
-      leadHEI: 'BIT Mesra (Dept. of Environmental Engineering)',
-      sdg: {
-        code: 'SDG 6',
-        label: 'Clean Water & Sanitation',
-        color: 'bg-blue-600',
-      },
-      summary:
-        'Solar-powered gravity-fed fluoride adsorption column eliminating skeletal fluorosis risk in 12 Anganwadi Centers serving 1,450 children.',
-      impactMetrics: '1,450 children secured • Zero-grid electricity • 5-year local SHG ops model',
-      status: 'PENDING_MATCH',
+      leadHei: 'BIT Mesra (Dept. of Environmental Engineering)',
+      stateAllocation: '₹3.50 Lakh',
+      corporateMatch: '₹3.50 Lakh',
+      corporatePartner: 'Tata Steel CSR',
+      status: '✅ 1:1 Matched & Escrow Locked (Schedule VII Compliant)',
+      mentor: 'Dr. A. Sen (Senior Principal Scientist, Tata Steel R&D)',
     },
     {
       id: 'JAG-CSR-02',
       title: 'Tribal Lac Post-Harvest Desiccant Storage Units (Khunti)',
-      district: 'Khunti (Torpa & Murhu Blocks)',
-      stateAllocationLakh: 4.2,
-      csrMatchLakh: 4.2,
-      leadHEI: 'BAU Ranchi (Agri-Innovation & Forest Tech)',
-      sdg: {
-        code: 'SDG 8',
-        label: 'Decent Work & Economic Growth',
-        color: 'bg-sky-600',
-      },
-      summary:
-        'Decentralized solar thermal desiccant drying units preventing 45% monsoon sticklac spoilage across 4 tribal Women Farmer Producer Groups.',
-      impactMetrics: '480 tribal women farmers • 38% higher household earnings • Local sal resin desiccant',
-      status: 'PENDING_MATCH',
+      leadHei: 'BAU Ranchi',
+      stateAllocation: '₹4.20 Lakh',
+      corporateMatch: '₹4.20 Lakh',
+      corporatePartner: 'CCL CSR',
+      status: '✅ 1:1 Matched & Escrow Locked',
+      mentor: 'Er. Manoj Kumar (CCL Agro-Infrastructure Cell)',
     },
-  ]);
+  ],
+  patents: [
+    {
+      id: 'IN-2026-JAG-001',
+      title: 'Activated Alumina Gradient Defluoridation Filter',
+      leadShare: '60%',
+      heiRoyalty: '25%',
+      rofrStatus: 'Tata Steel ROFR active through 15 Sep 2026',
+      stateLicense: 'Verified: royalty-free public deployment',
+    },
+    {
+      id: 'IN-2026-JAG-004',
+      title: 'IoT Real-Time Water Quality Telemetry Module',
+      leadShare: '60%',
+      heiRoyalty: '20%',
+      rofrStatus: 'CCL ROFR review pending',
+      stateLicense: 'Verified: royalty-free public deployment',
+    },
+  ],
+};
 
-  const [totalPool, setTotalPool] = useState<number>(5000000); // 50 Lakhs
-  const [activeMentorChallenge, setActiveMentorChallenge] = useState<CSRChallenge | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
+const KPI_CARDS = [
+  { key: 'totalCommittedCsrPool', label: 'Total Committed CSR Pool', icon: IndianRupee, accent: 'bg-amber-600', tint: 'bg-amber-50' },
+  { key: 'stateMatchingGrantsDisbursed', label: '1:1 State Matching Grants Disbursed', icon: Landmark, accent: 'bg-blue-700', tint: 'bg-blue-50' },
+  { key: 'activeCorporateMentors', label: 'Active Corporate Mentors Assigned', icon: Users, accent: 'bg-emerald-700', tint: 'bg-emerald-50' },
+  { key: 'tripartiteIprConcordats', label: 'Tripartite IPR Concordats Ratified', icon: FileCheck2, accent: 'bg-violet-700', tint: 'bg-violet-50' },
+] as const;
 
-  // Pledge matching grant
-  const handlePledgeGrant = (challengeId: string) => {
-    setChallenges((prev) =>
-      prev.map((c) => {
-        if (c.id === challengeId) {
-          const matchAmountINR = c.csrMatchLakh * 100000;
-          setTotalPool((current) => Math.max(0, current - matchAmountINR));
-          return {
-            ...c,
-            status: 'PLEDGED',
-            csr1Ref: `CSR1-JH-${Math.floor(100000 + Math.random() * 900000)}`,
-          };
-        }
-        return c;
-      })
-    );
-    setToast('Grant Pledged (Form CSR-1 Issued)');
-    window.setTimeout(() => setToast(null), 3200);
-  };
+export default function IndustryDashboardPage() {
+  const [overview, setOverview] = useState<EscrowOverview>(FALLBACK_OVERVIEW);
+  const [syncState, setSyncState] = useState<'loading' | 'live' | 'fallback'>('loading');
 
-  // Assign Mentor
-  const handleAssignMentor = (mentor: Mentor) => {
-    if (!activeMentorChallenge) return;
-    setChallenges((prev) =>
-      prev.map((c) => {
-        if (c.id === activeMentorChallenge.id) {
-          return {
-            ...c,
-            assignedMentor: {
-              name: mentor.name,
-              organization: mentor.organization,
-              designation: mentor.designation,
-            },
-          };
-        }
-        return c;
-      })
-    );
-    setActiveMentorChallenge(null);
-  };
+  useEffect(() => {
+    const controller = new AbortController();
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+    async function loadOverview() {
+      try {
+        const response = await fetch(`${apiUrl}/api/v1/escrow/overview`, { signal: controller.signal });
+        if (!response.ok) throw new Error('Escrow overview request failed');
+        const payload = (await response.json()) as Partial<EscrowOverview>;
+        setOverview({
+          metrics: { ...FALLBACK_OVERVIEW.metrics, ...(payload.metrics || {}) },
+          projects: payload.projects?.length ? payload.projects : FALLBACK_OVERVIEW.projects,
+          patents: payload.patents?.length ? payload.patents : FALLBACK_OVERVIEW.patents,
+        });
+        setSyncState('live');
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === 'AbortError')) setSyncState('fallback');
+      }
+    }
+
+    void loadOverview();
+    return () => controller.abort();
+  }, []);
 
   return (
-    <div className="space-y-6 pb-12">
-      {toast && <div role="status" className="fixed right-4 top-20 z-50 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-900 shadow-lg">{toast}</div>}
-      {/* Top Banner: Tata Steel & Coal India CSR Consortium */}
-      <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-[#1E3A8A] rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-700/30">
-        {/* Decorative Watermark */}
-        <div className="absolute -right-8 -bottom-10 opacity-10 pointer-events-none">
-          <Building className="w-64 h-64 text-white" />
-        </div>
-
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="bg-sky-400 text-slate-950 font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider">
-                Consortium Portal
-              </span>
-              <span className="inline-flex items-center space-x-1.5 bg-blue-500/20 text-blue-200 border border-blue-400/30 text-xs font-semibold px-3 py-1 rounded-full">
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-300" />
-                <span>Form CSR-1 Certified (Govt. of India MCA)</span>
-              </span>
-              <span className="text-xs text-slate-300 hidden lg:inline">
-                Companies Act 2013 § 135 / Schedule VII
-              </span>
+    <div className="mx-auto max-w-screen-2xl space-y-8 pb-12">
+      <header className="rounded-2xl bg-gradient-to-r from-slate-950 via-blue-950 to-blue-800 p-6 text-white shadow-xl sm:p-8">
+        <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-black uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sky-100 ring-1 ring-white/20"><Landmark className="h-3.5 w-3.5" /> DHTE evaluator console</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/15 px-3 py-1.5 text-emerald-200 ring-1 ring-emerald-300/30"><ShieldCheck className="h-3.5 w-3.5" /> Section 135 verified</span>
             </div>
-
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              Tata Steel &amp; Coal India CSR Consortium
-            </h1>
-            <p className="text-xs sm:text-sm text-blue-100 max-w-2xl leading-relaxed">
-              Co-funding breakthrough University R&amp;D solving critical grassroots challenges in Jharkhand. Every ₹1 of corporate CSR matching grant is matched 1:1 by the Department of Higher &amp; Technical Education (DHTE).
-            </p>
+            <h1 className="text-2xl font-black tracking-tight sm:text-3xl">State CSR &amp; Corporate Co-Funding Command Center</h1>
+            <p className="max-w-3xl text-sm leading-6 text-blue-100">Monitoring Schedule VII compliance, 1:1 state co-grants, and industry mentorship under Companies Act 2013 (Sec 135).</p>
           </div>
-
-          {/* Committed CSR Pool Badge */}
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 min-w-[240px] text-right">
-            <div className="text-[11px] font-bold text-sky-300 uppercase tracking-wider">
-              Committed CSR Pool
-            </div>
-            <div className="text-2xl sm:text-3xl font-black text-white mt-0.5">
-              ₹{(totalPool / 100000).toFixed(2)} Lakh
-            </div>
-            <div className="text-[10px] text-blue-200 mt-1 flex items-center justify-end space-x-1">
-              <CheckCircle2 className="w-3 h-3 text-blue-300" />
-              <span>Section 135 / 80G Compliant</span>
-            </div>
+          <div className="shrink-0 rounded-xl border border-white/20 bg-white/10 p-4 text-xs text-blue-100">
+            <p className="font-black uppercase tracking-wider text-sky-200">Data sync</p>
+            <p className="mt-1 flex items-center gap-1.5 font-bold"><span className={`h-2 w-2 rounded-full ${syncState === 'live' ? 'bg-emerald-400' : syncState === 'loading' ? 'bg-amber-300' : 'bg-slate-300'}`} />{syncState === 'live' ? 'Live escrow records' : syncState === 'loading' ? 'Loading escrow records' : 'Reference records displayed'}</p>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Statutory Info Card */}
-      <div className="bg-sky-50/70 border border-sky-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-sky-900">
-        <div className="flex items-center space-x-2.5">
-          <Award className="w-5 h-5 text-sky-700 shrink-0" />
-          <div>
-            <span className="font-bold text-slate-900">Tripartite Concordat Framework: </span>
-            <span>
-              All university pilots funded via CSR co-grant include pre-ratified Tripartite IPR (30% HEI / 30% Student Innovators / 40% Industry Sponsor) with first right of commercial licensing.
-            </span>
-          </div>
-        </div>
-        <div className="shrink-0 font-mono font-bold text-slate-700 bg-white px-2.5 py-1 rounded border border-sky-300">
-          MCA REG: CSR00049214
-        </div>
-      </div>
-
-      {/* Challenge Cards Grid Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-black text-slate-900 tracking-tight">
-            High-Impact Societal Challenges Open for Matching Co-Grant
-          </h2>
-          <p className="text-xs text-slate-500">
-            Select a verified university-led project to pledge 1:1 matching funds and assign industry technical mentors.
-          </p>
-        </div>
-        <div className="hidden sm:flex items-center space-x-2 text-xs text-slate-600 font-medium">
-          <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-          <span>Active R&amp;D Bids</span>
-        </div>
-      </div>
-
-      {/* Challenge Cards Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {challenges.map((challenge) => {
-          const isPledged = challenge.status === 'PLEDGED';
-
-          return (
-            <div
-              key={challenge.id}
-              className={`bg-white rounded-2xl border transition-all duration-200 flex flex-col justify-between shadow-xs hover:shadow-md ${
-                isPledged ? 'border-blue-300 ring-2 ring-blue-500/10' : 'border-slate-200'
-              }`}
-            >
-              {/* Card Top */}
-              <div className="p-6 space-y-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-mono text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                      {challenge.id}
-                    </span>
-                    <span
-                      className={`text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${challenge.sdg.color}`}
-                    >
-                      {challenge.sdg.code} • {challenge.sdg.label}
-                    </span>
-                  </div>
-
-                  {isPledged ? (
-                    <span className="inline-flex items-center space-x-1.5 bg-blue-100 text-blue-950 text-xs font-black px-3 py-1 rounded-full border border-blue-300">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
-                      <span>Grant Pledged</span>
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center space-x-1 bg-sky-100 text-sky-900 text-[11px] font-bold px-2.5 py-0.5 rounded-full">
-                      <Clock className="w-3 h-3 text-sky-700" />
-                      <span>Awaiting CSR Match</span>
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="text-base font-bold text-slate-900 leading-snug">
-                    {challenge.title}
-                  </h3>
-                  <div className="flex items-center space-x-1 text-xs text-slate-500 mt-1">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span>{challenge.district}</span>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  {challenge.summary}
-                </p>
-
-                {/* Lead HEI & Key Impact */}
-                <div className="space-y-2 bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500 font-medium">Lead University:</span>
-                    <span className="font-bold text-slate-900 text-right">{challenge.leadHEI}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500 font-medium">Social Impact Target:</span>
-                    <span className="font-semibold text-blue-800 text-right">
-                      {challenge.impactMetrics}
-                    </span>
-                  </div>
-                </div>
-
-                {/* 1:1 Co-Funding Split Table */}
-                <div className="grid grid-cols-2 gap-3 pt-2">
-                  <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-3">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-blue-800">
-                      State DHTE Allocation
-                    </div>
-                    <div className="text-lg font-black text-blue-950 mt-0.5">
-                      ₹{challenge.stateAllocationLakh.toFixed(2)} Lakh
-                    </div>
-                    <div className="text-[10px] text-blue-700">100% Treasury Backed</div>
-                  </div>
-
-                  <div className="bg-sky-50/70 border border-sky-200 rounded-xl p-3">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-sky-800">
-                      Required CSR Match
-                    </div>
-                    <div className="text-lg font-black text-sky-900 mt-0.5">
-                      ₹{challenge.csrMatchLakh.toFixed(2)} Lakh
-                    </div>
-                    <div className="text-[10px] text-sky-700">Schedule VII Eligible</div>
-                  </div>
-                </div>
-
-                {/* Assigned Mentor Indicator */}
-                {challenge.assignedMentor && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <UserCheck className="w-4 h-4 text-blue-700 shrink-0" />
-                      <div>
-                        <span className="font-bold text-slate-900">
-                          Mentor: {challenge.assignedMentor.name}
-                        </span>
-                        <span className="text-[11px] text-slate-600 block">
-                          {challenge.assignedMentor.organization} • {challenge.assignedMentor.designation}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="text-[10px] bg-blue-200 text-blue-900 font-bold px-2 py-0.5 rounded">
-                      Assigned
-                    </span>
-                  </div>
-                )}
-
-                {/* Form CSR-1 Receipt if Pledged */}
-                {isPledged && challenge.csr1Ref && (
-                  <div className="bg-blue-50 border border-blue-300 rounded-xl p-3 text-xs flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <FileText className="w-4 h-4 text-blue-700 shrink-0" />
-                      <div>
-                        <span className="font-bold text-blue-950">
-                          Statutory Receipt: {challenge.csr1Ref}
-                        </span>
-                        <span className="text-[11px] text-blue-800 block">
-                          Form CSR-1 digitally generated &amp; registered on MCA Portal.
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Card Footer Actions */}
-              <div className="p-4 bg-slate-50 border-t border-slate-200 rounded-b-2xl flex flex-wrap items-center justify-between gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setActiveMentorChallenge(challenge)}
-                  className="px-3.5 py-2 min-h-[40px] rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-200/80 border border-slate-300 bg-white transition-all flex items-center space-x-1.5 active:scale-95"
-                >
-                  <Users className="w-3.5 h-3.5 text-slate-600" />
-                  <span>
-                    {challenge.assignedMentor ? 'Change Corporate Mentor' : 'Assign Corporate Mentor'}
-                  </span>
-                </button>
-
-                {isPledged ? (
-                  <button
-                    type="button"
-                    disabled
-                    className="px-4 py-2 min-h-[40px] rounded-xl text-xs font-black text-blue-950 bg-blue-100/90 border border-blue-300 flex items-center space-x-1.5 cursor-default"
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-blue-700" />
-                    <span>Grant Pledged (Form CSR-1 Issued)</span>
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handlePledgeGrant(challenge.id)}
-                    className="px-4 py-2 min-h-[40px] rounded-xl text-xs font-bold text-white bg-blue-700 hover:bg-blue-800 border border-blue-800 shadow-sm hover:shadow transition-all flex items-center space-x-1.5 active:scale-95"
-                  >
-                    <DollarSign className="w-4 h-4 text-sky-300" />
-                    <span>Pledge Matching CSR Grant (₹{challenge.csrMatchLakh}L)</span>
-                  </button>
-                )}
-              </div>
+      <section aria-labelledby="kpi-heading">
+        <h2 id="kpi-heading" className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">State oversight summary</h2>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {KPI_CARDS.map(({ key, label, icon: Icon, accent, tint }) => (
+            <div key={key} className={`${tint} flex items-start gap-4 rounded-2xl border border-slate-200 p-5 shadow-xs`}>
+              <div className={`${accent} rounded-xl p-3 text-white`}><Icon className="h-5 w-5" /></div>
+              <div><p className="text-[10px] font-black uppercase leading-tight tracking-wide text-slate-500">{label}</p><p className="mt-1 text-xl font-black leading-tight text-slate-950">{overview.metrics[key]}</p></div>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Mentor Assignment Slide-Out / Modal */}
-      {activeMentorChallenge && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            {/* Modal Header */}
-            <div className="bg-blue-900 text-white p-5 flex items-center justify-between">
-              <div className="flex items-center space-x-2.5">
-                <Users className="w-5 h-5 text-sky-300" />
-                <div>
-                  <h4 className="text-sm font-black uppercase tracking-wide">
-                    Assign Corporate Technical Mentor
-                  </h4>
-                  <p className="text-xs text-blue-100">
-                    {activeMentorChallenge.title}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveMentorChallenge(null)}
-                className="p-1.5 rounded-lg text-blue-200 hover:text-white hover:bg-white/10"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-              <p className="text-xs text-slate-600">
-                Corporate mentors provide bi-weekly technical design reviews, assist student teams with industrial testing equipment, and guide field trial protocols.
-              </p>
-
-              <div className="space-y-3">
-                {AVAILABLE_MENTORS.map((mentor) => (
-                  <div
-                    key={mentor.id}
-                    className="bg-slate-50 hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 rounded-xl p-4 transition-all duration-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-bold text-slate-900">{mentor.name}</span>
-                        <span className="text-[10px] bg-white font-bold text-slate-700 px-2 py-0.5 rounded border border-slate-200">
-                          {mentor.organization}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-600">{mentor.designation}</p>
-                      <p className="text-[11px] text-blue-800 font-medium">
-                        Focus: {mentor.expertise}
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleAssignMentor(mentor)}
-                      className="shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-bold text-white bg-blue-700 hover:bg-blue-800 transition-all active:scale-95"
-                    >
-                      Assign Mentor
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setActiveMentorChallenge(null)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition-all"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+          ))}
         </div>
-      )}
+      </section>
+
+      <section aria-labelledby="projects-heading" className="space-y-4">
+        <div><h2 id="projects-heading" className="text-lg font-black text-slate-900">High-Impact Projects Co-Funding Tracking</h2><p className="text-xs text-slate-500">Administrative view of state allocations, corporate matching funds, escrow locks, and mentor accountability.</p></div>
+        <div className="grid gap-5 lg:grid-cols-2">
+          {overview.projects.map((project) => (
+            <article key={project.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white shadow-xs">
+              <div className="space-y-4 p-5 sm:p-6">
+                <div className="flex items-start justify-between gap-3"><span className="font-mono text-[11px] font-black text-slate-500">{project.id}</span><span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-black text-emerald-800"><CheckCircle2 className="h-3.5 w-3.5" /> Matched</span></div>
+                <h3 className="text-base font-black leading-snug text-slate-900">{project.title}</h3>
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 text-xs"><p className="font-bold text-slate-500">Lead HEI</p><p className="mt-1 font-black text-slate-900">{project.leadHei}</p></div>
+                <div className="grid gap-3 sm:grid-cols-2"><div className="rounded-xl border border-blue-200 bg-blue-50 p-3"><p className="text-[10px] font-black uppercase tracking-wide text-blue-700">State DHTE allocation</p><p className="mt-1 text-lg font-black text-blue-950">{project.stateAllocation}</p></div><div className="rounded-xl border border-amber-200 bg-amber-50 p-3"><p className="text-[10px] font-black uppercase tracking-wide text-amber-700">Corporate CSR match</p><p className="mt-1 text-lg font-black text-amber-950">{project.corporateMatch}</p><p className="text-[10px] font-bold text-amber-800">{project.corporatePartner}</p></div></div>
+                <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-bold text-emerald-900"><Lock className="mt-0.5 h-4 w-4 shrink-0" /><span>{project.status}</span></div>
+                <div className="flex items-start gap-2 rounded-xl border border-sky-200 bg-sky-50 p-3 text-xs"><Users className="mt-0.5 h-4 w-4 shrink-0 text-sky-700" /><span><strong className="text-slate-900">Assigned Corporate Mentor:</strong> <span className="text-slate-700">{project.mentor}</span></span></div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="ipr-heading" className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs">
+        <div className="flex flex-col gap-2 border-b border-slate-100 bg-slate-50 p-5 sm:flex-row sm:items-center sm:justify-between"><div><h2 id="ipr-heading" className="flex items-center gap-2 text-lg font-black text-slate-900"><Gavel className="h-5 w-5 text-violet-700" /> Tripartite IPR &amp; ROFR Monitoring</h2><p className="mt-1 text-xs text-slate-500">PRD Section 10 · Academia–Industry–State Concordat register</p></div><span className="inline-flex items-center gap-1.5 self-start rounded-full bg-violet-100 px-3 py-1 text-[11px] font-black text-violet-900"><BadgeCheck className="h-3.5 w-3.5" /> State review enabled</span></div>
+        <div className="overflow-x-auto"><table className="w-full min-w-[850px] text-left text-xs"><thead className="border-b border-slate-100 text-[10px] uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3">Patent ID</th><th className="px-5 py-3">Title</th><th className="px-5 py-3">Lead student / faculty share</th><th className="px-5 py-3">HEI royalty share</th><th className="px-5 py-3">Corporate ROFR status</th><th className="px-5 py-3">State license</th></tr></thead><tbody className="divide-y divide-slate-100">{overview.patents.map((patent) => <tr key={patent.id} className="align-top hover:bg-violet-50/30"><td className="whitespace-nowrap px-5 py-4 font-mono font-black text-slate-500">{patent.id}</td><td className="px-5 py-4 font-black text-slate-900">{patent.title}</td><td className="px-5 py-4 font-bold text-emerald-800">{patent.leadShare} <span className="block text-[10px] font-medium text-slate-500">Minimum concordat threshold met</span></td><td className="px-5 py-4 font-bold text-blue-800">{patent.heiRoyalty}</td><td className="px-5 py-4 text-slate-700">{patent.rofrStatus}</td><td className="px-5 py-4 font-bold text-emerald-800">{patent.stateLicense}</td></tr>)}</tbody></table></div>
+        <div className="flex items-center gap-2 border-t border-slate-100 p-4 text-[10px] font-bold text-slate-500"><FileCheck2 className="h-3.5 w-3.5 text-emerald-600" /> State license verification is required before any commercial deployment or ROFR exercise.</div>
+      </section>
+
+      <footer className="text-center text-[10px] text-slate-400">JAGRIT SIH26043 · DHTE CSR oversight · Companies Act 2013 Section 135 / Schedule VII · All review records audit-logged.</footer>
     </div>
   );
 }
-

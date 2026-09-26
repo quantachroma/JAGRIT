@@ -1,13 +1,19 @@
 import { Request, Response, Router } from 'express';
 import {
 	auditSLA,
+	authorizeTranche,
 	EscrowProjectNotFoundError,
 	releaseTranche1,
 	releaseTranche2,
 	releaseTranche3,
+	getEscrowOverview,
 } from './escrow.service';
 
 export const escrowRouter = Router();
+
+escrowRouter.get('/overview', async (_request, response) => {
+	response.json(await getEscrowOverview());
+});
 
 function targetId(request: Request): string {
 	const body = request.body as Record<string, unknown>;
@@ -25,6 +31,22 @@ escrowRouter.get('/audit-sla', async (_request, response) => {
 		response.json(await auditSLA());
 	} catch (error) {
 		response.status(500).json({ error: error instanceof Error ? error.message : 'Unable to audit project SLA.' });
+	}
+});
+
+escrowRouter.post('/authorize-tranche', async (request: Request, response: Response) => {
+	const body = request.body as Record<string, unknown>;
+	const projectId = String(body.projectId || '').trim();
+	const trancheNumber = Number(body.trancheNumber);
+	if (!projectId || ![2, 3].includes(trancheNumber)) {
+		response.status(400).json({ error: 'projectId and trancheNumber (2 or 3) are required.' });
+		return;
+	}
+
+	try {
+		response.json(await authorizeTranche(projectId, trancheNumber as 2 | 3));
+	} catch (error) {
+		response.status(statusFor(error)).json({ error: error instanceof Error ? error.message : 'Unable to authorize tranche.' });
 	}
 });
 

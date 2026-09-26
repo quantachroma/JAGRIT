@@ -24,6 +24,7 @@ import {
 import AIAssistantDrawer from '@/components/ai-assistant-drawer';
 import { useCitizen } from '@/context/CitizenContext';
 import { getActiveSession, clearActiveSession } from '@/lib/mock-auth';
+import InstitutionalLayout from './institutional-layout';
 
 type NavRole = 'CITIZEN' | 'STUDENT' | 'FACULTY_PI' | 'INDUSTRY_MENTOR' | 'EVALUATOR' | 'PRI_OFFICER' | 'ADMIN';
 const ROLE_ALIASES: Record<string, NavRole> = { UNIVERSITY: 'STUDENT', INDUSTRY: 'INDUSTRY_MENTOR', GOVERNMENT: 'EVALUATOR' };
@@ -48,6 +49,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const { user, logout } = useCitizen();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isLandingPage = pathname === '/';
+  const isInstitutional =
+    pathname.startsWith('/government') ||
+    pathname.startsWith('/university') ||
+    pathname.startsWith('/industry') ||
+    pathname.startsWith('/repository') ||
+    pathname.startsWith('/samvaad') ||
+    pathname.startsWith('/progress');
 
   const isProtected = PROTECTED_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
@@ -73,6 +81,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   if (isLandingPage) {
     return <main>{children}</main>;
+  }
+
+  if (isInstitutional) {
+    return <InstitutionalLayout>{children}</InstitutionalLayout>;
   }
 
   const role = user.role ? ROLE_ALIASES[user.role] || user.role as NavRole : null;

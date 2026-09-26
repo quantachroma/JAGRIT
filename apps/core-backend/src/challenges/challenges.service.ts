@@ -166,7 +166,7 @@ export async function createOrDeduplicateChallenge(data: ChallengeSubmission) {
 		`WITH created_challenge AS (
 			INSERT INTO public.challenges
 			(ticket_number, title, description, location, district, block, panchayat, status, submission_channel)
-		 VALUES ($1, $2, $3, ST_SetSRID(ST_Point($4, $5), 4326), $6, $7, $8, 'PENDING_HITL', 'APP')
+			 VALUES ($1, $2, $3, ST_SetSRID(ST_Point($4, $5), 4326), $6, $7, $8, 'PENDING_TRIAGE', 'APP')
 			RETURNING id
 		), recorded_submitter_vote AS (
 			INSERT INTO public.challenge_upvotes (ticket_id, phone_hash, voter_location)
@@ -190,7 +190,7 @@ export async function createOrDeduplicateChallenge(data: ChallengeSubmission) {
 	return {
 		is_duplicate: false,
 		ticket_number: ticketNumber,
-		status: 'PENDING_HITL',
+		status: 'PENDING_TRIAGE',
 		message: 'New challenge registered successfully.',
 	};
 }

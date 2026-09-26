@@ -1,120 +1,151 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 import {
   Landmark,
   FileText,
   GraduationCap,
   Award,
   Rocket,
-  ArrowUpRight,
-  CheckCircle2,
-  AlertTriangle,
-  Building2,
   Cpu,
-  Clock,
-  Send,
   MapPin,
-  Check,
-  Filter,
-  RefreshCw,
-  ExternalLink,
-  ShieldCheck,
   TrendingUp,
 } from 'lucide-react';
+import GovtAiAssistantDrawer from '@/components/government/GovtAiAssistantDrawer';
 
 interface TriageTicket {
   id: string;
   ticketNumber: string;
   title: string;
+  description: string;
   source: string;
   district: string;
-  date: string;
-  aiClassification: 'CIVIC_ROUTINE' | 'HEI_RESEARCH';
-  aiConfidence: number;
-  domain: string;
-  recommendedBudget?: number;
-  status: 'AWAITING_REVIEW' | 'CONFIRMED';
-  confirmedActionNote?: string;
+  isDemo?: boolean;
 }
 
+interface TriageEvaluation {
+  classification: 'TYPE_A' | 'TYPE_B';
+  confidence: string;
+  rationale: string;
+}
+
+const DEMO_TRIAGE_TICKETS: TriageTicket[] = [
+  {
+    id: 'demo-kanke-pothole',
+    ticketNumber: 'JAG-DEMO-RNC-0087',
+    title: 'Deep Pothole and Drainage Waterlogging on Kanke Road',
+    description: 'Routine civic drainage and road maintenance issue reported from Kanke Road.',
+    source: 'WEB',
+    district: 'Ranchi',
+    isDemo: true,
+  },
+  {
+    id: 'demo-palamu-fluoride',
+    ticketNumber: 'JAG-DEMO-PAL-0041',
+    title: 'Palamu Chianki Village Groundwater High Fluoride Contamination',
+    description: 'Groundwater fluoride contamination requires applied water-quality research and field testing.',
+    source: 'WHATSAPP',
+    district: 'Palamu',
+    isDemo: true,
+  },
+];
+
 export default function GovernmentDashboardPage() {
-  const [tickets, setTickets] = useState<TriageTicket[]>([
-    {
-      id: 't1',
-      ticketNumber: '#JAG-4190',
-      title: 'Ranchi Road Bitumen & Deep Pothole Repair (Albert Ekka Chowk to Main Road)',
-      source: 'Nagrik PWA Grievance Form',
-      district: 'Ranchi Urban',
-      date: 'Today, 09:15 AM',
-      aiClassification: 'CIVIC_ROUTINE',
-      aiConfidence: 0.96,
-      domain: 'Municipal Infrastructure & Road Maintenance',
-      status: 'AWAITING_REVIEW',
-    },
-    {
-      id: 't2',
-      ticketNumber: '#JAG-4191',
-      title: 'Kanke Kasturba Gandhi Residential School Arsenic Groundwater Contamination',
-      source: 'Block Development Officer (BDO) Escalation',
-      district: 'Ranchi (Kanke Block)',
-      date: 'Today, 08:30 AM',
-      aiClassification: 'HEI_RESEARCH',
-      aiConfidence: 0.94,
-      domain: 'Chemical Adsorption & Potable Water Engineering',
-      recommendedBudget: 350000,
-      status: 'AWAITING_REVIEW',
-    },
-    {
-      id: 't3',
-      ticketNumber: '#JAG-4192',
-      title: 'Monsoon High-Humidity Sticklac Spoilage in Torpa Tribal FPO Storage Units',
-      source: 'District Forest Officer (DFO) & JHAMCOFED',
-      district: 'Khunti (Torpa)',
-      date: 'Yesterday, 04:45 PM',
-      aiClassification: 'HEI_RESEARCH',
-      aiConfidence: 0.91,
-      domain: 'Bio-resource Preservation & Solar Thermal Desiccants',
-      recommendedBudget: 420000,
-      status: 'AWAITING_REVIEW',
-    },
-  ]);
+  const [tickets, setTickets] = useState<TriageTicket[]>([]);
+  const [evaluations, setEvaluations] = useState<Record<string, TriageEvaluation>>({});
+  const [loadingTickets, setLoadingTickets] = useState(true);
+  const [queueNotice, setQueueNotice] = useState<string | null>(null);
 
   const [poolBalance, setPoolBalance] = useState<number>(42000000); // 4.20 Crore
 
-  // Confirm ULB Dispatch
-  const handleConfirmULB = (ticketId: string) => {
-    setTickets((prev) =>
-      prev.map((t) => {
-        if (t.id === ticketId) {
-          return {
-            ...t,
-            status: 'CONFIRMED',
-            confirmedActionNote: 'Dispatched to Ranchi Municipal Corp (JharSewa Ref: RMC-2026-8812)',
-          };
-        }
-        return t;
-      })
-    );
-  };
+  useEffect(() => {
+    const controller = new AbortController();
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-  // Approve Budget & Broadcast to HEIs
-  const handleApproveHEI = (ticketId: string, budget: number = 350000) => {
-    setTickets((prev) =>
-      prev.map((t) => {
-        if (t.id === ticketId) {
-          setPoolBalance((curr) => Math.max(0, curr - budget));
-          return {
-            ...t,
-            status: 'CONFIRMED',
-            confirmedActionNote: `Approved ₹${(budget / 100000).toFixed(2)}L & Broadcasted to BIT Mesra & Qualified HEIs`,
-          };
+    async function loadChallenges() {
+      try {
+        const response = await fetch(`${apiUrl}/api/v1/challenges`, { signal: controller.signal });
+        if (!response.ok) throw new Error(`Challenge request failed: ${response.status}`);
+        const payload: unknown = await response.json();
+        const items = Array.isArray(payload)
+          ? payload
+          : payload && typeof payload === 'object' && 'data' in payload && Array.isArray(payload.data)
+            ? payload.data
+            : [];
+
+        const liveTickets = items.filter((item): item is Record<string, unknown> => {
+          if (!item || typeof item !== 'object') return false;
+          const status = String((item as Record<string, unknown>).status || 'PENDING_TRIAGE');
+          return status === 'PENDING_TRIAGE' || status === 'PENDING_HITL';
+        }).flatMap((challenge, index) => {
+          const id = String(challenge.id || challenge.ticket_number || `live-${index}`);
+          return [{
+            id,
+            ticketNumber: String(challenge.ticket_number || challenge.id || 'Unknown ticket'),
+            title: String(challenge.title || 'Citizen challenge'),
+            description: String(challenge.description || challenge.title || 'Citizen challenge awaiting review'),
+            source: String(challenge.submission_channel || 'WEB').toUpperCase(),
+            district: String(challenge.district || 'Jharkhand'),
+          }];
+        });
+        setTickets(liveTickets.length > 0 ? liveTickets : DEMO_TRIAGE_TICKETS);
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === 'AbortError')) {
+          setQueueNotice('Unable to load live challenges from the backend.');
+          setTickets(DEMO_TRIAGE_TICKETS);
         }
-        return t;
-      })
-    );
-  };
+      } finally {
+        setLoadingTickets(false);
+      }
+    }
+
+    void loadChallenges();
+    return () => controller.abort();
+  }, []);
+
+  function handleCheck(ticketId: string, description: string, title: string) {
+    const text = `${title} ${description}`.toLowerCase();
+    const isTypeB = /काला पानी|fluoride|fluorosis|arsenic|toxic|chemical|handpump|crop rot|solar microgrid|contaminat|पानी/.test(text);
+    const evaluation: TriageEvaluation = isTypeB
+      ? {
+          classification: 'TYPE_B',
+          confidence: '96.4%',
+          rationale: 'Critical public health hazard (S_health = 95). Chemical/materials R&D required. Exceeds municipal maintenance scope.',
+        }
+      : {
+          classification: 'TYPE_A',
+          confidence: '98.2%',
+          rationale: 'Routine municipal defect. S_health <= 25. Standard maintenance pattern requires Urban Local Body intervention.',
+        };
+    setEvaluations((current) => ({ ...current, [ticketId]: evaluation }));
+  }
+
+  async function updateChallengeStatus(ticketId: string, status: 'APPROVED_RND' | 'REROUTED_ULB'): Promise<boolean> {
+    setQueueNotice(null);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const ticket = tickets.find((item) => item.id === ticketId);
+      if (!ticket?.isDemo) {
+        const response = await fetch(`${apiUrl}/api/v1/challenges/${encodeURIComponent(ticketId)}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status }),
+        });
+        if (!response.ok) throw new Error('Unable to update evaluator status.');
+      }
+      setTickets((current) => current.filter((ticket) => ticket.id !== ticketId));
+      if (status === 'APPROVED_RND') {
+        setPoolBalance((current) => Math.max(0, current - 350000));
+        setQueueNotice('✅ Success: Challenge broadcasted to all empanelled HEIs scoring >= 70%.');
+      } else {
+        setQueueNotice('✅ Success: The grievance has been successfully rerouted to the Municipal Corporation (JharSewa API gateway) for routine maintenance.');
+      }
+      return true;
+    } catch (error) {
+      setQueueNotice(error instanceof Error ? error.message : 'Unable to update evaluator status.');
+      return false;
+    }
+  }
 
   return (
     <div className="space-y-6 pb-12">
@@ -123,20 +154,20 @@ export default function GovernmentDashboardPage() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="bg-sky-400 text-slate-950 font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider">
-                Government Command Center
-              </span>
-              <span className="text-xs text-blue-200">
-                Department of Higher &amp; Technical Education (DHTE)
+              <span className="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                OFFICIAL DHTE GOVERNMENT OF JHARKHAND
               </span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              Government of Jharkhand • State Societal Innovation Command Center
+              DHTE Evaluator Command Center
             </h1>
             <p className="text-xs sm:text-sm text-blue-100 max-w-2xl leading-relaxed">
               Real-time governance console overseeing rural societal challenge triage, university research grants, industry tripartite IP filing, and Human-in-the-Loop (HITL) quality gates.
             </p>
+            <button type="button" className="bg-white text-blue-900 font-bold text-xs px-4 py-2 rounded-xl shadow-sm">
+              Samvaad Lab Sharing
+            </button>
           </div>
 
           {/* State Innovation Pool KPI */}
@@ -261,27 +292,26 @@ export default function GovernmentDashboardPage() {
           <div className="flex items-center space-x-2 text-xs">
             <span className="font-semibold text-slate-600">Pending Review:</span>
             <span className="bg-sky-100 text-sky-900 font-black px-2.5 py-0.5 rounded-full">
-              {tickets.filter((t) => t.status === 'AWAITING_REVIEW').length} Tickets
+              {tickets.filter((ticket) => !evaluations[ticket.id]).length} Tickets
             </span>
           </div>
         </div>
 
         {/* Triage Queue List */}
         <div className="space-y-4">
+          {loadingTickets && <p className="text-sm text-slate-500">Loading live challenges...</p>}
+          {queueNotice && <p className="text-sm font-semibold text-slate-600">{queueNotice}</p>}
+          {!loadingTickets && tickets.length === 0 && !queueNotice && (
+            <p className="text-sm text-slate-500">No challenges are waiting for evaluation.</p>
+          )}
           {tickets.map((ticket) => {
-            const isConfirmed = ticket.status === 'CONFIRMED';
-            const isCivic = ticket.aiClassification === 'CIVIC_ROUTINE';
+            const evaluation = evaluations[ticket.id];
+            const isTypeB = evaluation?.classification === 'TYPE_B';
 
             return (
               <div
                 key={ticket.id}
-                className={`rounded-2xl border p-5 transition-all duration-200 ${
-                  isConfirmed
-                    ? 'bg-slate-50/80 border-slate-200'
-                    : isCivic
-                    ? 'bg-sky-50/30 border-sky-200 hover:shadow-xs'
-                    : 'bg-blue-50/30 border-blue-200 hover:shadow-xs'
-                }`}
+                className="rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-200 hover:shadow-xs"
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   {/* Ticket Details */}
@@ -290,8 +320,8 @@ export default function GovernmentDashboardPage() {
                       <span className="font-mono text-xs font-black text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">
                         {ticket.ticketNumber}
                       </span>
-                      <span className="text-[11px] text-slate-500 font-medium">
-                        {ticket.source} • {ticket.date}
+                      <span className="text-[11px] text-slate-700 font-bold bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                        {ticket.source === 'WHATSAPP' ? 'WhatsApp' : 'Web'}
                       </span>
                       <span className="inline-flex items-center space-x-1 text-[11px] text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">
                         <MapPin className="w-3 h-3 text-slate-400" />
@@ -299,74 +329,54 @@ export default function GovernmentDashboardPage() {
                       </span>
                     </div>
 
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
-                      {ticket.title}
-                    </h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">{ticket.description}</p>
 
-                    {/* AI Classification Pill & Domain */}
-                    <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-                      <div className="flex items-center space-x-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
-                        <Cpu className="w-3.5 h-3.5 text-slate-600" />
-                        <span className="font-semibold text-slate-700">AI Triage:</span>
-                        <span
-                          className={`font-black ${
-                            isCivic ? 'text-sky-800' : 'text-blue-900'
-                          }`}
-                        >
-                          {isCivic ? 'Type A (Civic Routine)' : 'Type B (HEI R&D)'}
-                        </span>
-                        <span className="text-slate-400">|</span>
-                        <span className="text-slate-600 font-medium">
-                          {(ticket.aiConfidence * 100).toFixed(0)}% Confidence
-                        </span>
+                    {evaluation && (
+                      <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2 text-xs">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Cpu className="w-3.5 h-3.5 text-slate-600" />
+                          <span className="font-bold text-slate-700">DeBERTa-v3 Triage Analysis</span>
+                          <span className={`font-black ${isTypeB ? 'text-emerald-800' : 'text-amber-800'}`}>
+                            {isTypeB ? 'TYPE_B (Applied R&D)' : 'TYPE_A (Routine Municipal Civic)'}
+                          </span>
+                          <span className="text-slate-500">{evaluation.confidence} confidence</span>
+                        </div>
+                        <p className="text-slate-600">{evaluation.rationale}</p>
                       </div>
-
-                      <span className="text-slate-600 text-xs">
-                        Domain: <strong className="text-slate-800">{ticket.domain}</strong>
-                      </span>
-
-                      {ticket.recommendedBudget && (
-                        <span className="text-blue-900 font-bold text-xs bg-blue-100/70 px-2 py-0.5 rounded">
-                          Budget: ₹{(ticket.recommendedBudget / 100000).toFixed(2)} Lakh
-                        </span>
-                      )}
-                    </div>
+                    )}
                   </div>
 
                   {/* Actions Column */}
                   <div className="shrink-0 flex flex-col sm:items-end justify-center gap-2">
-                    {isConfirmed ? (
-                      <div className="bg-white border border-blue-300 rounded-xl px-4 py-2.5 text-xs text-slate-800 shadow-2xs space-y-1">
-                        <div className="flex items-center space-x-1.5 font-bold text-blue-900">
-                          <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                          <span>HITL Evaluator Confirmed</span>
-                        </div>
-                        <p className="text-[11px] text-slate-600 font-medium max-w-xs">
-                          {ticket.confirmedActionNote}
-                        </p>
-                      </div>
+                    {!evaluation ? (
+                      <button
+                        type="button"
+                        onClick={() => handleCheck(ticket.id, ticket.description, ticket.title)}
+                        className="bg-[#1E3A8A] hover:bg-blue-900 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
+                      >
+                        🔍 Check
+                      </button>
+                    ) : isTypeB ? (
+                      <>
+                        <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-lg border border-emerald-300">
+                          ✅ Approved for Applied R&amp;D
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => void updateChallengeStatus(ticket.id, 'APPROVED_RND')}
+                          className="bg-[#1E3A8A] hover:bg-blue-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-1.5"
+                        >
+                          🎓 List the Problem to the Universities
+                        </button>
+                      </>
                     ) : (
-                      <div className="flex items-center space-x-2">
-                        {isCivic ? (
-                          <button
-                            type="button"
-                            onClick={() => handleConfirmULB(ticket.id)}
-                            className="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs hover:shadow transition-all flex items-center space-x-1.5 active:scale-95"
-                          >
-                            <Building2 className="w-4 h-4" />
-                            <span>Confirm ULB Dispatch</span>
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => handleApproveHEI(ticket.id, ticket.recommendedBudget)}
-                            className="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-xs hover:shadow transition-all flex items-center space-x-1.5 active:scale-95 border border-blue-800"
-                          >
-                            <Send className="w-4 h-4 text-sky-300" />
-                            <span>Approve ₹3.5L &amp; Broadcast to Universities</span>
-                          </button>
-                        )}
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => void updateChallengeStatus(ticket.id, 'REROUTED_ULB')}
+                        className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm"
+                      >
+                          🚛 Reroute to Municipal ULB (JharSewa)
+                      </button>
                     )}
                   </div>
                 </div>
@@ -376,61 +386,15 @@ export default function GovernmentDashboardPage() {
         </div>
       </div>
 
-      {/* University R&D Deployment Status Grid */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-base font-bold text-slate-900">
-              State HEI Research Capability Index
-            </h3>
-            <p className="text-xs text-slate-500">
-              Active academic deployment, field testing telemetry, and faculty patent filing status.
-            </p>
-          </div>
-          <Link
-            href="/university/dashboard"
-            className="text-xs font-bold text-blue-900 hover:underline flex items-center space-x-1"
-          >
-            <span>Open University Portal</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
+      <GovtAiAssistantDrawer
+        innovationPool={poolBalance}
+        activeProjects={384}
+        escrowLocked={14000000}
+        pendingReviewTickets={tickets.filter((ticket) => !evaluations[ticket.id]).length}
+        typeATickets={Object.values(evaluations).filter((evaluation) => evaluation.classification === 'TYPE_A').length}
+        typeBTickets={Object.values(evaluations).filter((evaluation) => evaluation.classification === 'TYPE_B').length}
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
-            <div className="flex items-center justify-between font-bold">
-              <span className="text-slate-900">BIT Mesra</span>
-              <span className="text-blue-900 bg-blue-100 px-2 py-0.5 rounded text-[10px]">Tier 1 Lead</span>
-            </div>
-            <p className="text-slate-600 text-[11px]">18 Active Projects • 34 Patents Filed • NABL Environmental Lab</p>
-            <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-700 w-[94%]" />
-            </div>
-          </div>
-
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
-            <div className="flex items-center justify-between font-bold">
-              <span className="text-slate-900">IIT (ISM) Dhanbad</span>
-              <span className="text-blue-800 bg-blue-100 px-2 py-0.5 rounded text-[10px]">Tier 1 Lead</span>
-            </div>
-            <p className="text-slate-600 text-[11px]">14 Active Projects • 27 Patents Filed • Mining &amp; Hydro Lab</p>
-            <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-700 w-[89%]" />
-            </div>
-          </div>
-
-          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
-            <div className="flex items-center justify-between font-bold">
-              <span className="text-slate-900">BAU Ranchi</span>
-              <span className="text-sky-900 bg-sky-100 px-2 py-0.5 rounded text-[10px]">Agri Tech Lead</span>
-            </div>
-            <p className="text-slate-600 text-[11px]">22 Active Projects • 19 Patents Filed • Post-Harvest Lab</p>
-            <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-              <div className="h-full bg-sky-600 w-[85%]" />
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

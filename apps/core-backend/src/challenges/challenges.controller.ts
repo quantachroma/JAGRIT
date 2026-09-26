@@ -156,6 +156,32 @@ challengesRouter.get('/', async (_request, response) => {
 	}
 });
 
+challengesRouter.patch('/:id/status', async (request: Request, response: Response) => {
+	const status = String(request.body?.status || '').trim();
+	if (!['APPROVED_RND', 'REROUTED_ULB'].includes(status)) {
+		response.status(400).json({ error: "status must be 'APPROVED_RND' or 'REROUTED_ULB'." });
+		return;
+	}
+
+	try {
+		const result = await query(
+			`UPDATE public.challenges
+			 SET status = $1
+			 WHERE id::text = $2 OR ticket_number = $2
+			 RETURNING id, ticket_number, status;`,
+			[status, request.params.id],
+		);
+		if (result.rowCount === 0) {
+			response.status(404).json({ error: 'Challenge not found.' });
+			return;
+		}
+		response.json({ success: true, challenge: result.rows[0] });
+	} catch (error) {
+		console.error('Challenge status update failed:', error);
+		response.status(500).json({ error: error instanceof Error ? error.message : 'Unable to update challenge status.' });
+	}
+});
+
 	challengesRouter.post('/check-dedup', async (request: Request, response: Response) => {
 	const { text, lat, lon } = request.body;
 	const result = await evaluateDeduplication(String(text || ''), Number(lat), Number(lon));

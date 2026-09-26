@@ -32,14 +32,28 @@ const INITIAL_ACCEPTED_PROJECTS: AcceptedProject[] = [
   },
 ];
 
-interface Props { challenges: OpenChallenge[]; summary: { openTickets: number; statePoolTotalINR: number; activeGrantsLabel: string }; }
+type HeiMatch = {
+  id: string;
+  name: string;
+  district: string;
+  score: number;
+  status: "Invited · Lead Match" | "Invited" | "Disqualified - lacks water/materials lab accreditation";
+  axes: OpenChallenge["xai"];
+};
+
+type UniversityChallenge = OpenChallenge & {
+  qualifiedHeis: HeiMatch[];
+  biddingDeadline?: string;
+};
+
+interface Props { challenges: UniversityChallenge[]; summary: { openTickets: number; statePoolTotalINR: number; activeGrantsLabel: string }; }
 
 export default function DashboardClient({ challenges, summary }: Props) {
   const { t } = useLanguage();
   const fmt = formatINR;
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<string>("All");
-  const [selected, setSelected] = useState<OpenChallenge | null>(null);
+  const [selected, setSelected] = useState<UniversityChallenge | null>(null);
   const [acceptFor, setAcceptFor] = useState<OpenChallenge | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [acceptedProjects, setAcceptedProjects] = useState<AcceptedProject[]>(INITIAL_ACCEPTED_PROJECTS);
@@ -73,6 +87,12 @@ export default function DashboardClient({ challenges, summary }: Props) {
     const okF = filter === "All" || c.domain.toLowerCase().includes(filter.split(" ")[0].toLowerCase()) || (filter === "Water & Sanitation" && c.domain.toLowerCase().includes("water")) || (filter === "Water & Sanitation" && c.domain.toLowerCase().includes("sanitation")) || (filter === "Agritech & Lac" && c.domain.toLowerCase().includes("agri")) || (filter === "Renewable Energy" && c.domain.toLowerCase().includes("cold")) || (filter === "Tribal Health" && c.domain.toLowerCase().includes("health"));
     return okQ && okF;
   }), [challenges, q, filter]);
+
+  function getDaysLeft(challenge: UniversityChallenge): number {
+    if (!challenge.biddingDeadline) return DAYS_LEFT[challenge.ticketId] ?? 4;
+    const remaining = new Date(challenge.biddingDeadline).getTime() - Date.now();
+    return Math.max(0, Math.ceil(remaining / 86_400_000));
+  }
 
   return (
     <div className="space-y-6">
@@ -153,7 +173,7 @@ export default function DashboardClient({ challenges, summary }: Props) {
       {toast && (<p role="status" className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-800">{toast}</p>)}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {list.map((c) => {
-          const daysLeft = DAYS_LEFT[c.ticketId] ?? 4;
+          const daysLeft = getDaysLeft(c);
           const shortTag =
             c.shortTag ||
             (c.ticketId === "JAG-4102"
@@ -215,6 +235,20 @@ export default function DashboardClient({ challenges, summary }: Props) {
                     </span>
                   </div>
                 </div>
+
+                <details className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
+                  <summary className="cursor-pointer text-xs font-black text-emerald-900">
+                    Eligible Qualified HEIs (Statutory Threshold &gt;= 70%)
+                  </summary>
+                  <div className="mt-3 space-y-2">
+                    {c.qualifiedHeis.map((hei) => (
+                      <div key={hei.id} className="flex items-center justify-between gap-3 rounded-lg bg-white px-3 py-2 text-xs">
+                        <span className="font-bold text-slate-800">{hei.name}</span>
+                        <span className="shrink-0 font-black text-emerald-800">{hei.score}% Match ({hei.status})</span>
+                      </div>
+                    ))}
+                  </div>
+                </details>
               </div>
 
               {/* Action Button */}
@@ -223,7 +257,7 @@ export default function DashboardClient({ challenges, summary }: Props) {
                   onClick={() => setSelected(c)}
                   className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 text-xs font-bold shadow-md shadow-blue-500/20 hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
-                  <span>{t.university.reviewBtn}</span>
+                  <span>Review Challenge &amp; Match Analysis</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
@@ -239,7 +273,20 @@ export default function DashboardClient({ challenges, summary }: Props) {
               <h2 className="text-lg font-bold leading-snug">{selected.title}</h2></div>
               <button onClick={() => setSelected(null)} aria-label="Close detail" className="rounded-full bg-white p-1.5 hover:bg-slate-100"><X className="h-5 w-5" /></button>
             </div>
-            <div className="mt-4"><XaiSpiderChart data={selected.xai} ticketId={selected.ticketId} /></div>
+            <div className="mt-4">
+              <p className="mb-3 text-xs font-black uppercase tracking-wide text-slate-600">Formula 4 · Six-Axis Institutional Capability Match</p>
+              <div className="grid gap-4 lg:grid-cols-2">
+                {selected.qualifiedHeis.map((hei) => (
+                  <div key={hei.id} className="rounded-xl border border-slate-200 bg-white p-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-xs font-black text-slate-900">{hei.name}</p>
+                      <span className={`shrink-0 rounded-full px-2 py-1 text-[10px] font-black ${hei.score >= 70 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>{hei.score}%</span>
+                    </div>
+                    <XaiSpiderChart data={hei.axes} />
+                  </div>
+                ))}
+              </div>
+            </div>
             <div className="mt-4 rounded-xl border border-sky-200 bg-sky-50 p-3 text-xs text-sky-900">
               <p className="font-bold">{t.university.juryTip}</p>
             </div>

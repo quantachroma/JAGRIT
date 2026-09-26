@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Users, Building2, UserCheck, Plus, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
 import type { ChallengeStatus, ChallengeSubmissionPayload } from "@jagrit/contracts";
 import type { OpenChallenge } from "@/lib/mock-data";
@@ -8,17 +8,20 @@ export type BidMode = "SOLO" | "CONSORTIUM";
 const APAAR_RE = /^[A-Z]{2,4}\/\d{4}\/[A-Z]{2,3}-?\d{2,5}$/i;
 const EMP_RE = /^[A-Z]+\/EMP\/\d{4}-\d{2,4}$/i;
 
-interface Props { open: boolean; challenge: OpenChallenge | null; onClose: () => void; onSubmitted: (s: ChallengeStatus, m: string) => void; }
+interface Props { open: boolean; challenge: OpenChallenge | null; initialMode?: BidMode; onClose: () => void; onSubmitted: (s: ChallengeStatus, m: string) => void; }
 interface Student { name: string; dept: string; apaar: string; }
 
-export default function ChallengeAcceptModal({ open, challenge, onClose, onSubmitted }: Props) {
-  const [mode, setMode] = useState<BidMode>("SOLO");
+export default function ChallengeAcceptModal({ open, challenge, initialMode = "SOLO", onClose, onSubmitted }: Props) {
+  const [mode, setMode] = useState<BidMode>(initialMode);
   const [partner, setPartner] = useState("Birsa Agricultural University");
   const [piName, setPiName] = useState("Dr. R. K. Verma");
   const [piCode, setPiCode] = useState("BIT/EMP/2014-042");
   const [students, setStudents] = useState<Student[]>([{ name: "Ananya Sharma", dept: "Environmental Eng.", apaar: "BIT/2023/BT-114" }]);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
+  useEffect(() => {
+    if (open) setMode(initialMode);
+  }, [open, initialMode]);
   if (!open || !challenge) return null;
   function addStudent() {
     if (students.length >= 5) { setError("Maximum 5 student members allowed."); return; }

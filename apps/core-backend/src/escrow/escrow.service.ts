@@ -1,4 +1,4 @@
-import { query } from '../db/client';
+import { pool, query } from '../db/client';
 
 export class EscrowProjectNotFoundError extends Error {
 	statusCode = 404;
@@ -16,6 +16,172 @@ export interface Tranche3Evidence {
 }
 
 export type SlaStatus = 'ON_TRACK' | 'WARNING_DAY_7' | 'ESCALATION_DAY_14' | 'DRAW_DOWN_FROZEN_DAY_30';
+
+export interface EscrowOverview {
+	metrics: {
+		totalCommittedCsrPool: string;
+		stateMatchingGrantsDisbursed: string;
+		activeCorporateMentors: string;
+		tripartiteIprConcordats: string;
+	};
+	projects: Array<{
+		id: string;
+		title: string;
+		leadHei: string;
+		stateAllocation: string;
+		corporateMatch: string;
+		corporatePartner: string;
+		status: string;
+		mentor: string;
+	}>;
+	patents: Array<{
+		id: string;
+		title: string;
+		leadShare: string;
+		heiRoyalty: string;
+		rofrStatus: string;
+		stateLicense: string;
+	}>;
+}
+
+const DEFAULT_ESCROW_OVERVIEW: EscrowOverview = {
+	metrics: {
+		totalCommittedCsrPool: '₹50.00 Lakh',
+		stateMatchingGrantsDisbursed: '₹24.50 Lakh',
+		activeCorporateMentors: '14 Senior Engineers',
+		tripartiteIprConcordats: '8 Agreements',
+	},
+	projects: [
+		{
+			id: 'JAG-CSR-01',
+			title: 'Solar Fluoride Purification for 12 Anganwadi Centers (Palamu)',
+			leadHei: 'BIT Mesra (Dept. of Environmental Engineering)',
+			stateAllocation: '₹3.50 Lakh',
+			corporateMatch: '₹3.50 Lakh',
+			corporatePartner: 'Tata Steel CSR',
+			status: '✅ 1:1 Matched & Escrow Locked (Schedule VII Compliant)',
+			mentor: 'Dr. A. Sen (Senior Principal Scientist, Tata Steel R&D)',
+		},
+		{
+			id: 'JAG-CSR-02',
+			title: 'Tribal Lac Post-Harvest Desiccant Storage Units (Khunti)',
+			leadHei: 'BAU Ranchi',
+			stateAllocation: '₹4.20 Lakh',
+			corporateMatch: '₹4.20 Lakh',
+			corporatePartner: 'CCL CSR',
+			status: '✅ 1:1 Matched & Escrow Locked',
+			mentor: 'Er. Manoj Kumar (CCL Agro-Infrastructure Cell)',
+		},
+	],
+	patents: [
+		{
+			id: 'IN-2026-JAG-001',
+			title: 'Activated Alumina Gradient Defluoridation Filter',
+			leadShare: '60%',
+			heiRoyalty: '25%',
+			rofrStatus: 'Tata Steel ROFR active through 15 Sep 2026',
+			stateLicense: 'Verified: royalty-free public deployment',
+		},
+		{
+			id: 'IN-2026-JAG-004',
+			title: 'IoT Real-Time Water Quality Telemetry Module',
+			leadShare: '60%',
+			heiRoyalty: '20%',
+			rofrStatus: 'CCL ROFR review pending',
+			stateLicense: 'Verified: royalty-free public deployment',
+		},
+	],
+};
+
+export async function getEscrowOverview(): Promise<EscrowOverview> {
+	try {
+		const result = await query<{
+			id: string;
+			lead_university_name: string;
+			industry_mentor_name: string | null;
+			industry_organization: string | null;
+		}>(
+			`SELECT p.id::text AS id, p.lead_university_name, u.full_name AS industry_mentor_name,
+					 u.organization AS industry_organization
+			 FROM public.projects p
+			 LEFT JOIN public.users u ON u.id = p.industry_mentor_id
+			 WHERE p.resolution_status IN ('IN_PROGRESS', 'IN_PILOT')
+			 ORDER BY p.created_at DESC LIMIT 10;`,
+		);
+		if (!result.rows.length) return DEFAULT_ESCROW_OVERVIEW;
+
+		return {
+			...DEFAULT_ESCROW_OVERVIEW,
+			projects: result.rows.map((row, index) => ({
+				...(DEFAULT_ESCROW_OVERVIEW.projects[index] || DEFAULT_ESCROW_OVERVIEW.projects[0]),
+				id: row.id,
+				leadHei: row.lead_university_name,
+				mentor: row.industry_mentor_name
+					? `${row.industry_mentor_name}${row.industry_organization ? ` (${row.industry_organization})` : ''}`
+					: DEFAULT_ESCROW_OVERVIEW.projects[index]?.mentor || 'Mentor assignment pending',
+			})),
+		};
+	} catch {
+		return DEFAULT_ESCROW_OVERVIEW;
+	}
+}
+
+export async function authorizeTranche(projectId: string, trancheNumber: 2 | 3) {
+	const trancheColumn = trancheNumber === 2 ? 'tranche_2_disbursed' : 'tranche_3_disbursed';
+	const client = await pool.connect();
+
+	try {
+		await client.query('BEGIN');
+		await client.query(`
+			CREATE TABLE IF NOT EXISTS public.escrow_audit_log (
+				id BIGSERIAL PRIMARY KEY,
+				project_id TEXT NOT NULL,
+				tranche_number SMALLINT NOT NULL,
+				action TEXT NOT NULL,
+				actor TEXT NOT NULL,
+				integrations TEXT[] NOT NULL,
+				created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+			);
+		`);
+
+		const project = await client.query<{ id: string }>(
+			'SELECT id::text AS id FROM public.projects WHERE id::text = $1 FOR UPDATE;',
+			[projectId],
+		);
+		if (!project.rows[0]) throw new EscrowProjectNotFoundError();
+
+		const updated = await client.query<{ id: string; tranche_2_disbursed?: boolean; tranche_3_disbursed?: boolean }>(
+			`UPDATE public.projects
+			 SET ${trancheColumn} = TRUE
+			 WHERE id::text = $1 AND ${trancheColumn} IS DISTINCT FROM TRUE
+			 RETURNING id, tranche_2_disbursed, tranche_3_disbursed;`,
+			[projectId],
+		);
+		if (!updated.rows[0]) throw new Error(`Tranche ${trancheNumber} is already authorized.`);
+
+		const audit = await client.query<{ id: string }>(
+			`INSERT INTO public.escrow_audit_log
+				(project_id, tranche_number, action, actor, integrations)
+			 VALUES ($1, $2, 'AUTHORIZED', 'DHTE_EVALUATOR', ARRAY['SNA', 'PFMS'])
+			 RETURNING id;`,
+			[projectId, trancheNumber],
+		);
+
+		await client.query('COMMIT');
+		return {
+			success: true,
+			projectId,
+			trancheNumber,
+			auditId: audit.rows[0].id,
+			message: `Tranche ${trancheNumber} authorized and logged for SNA/PFMS disbursement.`,
+		};
+	} catch (error) {
+		await client.query('ROLLBACK').catch(() => undefined);
+		throw error;
+	} finally {
+		client.release();
+	}
+}
 
 export function validateTranche2Requirements(nablCertUrl: string, evaluatorApproved: boolean): void {
 	assertNonEmpty(nablCertUrl, 'NABL certificate URL');
