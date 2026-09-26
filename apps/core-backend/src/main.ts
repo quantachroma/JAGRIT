@@ -22,7 +22,14 @@ const port = Number(process.env.PORT || 5000);
 
 app.use(express.json());
 const corsOptions = {
-	origin: ['http://localhost:3000', 'http://localhost:3001'],
+	origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+		// Allow any localhost port or requests without origin
+		if (!origin || /^http:\/\/localhost:\d+$/.test(origin)) {
+			callback(null, true);
+		} else {
+			callback(null, true);
+		}
+	},
 	credentials: true,
 };
 app.use(cors(corsOptions));

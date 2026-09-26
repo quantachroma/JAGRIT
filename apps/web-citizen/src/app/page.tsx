@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import HeroBackgroundSvg from '@/components/hero/hero-background-svg';
@@ -33,8 +34,36 @@ const civicPillars = [
   { eyebrow: '03 / Public trust', title: 'Progress is visible. Funding is earned.', description: 'Dual-lock citizen quorum and PESA Gram Sabha verification release milestone escrow in a clear 30% / 40% / 30% sequence.', accent: 'from-[#166534] via-[#15803d] to-[#14532d]', icon: 'quorum' as const, stat: '30·40·30', statLabel: 'escrow tranches' },
 ];
 
+const HERO_STRINGS = {
+  en: {
+    subtitle: 'A public innovation loop for village voices, university research, accountable funding, and solutions that return to the people who shaped them.',
+    btnExplore: 'Explore Statewide Progress →',
+    btnScroll: 'View 6-Step Lifecycle (Scroll) ↓',
+    civicOsTitle: 'A civic operating system for Jharkhand.',
+    civicOsDesc: 'Built around NEP 2020 research credits, local language access, and Gram Sabha verified trust.',
+  },
+  hi: {
+    subtitle: 'ग्रामीण आवाज़ों, विश्वविद्यालय अनुसंधान, जवाबदेह वित्तपोषण और उन समाधानों के लिए एक सार्वजनिक नवाचार लूप जो उन्हें आकार देने वाले लोगों तक वापस लौटते हैं।',
+    btnExplore: 'राज्यव्यापी प्रगति देखें →',
+    btnScroll: '६-चरणीय जीवनचक्र देखें (स्क्रॉल करें) ↓',
+    civicOsTitle: 'झारखंड के लिए एक नागरिक ऑपरेटिंग सिस्टम।',
+    civicOsDesc: 'NEP 2020 अनुसंधान क्रेडिट, स्थानीय भाषा पहुंच और ग्राम सभा सत्यापित विश्वास के आसपास निर्मित।',
+  },
+  sat: {
+    subtitle: 'ᱟᱹᱛᱩ ᱨᱮᱭᱟᱜ ᱟᱲᱟᱝ, ᱡᱮᱜᱮᱛ ᱵᱤᱨᱫᱟᱹᱜᱟᱲ ᱨᱮᱭᱟᱜ ᱠᱷᱚᱸᱫᱽᱨᱚᱸᱫᱽ, ᱟᱨ ᱥᱚᱞᱦᱮ ᱠᱚ ᱞᱟᱹᱜᱤᱫ ᱢᱤᱫ ᱯᱟᱵᱽᱞᱤᱠ ᱤᱱᱳᱵᱷᱮᱥᱚᱱ ᱞᱩᱯ ᱾',
+    btnExplore: 'ᱯᱚᱱᱚᱛ ᱡᱟᱠᱟᱛ ᱨᱮᱭᱟᱜ ᱯᱨᱚᱜᱚᱛᱤ ᱧᱮᱞ ᱢᱮ →',
+    btnScroll: '᱖-ᱫᱷᱟᱯ ᱡᱤᱭᱚᱱᱪᱚᱠᱨᱚ ᱧᱮᱞ ᱢᱮ (ᱥᱠᱨᱚᱞ) ↓',
+    civicOsTitle: 'ᱡᱷᱟᱨᱠᱷᱚᱸᱰ ᱞᱟᱹᱜᱤᱫ ᱢᱤᱫ ᱥᱤᱵᱷᱤᱠ ᱚᱯᱮᱨᱮᱴᱤᱝ ᱥᱤᱥᱴᱮᱢ ᱾',
+    civicOsDesc: 'NEP 2020 ᱨᱤᱥᱟᱨᱪ ᱠᱨᱮᱰᱤᱴ, ᱞᱚᱠᱟᱞ ᱯᱟᱹᱨᱥᱤ ᱟᱨ ᱜᱨᱟᱢ ᱥᱚᱵᱷᱟ ᱯᱟᱹᱛᱭᱟᱹᱣ ᱨᱮ ᱵᱮᱱᱟᱣ ᱟᱠᱟᱱᱟ ᱾',
+  },
+} as const;
+
 export default function EntryPage() {
   const { language, setLanguage, t } = useLanguage();
+  const searchParams = useSearchParams();
+  const requestedLanguage = searchParams.get('lang');
+  const activeLanguage = requestedLanguage === 'hi' || requestedLanguage === 'sat' ? requestedLanguage : 'en';
+  const heroStrings = HERO_STRINGS[activeLanguage];
   const [showLogin, setShowLogin] = useState(false);
   const [role, setRole] = useState<'citizen' | 'university' | 'industry' | 'govt'>('citizen');
   const [isRegistering, setIsRegistering] = useState(false);
@@ -424,13 +453,13 @@ export default function EntryPage() {
                     <p className="mt-5 text-xl font-black leading-tight text-amber-200 sm:text-2xl">समस्या से समाधान तक — Problem se Samadhaan tak</p>
                     <p className="mt-5 max-w-2xl text-xl font-bold leading-tight text-white sm:text-2xl">Jharkhand Academia-Industry Gateway for Research, Innovation &amp; Transformation of Society</p>
                     <p className="mt-3 max-w-2xl text-lg font-semibold leading-8 text-amber-200">झारखण्ड जन-समस्या नवाचार, शोध एवं सामाजिक परिवर्तन सेतु</p>
-                    <p className="mt-5 max-w-xl text-sm leading-6 text-slate-200">A public innovation loop for village voices, university research, accountable funding, and solutions that return to the people who shaped them.</p>
+                    <p className="mt-5 max-w-xl text-sm leading-6 text-slate-200">{heroStrings.subtitle}</p>
                     <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                      <Link href="/progress" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-amber-300/50 px-5 text-sm font-black text-amber-200 transition-colors hover:bg-amber-300/10 focus:outline-none focus:ring-2 focus:ring-amber-200">🗺️ Explore Statewide Progress <ArrowRight className="h-4 w-4" /></Link>
-                      <a href="#lifecycle" onClick={(event) => { event.preventDefault(); document.getElementById('lifecycle')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 text-sm font-black text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-300">📜 View 6-Step Lifecycle (Scroll) <ArrowDown className="h-4 w-4" /></a>
+                      <Link href="/progress" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-amber-300/50 px-5 text-sm font-black text-amber-200 transition-colors hover:bg-amber-300/10 focus:outline-none focus:ring-2 focus:ring-amber-200"><span>{heroStrings.btnExplore}</span> <ArrowRight className="h-4 w-4" /></Link>
+                      <a href="#lifecycle" onClick={(event) => { event.preventDefault(); document.getElementById('lifecycle')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-5 text-sm font-black text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-300"><span>{heroStrings.btnScroll}</span> <ArrowDown className="h-4 w-4" /></a>
                     </div>
                   </div>
-                  <div className="hidden justify-end pb-2 lg:flex"><div className="max-w-xs border-l-2 border-amber-300/60 pl-5 text-sm leading-6 text-slate-300"><span className="font-black text-white">A civic operating system for Jharkhand.</span><br />Built around NEP 2020 research credits, local language access, and Gram Sabha verified trust.</div></div>
+                  <div className="hidden justify-end pb-2 lg:flex"><div className="max-w-xs border-l-2 border-amber-300/60 pl-5 text-sm leading-6 text-slate-300"><span className="font-black text-white">{heroStrings.civicOsTitle}</span><br />{heroStrings.civicOsDesc}</div></div>
                 </div>
                 <HeroCarousel pillars={civicPillars} />
               </div>

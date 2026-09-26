@@ -25,45 +25,43 @@ const navigationItems: GovernmentNavItem[] = [
     label: 'Government Evaluator',
     href: '/government/dashboard',
     icon: Landmark,
-    activeCheck: (pathname) => pathname.startsWith('/government') || pathname.startsWith('/admin'),
+    activeCheck: (pathname) => pathname === '/government/dashboard' || pathname.startsWith('/admin'),
   },
   {
     label: 'University Matching',
-    href: '/university/dashboard',
+    href: '/government/matching',
     icon: GraduationCap,
-    activeCheck: (pathname) =>
-      (pathname === '/university' || pathname.startsWith('/university/dashboard')) &&
-      !pathname.includes('hackathon'),
+    activeCheck: (pathname) => pathname.startsWith('/government/matching'),
   },
   {
     label: 'Bidding & Hackathon',
-    href: '/university/hackathon',
+    href: '/government/hackathon',
     icon: Trophy,
-    activeCheck: (pathname) => pathname.includes('hackathon'),
+    activeCheck: (pathname) => pathname.startsWith('/government/hackathon'),
   },
   {
     label: 'Industry / CSR',
-    href: '/industry/dashboard',
+    href: '/government/industry',
     icon: Building2,
-    activeCheck: (pathname) => pathname.startsWith('/industry'),
+    activeCheck: (pathname) => pathname.startsWith('/government/industry'),
   },
   {
     label: 'Progress Tracker',
-    href: '/progress',
+    href: '/government/progress',
     icon: TrendingUp,
-    activeCheck: (pathname) => pathname === '/progress' || pathname.startsWith('/progress/'),
+    activeCheck: (pathname) => pathname === '/government/progress' || pathname.startsWith('/government/progress/'),
   },
   {
     label: 'R&D Repository',
-    href: '/repository',
+    href: '/government/repository',
     icon: Archive,
-    activeCheck: (pathname) => pathname.startsWith('/repository'),
+    activeCheck: (pathname) => pathname.startsWith('/government/repository'),
   },
   {
     label: 'Samvaad',
-    href: '/samvaad',
+    href: '/government/samvaad',
     icon: MessageSquare,
-    activeCheck: (pathname) => pathname.startsWith('/samvaad'),
+    activeCheck: (pathname) => pathname.startsWith('/government/samvaad'),
   },
 ];
 

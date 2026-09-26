@@ -52,10 +52,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const isInstitutional =
     pathname.startsWith('/government') ||
     pathname.startsWith('/university') ||
-    pathname.startsWith('/industry') ||
-    pathname.startsWith('/repository') ||
-    pathname.startsWith('/samvaad') ||
-    pathname.startsWith('/progress');
+    pathname.startsWith('/industry');
 
   const isProtected = PROTECTED_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
@@ -98,14 +95,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const role = user.role ? ROLE_ALIASES[user.role] || user.role as NavRole : null;
   const navItems = [
     { label: t.nav.citizen, href: '/dashboard', icon: Users, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
-    { label: t.nav.progress || 'Progress Tracker', href: '/progress', icon: TrendingUp, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.progress || 'Progress Tracker', href: '/dashboard/progress', icon: TrendingUp, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.feedback || '45-Day Feedback', href: '/feedback', icon: CheckCircle2, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.whatsapp, href: '/whatsapp-simulator', icon: MessageCircle, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.pledgeSupport || 'Pledge & Support', href: '/pledge-support', icon: HeartHandshake, roles: ['CITIZEN', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.university, href: '/university/dashboard', icon: GraduationCap, roles: ['STUDENT', 'FACULTY_PI', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.industry, href: '/industry/dashboard', icon: Building2, roles: ['INDUSTRY_MENTOR', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.govt, href: '/government/dashboard', icon: Landmark, roles: FULL_VISIBILITY_ROLES },
-    { label: t.nav.samvaad, href: '/samvaad', icon: MessageSquare, roles: ['CITIZEN', 'STUDENT', 'FACULTY_PI', 'INDUSTRY_MENTOR', ...FULL_VISIBILITY_ROLES] },
+    { label: t.nav.samvaad, href: '/dashboard/samvaad', icon: MessageSquare, roles: ['CITIZEN', 'STUDENT', 'FACULTY_PI', 'INDUSTRY_MENTOR', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.hackathon, href: '/university/hackathon/annual', icon: Trophy, roles: ['STUDENT', 'FACULTY_PI', 'INDUSTRY_MENTOR', ...FULL_VISIBILITY_ROLES] },
     { label: t.nav.rndFailures, href: '/repository', icon: Archive, roles: ['STUDENT', 'FACULTY_PI', ...FULL_VISIBILITY_ROLES] },
     { label: language === 'hi' ? 'शासन केंद्र' : language === 'sat' ? 'ᱥᱚᱨᱠᱟᱨ ᱠᱮᱱᱫᱨ' : 'Government Console', href: '/admin', icon: Landmark, roles: FULL_VISIBILITY_ROLES },

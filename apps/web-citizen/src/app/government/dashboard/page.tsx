@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
   Landmark,
   FileText,
@@ -361,13 +362,17 @@ export default function GovernmentDashboardPage() {
                         <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-lg border border-emerald-300">
                           ✅ Approved for Applied R&amp;D
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => void updateChallengeStatus(ticket.id, 'APPROVED_RND')}
-                          className="bg-[#1E3A8A] hover:bg-blue-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-1.5"
+                        <Link
+                          href={`/government/matching?challengeId=${encodeURIComponent(ticket.id)}`}
+                          onClick={async (event) => {
+                            event.preventDefault();
+                            const approved = await updateChallengeStatus(ticket.id, 'APPROVED_RND');
+                            if (approved) window.location.assign(`/government/matching?challengeId=${encodeURIComponent(ticket.id)}`);
+                          }}
+                          className="bg-[#1E3A8A] hover:bg-blue-900 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-1.5 transition-all"
                         >
-                          🎓 List the Problem to the Universities
-                        </button>
+                          🎓 Go for University Matching →
+                        </Link>
                       </>
                     ) : (
                       <button
