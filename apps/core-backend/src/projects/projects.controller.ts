@@ -1,8 +1,16 @@
 import { Request, Response, Router } from 'express';
-import { getProjectById } from './projects.service';
+import { getProjectById, getProjects } from './projects.service';
 import { BreakdownReport, completeRepair, getRepairDeadline, loadAlarmState, persistAlarmState, recordBreakdownReport, REPAIR_SLA_DAYS } from '../quorum/alarm.service';
 
 export const projectsRouter = Router();
+
+projectsRouter.get('/', async (_request: Request, response: Response) => {
+	try {
+		response.json(await getProjects());
+	} catch (error) {
+		response.status(500).json({ error: error instanceof Error ? error.message : 'Unable to load projects.' });
+	}
+});
 
 projectsRouter.get('/:id', async (request: Request, response: Response) => {
 	const project = await getProjectById(String(request.params.id));

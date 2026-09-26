@@ -12,6 +12,7 @@ import { bidsRouter } from './bids/bids.controller';
 import { projectsRouter } from './projects/projects.controller';
 import { creditsRouter } from './credits/credits.controller';
 import { blueprintsRouter } from './blueprints/blueprints.controller';
+import { universityRouter } from './university/university.controller';
 
 
 dotenv.config({ path: CORE_BACKEND_ENV_PATH });
@@ -50,6 +51,7 @@ app.use('/api/v1/bids', bidsRouter);
 app.use('/api/v1/projects', projectsRouter);
 app.use('/api/v1/credits', creditsRouter);
 app.use('/api/v1/blueprints', blueprintsRouter);
+app.use('/api/v1/university', universityRouter);
 
 type UniversitySeed = {
 	shortCode: string;

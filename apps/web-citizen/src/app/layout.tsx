@@ -83,6 +83,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     return <main>{children}</main>;
   }
 
+  if (pathname.startsWith('/university')) {
+    return <>{children}</>;
+  }
+
+  if (pathname.startsWith('/industry')) {
+    return <>{children}</>;
+  }
+
   if (isInstitutional) {
     return <InstitutionalLayout>{children}</InstitutionalLayout>;
   }

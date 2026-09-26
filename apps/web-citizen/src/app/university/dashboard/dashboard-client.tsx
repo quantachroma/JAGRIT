@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, MapPin, IndianRupee, Sparkles, Timer, X, Wallet, FlaskConical, UserCheck, ArrowRight } from "lucide-react";
+import { Search, MapPin, IndianRupee, Sparkles, Timer, X, Wallet, FlaskConical, UserCheck, ArrowRight, CheckCircle2, Users, ShieldCheck, TestTube2 } from "lucide-react";
 import type { ChallengeStatus } from "@jagrit/contracts";
 import type { OpenChallenge } from "@/lib/mock-data";
 import XaiSpiderChart from "@/components/xai-spider-chart";
@@ -19,6 +19,28 @@ export interface AcceptedProject {
   activeSprint: string;
   facultyPI: string;
   link: string;
+}
+
+export interface UniversityProject {
+  id: string;
+  challengeId: string;
+  title: string;
+  status: string;
+  executionMode: string;
+  tranche1Disbursed: boolean;
+  tranche2Disbursed: boolean;
+  tranche3Disbursed: boolean;
+  leadUniversityName: string;
+  totalBudgetInr: string | number;
+  facultyPI: string;
+  teamMembers: string[];
+  stage: string;
+  stageProgressPct: number;
+  populationSecured: string;
+  purityTest: string;
+  location: string;
+  quorumScore: string;
+  solvedAt: string;
 }
 
 const INITIAL_ACCEPTED_PROJECTS: AcceptedProject[] = [
@@ -46,9 +68,9 @@ type UniversityChallenge = OpenChallenge & {
   biddingDeadline?: string;
 };
 
-interface Props { challenges: UniversityChallenge[]; summary: { openTickets: number; statePoolTotalINR: number; activeGrantsLabel: string }; }
+interface Props { challenges: UniversityChallenge[]; projects: UniversityProject[]; summary: { openTickets: number; statePoolTotalINR: number; activeGrantsLabel: string }; }
 
-export default function DashboardClient({ challenges, summary }: Props) {
+export default function DashboardClient({ challenges, projects, summary }: Props) {
   const { t } = useLanguage();
   const fmt = formatINR;
   const [q, setQ] = useState("");
@@ -57,6 +79,8 @@ export default function DashboardClient({ challenges, summary }: Props) {
   const [acceptFor, setAcceptFor] = useState<OpenChallenge | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [acceptedProjects, setAcceptedProjects] = useState<AcceptedProject[]>(INITIAL_ACCEPTED_PROJECTS);
+  const activeProjects = projects.filter((project) => !/COMPLETELY_SOLVED|SOLVED/i.test(project.status));
+  const solvedProjects = projects.filter((project) => /COMPLETELY_SOLVED|SOLVED/i.test(project.status));
 
   const filterOptions = useMemo(() => [
     { key: "All", label: t.university.filterAll },
@@ -153,6 +177,53 @@ export default function DashboardClient({ challenges, summary }: Props) {
             </div>
           ))}
         </div>
+      </section>
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6" aria-labelledby="active-projects-heading">
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-wide text-blue-700">University delivery portfolio</p>
+            <h2 id="active-projects-heading" className="mt-1 text-xl font-black text-slate-900">Active accepted projects</h2>
+            <p className="mt-1 text-sm text-slate-600">Tranche governance, stage milestones, and research team accountability.</p>
+          </div>
+          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-800">{activeProjects.length} active</span>
+        </div>
+        {activeProjects.length === 0 ? (
+          <p className="mt-5 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm text-slate-600">No accepted projects are currently available from the university portfolio API.</p>
+        ) : (
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            {activeProjects.map((project) => (
+              <article key={project.id} className="rounded-xl border border-blue-100 bg-blue-50/40 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-mono text-xs font-black text-blue-700">#{project.challengeId || project.id}</p>
+                    <h3 className="mt-1 text-base font-black leading-snug text-slate-900">{project.title}</h3>
+                    <p className="mt-1 text-xs font-semibold text-slate-600">{project.leadUniversityName}{project.location ? ` · ${project.location}` : ''}</p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-black text-amber-800">{project.status.replaceAll('_', ' ')}</span>
+                </div>
+                <div className="mt-4 space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-700"><span>Stage: {project.stage}</span><span>{project.stageProgressPct}%</span></div>
+                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-200"><div className="h-full rounded-full bg-blue-600" style={{ width: `${Math.min(100, Math.max(0, project.stageProgressPct))}%` }} /></div>
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    {[['Tranche 1', project.tranche1Disbursed], ['Tranche 2 · NABL audit', project.tranche2Disbursed], ['Tranche 3 · Gram Sabha NOC', project.tranche3Disbursed]].map(([label, complete]) => (
+                      <div key={String(label)} className={`rounded-lg border p-2 text-xs font-bold ${complete ? 'border-emerald-200 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-white text-slate-500'}`}><CheckCircle2 className="mb-1 h-4 w-4" />{label}</div>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-700"><span className="inline-flex items-center gap-1"><UserCheck className="h-3.5 w-3.5 text-blue-700" />{project.facultyPI}</span><span className="inline-flex items-center gap-1"><Users className="h-3.5 w-3.5 text-blue-700" />{project.teamMembers.length ? project.teamMembers.join(', ') : 'Team roster pending'}</span></div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+      <section className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-5 shadow-sm sm:p-6" aria-labelledby="solved-projects-heading">
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-emerald-100 pb-4">
+          <div><p className="text-xs font-black uppercase tracking-wide text-emerald-700">Verified public impact</p><h2 id="solved-projects-heading" className="mt-1 text-xl font-black text-slate-900">Successfully Solved Village Deployments</h2><p className="mt-1 text-sm text-slate-600">Only projects cleared through citizen quorum appear in this archive.</p></div>
+          <ShieldCheck className="h-7 w-7 text-emerald-700" aria-hidden="true" />
+        </div>
+        {solvedProjects.length === 0 ? <p className="mt-5 rounded-xl border border-dashed border-emerald-300 bg-white/70 p-5 text-sm text-slate-600">No quorum-verified deployments are available yet.</p> : <div className="mt-5 grid gap-4 lg:grid-cols-2">{solvedProjects.map((project) => <article key={project.id} className="rounded-xl border border-emerald-200 bg-white p-4"><div className="flex items-start justify-between gap-3"><div><p className="font-mono text-xs font-black text-emerald-700">#{project.challengeId || project.id}</p><h3 className="mt-1 text-base font-black text-slate-900">{project.title}</h3></div><span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-black text-emerald-800">Quorum verified</span></div><div className="mt-4 grid grid-cols-2 gap-2 text-xs"><div className="rounded-lg bg-emerald-50 p-3"><Users className="h-4 w-4 text-emerald-700" /><strong className="mt-1 block text-slate-900">{project.populationSecured || 'Recorded in impact report'}</strong><span className="text-slate-600">population secured</span></div><div className="rounded-lg bg-emerald-50 p-3"><TestTube2 className="h-4 w-4 text-emerald-700" /><strong className="mt-1 block text-slate-900">{project.purityTest || 'Verified'}</strong><span className="text-slate-600">purity test result</span></div></div><p className="mt-3 text-xs font-semibold text-slate-600">{project.quorumScore ? `Citizen quorum score: ${project.quorumScore}` : 'Citizen quorum passed'}{project.solvedAt ? ` · ${project.solvedAt}` : ''}</p></article>)}</div>}
       </section>
       <div className="rounded-xl border border-[#F1F5F9] bg-white p-5">
         <p className="text-xs font-semibold uppercase tracking-wide text-[#2563EB]">{t.university.discoveryFeedTag}</p>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import DashboardClient from './dashboard-client';
+import DashboardClient, { type UniversityProject } from './dashboard-client';
 import type { OpenChallenge } from '@/lib/mock-data';
 
 const EMPANELLED_HEIS = [
@@ -26,6 +26,40 @@ type UniversityChallenge = OpenChallenge & {
   qualifiedHeis: HeiMatch[];
   biddingDeadline?: string;
 };
+
+function normalizeProjects(payload: unknown): UniversityProject[] {
+  const records = Array.isArray(payload)
+    ? payload
+    : payload && typeof payload === 'object' && Array.isArray((payload as { projects?: unknown }).projects)
+      ? (payload as { projects: unknown[] }).projects
+      : [];
+
+  return records.map((record, index) => {
+    const project = (record && typeof record === 'object' ? record : {}) as Record<string, unknown>;
+    const teamMembers = Array.isArray(project.teamMembers) ? project.teamMembers.map(String) : [];
+    return {
+      id: String(project.id || project.project_id || `project-${index}`),
+      challengeId: String(project.challengeId || project.challenge_id || project.ticketId || project.ticketNumber || project.ticket_number || ''),
+      title: String(project.title || project.challengeTitle || 'Accepted university project'),
+      status: String(project.status || project.resolution_status || 'IN_PROGRESS'),
+      executionMode: String(project.executionMode || project.execution_mode || 'University-led sprint'),
+      tranche1Disbursed: project.tranche1Disbursed === true || project.tranche_1_disbursed === true,
+      tranche2Disbursed: project.tranche2Disbursed === true || project.tranche_2_disbursed === true,
+      tranche3Disbursed: project.tranche3Disbursed === true || project.tranche_3_disbursed === true,
+      leadUniversityName: String(project.leadUniversityName || project.lead_university_name || 'BIT Mesra'),
+      totalBudgetInr: String(project.totalBudgetInr || project.total_budget_inr || ''),
+      facultyPI: String(project.facultyPI || project.faculty_pi || 'Faculty PI pending confirmation'),
+      teamMembers,
+      stage: String(project.stage || project.stageLabel || 'Bench Prototyping & Lab Testing'),
+      stageProgressPct: Number(project.stageProgressPct || project.stage_progress_pct || 18),
+      populationSecured: String(project.populationSecured || project.population_secured || ''),
+      purityTest: String(project.purityTest || project.purity_test || ''),
+      location: String(project.location || project.village_name || ''),
+      quorumScore: String(project.quorumScore || project.quorum_score || ''),
+      solvedAt: String(project.solvedAt || project.solved_at || ''),
+    };
+  });
+}
 
 const ROUTINE_CIVIC_RE = /pothole|road crater|waterlogging|drain|garbage|street light|road repair|सड़क गड्ढा|जलजमाव|नाली|कचरा/i;
 
@@ -117,14 +151,21 @@ function computeHEIMatches(challengeDomain: string, challengeDistrict: string): 
 
 export default function DashboardPage() {
   const [challenges, setChallenges] = useState<UniversityChallenge[]>([]);
+  const [projects, setProjects] = useState<UniversityProject[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadRealData() {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const res = await fetch(`${apiUrl}/api/v1/challenges`);
-        const liveData = await res.json();
+        const [challengeResponse, projectResponse] = await Promise.all([
+          fetch(`${apiUrl}/api/v1/challenges`),
+          fetch(`${apiUrl}/api/v1/projects`),
+        ]);
+        const liveData = challengeResponse.ok ? await challengeResponse.json() : [];
+        if (projectResponse.ok) {
+          setProjects(normalizeProjects(await projectResponse.json()));
+        }
 
         if (Array.isArray(liveData) && liveData.length > 0) {
           // 1. Strict Deduplication by Ticket Number and Title (Zero duplicates possible!)
@@ -288,5 +329,5 @@ export default function DashboardPage() {
     );
   }
 
-  return <DashboardClient challenges={challenges} summary={dynamicSummary} />;
+  return <DashboardClient challenges={challenges} projects={projects} summary={dynamicSummary} />;
 }

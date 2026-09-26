@@ -1,0 +1,21 @@
+import { Activity, ArrowUpRight, Medal, Trophy } from 'lucide-react';
+
+const institutions = [
+  { rank: 1, name: 'BIT Mesra', score: 95, solved: 38, velocity: 92, trend: '+8%' },
+  { rank: 2, name: 'IIT (ISM) Dhanbad', score: 92, solved: 31, velocity: 88, trend: '+5%' },
+  { rank: 3, name: 'NIT Jamshedpur', score: 86, solved: 27, velocity: 81, trend: '+11%' },
+  { rank: 4, name: 'Ranchi University', score: 88, solved: 24, velocity: 76, trend: '+3%' },
+  { rank: 5, name: 'Birsa Agricultural University', score: 80, solved: 19, velocity: 71, trend: '+7%' },
+  { rank: 6, name: 'BIT Sindri', score: 74, solved: 16, velocity: 68, trend: '+2%' },
+];
+
+export default function LeaderboardPage() {
+  return (
+    <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:py-8">
+      <header className="border-b border-slate-200 pb-6"><p className="text-xs font-black uppercase tracking-[0.18em] text-amber-700">Statewide performance</p><h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950">Institutional leaderboard</h1><p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">A transparent view of H-Score, verified resolutions, and the speed at which Jharkhand HEIs move from match to field impact.</p></header>
+      <div className="grid gap-4 sm:grid-cols-3"><div className="rounded-xl border border-blue-100 bg-blue-50 p-4"><p className="text-xs font-bold uppercase text-blue-700">State average H-Score</p><p className="mt-1 text-3xl font-black text-blue-950">84.2</p></div><div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4"><p className="text-xs font-bold uppercase text-emerald-700">Verified resolutions</p><p className="mt-1 text-3xl font-black text-emerald-950">155</p></div><div className="rounded-xl border border-amber-100 bg-amber-50 p-4"><p className="text-xs font-bold uppercase text-amber-700">Median velocity</p><p className="mt-1 text-3xl font-black text-amber-950">78%</p></div></div>
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="flex items-center gap-2 border-b border-slate-100 p-5"><Trophy className="h-5 w-5 text-amber-600" /><h2 className="text-lg font-black text-slate-950">Jharkhand HEI rankings</h2></div><div className="divide-y divide-slate-100">{institutions.map((institution) => <div key={institution.name} className="grid gap-4 p-5 md:grid-cols-[3rem_1fr_11rem_11rem_5rem] md:items-center"><div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-black text-slate-700">{institution.rank <= 3 ? <Medal className="h-5 w-5 text-amber-600" /> : `#${institution.rank}`}</div><div><p className="font-black text-slate-900">{institution.name}</p><p className="mt-0.5 text-xs text-slate-500">{institution.solved} quorum-verified resolutions</p></div><div><div className="mb-1 flex justify-between text-xs font-bold text-slate-600"><span>H-Score</span><span>{institution.score}/100</span></div><div className="h-2 rounded-full bg-slate-100"><div className="h-full rounded-full bg-blue-600" style={{ width: `${institution.score}%` }} /></div></div><div><div className="mb-1 flex justify-between text-xs font-bold text-slate-600"><span>Resolution velocity</span><span>{institution.velocity}%</span></div><div className="h-2 rounded-full bg-slate-100"><div className="h-full rounded-full bg-emerald-500" style={{ width: `${institution.velocity}%` }} /></div></div><span className="inline-flex items-center gap-1 text-xs font-black text-emerald-700"><ArrowUpRight className="h-3.5 w-3.5" />{institution.trend}</span></div>)}</div></section>
+      <section className="rounded-2xl border border-slate-200 bg-slate-950 p-5 text-white sm:p-6"><div className="flex items-center gap-2"><Activity className="h-5 w-5 text-cyan-300" /><h2 className="font-black">Resolution velocity, last 6 months</h2></div><div className="mt-6 flex h-40 items-end gap-3 border-b border-slate-700 pb-0 sm:gap-6">{[42, 55, 49, 68, 73, 86].map((height, index) => <div key={height} className="flex flex-1 flex-col items-center gap-2"><div className="w-full max-w-14 rounded-t-md bg-cyan-400" style={{ height: `${height}%` }} /><span className="text-[10px] font-bold text-slate-400">{['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'][index]}</span></div>)}</div></section>
+    </div>
+  );
+}

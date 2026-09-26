@@ -1,0 +1,14 @@
+'use client';
+
+import { useState } from 'react';
+import { CheckCircle2, ClipboardCheck, Plus, Users } from 'lucide-react';
+
+const mentors = [
+  { name: 'Dr. A. Sen', company: 'Tata Steel R&D', assignment: 'Team Jalpravah · Water purification', status: 'Signed' },
+  { name: 'Er. Manoj Kumar', company: 'Coal India', assignment: 'Team VanaJeevan · Lac storage', status: 'Pending sign-off' },
+];
+
+export default function CorporateMentorshipPage() {
+  const [assigned, setAssigned] = useState(false);
+  return <div className="mx-auto max-w-7xl space-y-8 pb-12"><header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-700">Round 2 bench testing</p><h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950">Corporate Mentorship Hub</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Manage senior engineers assigned to prototype reviews and technical sign-offs.</p></div><button type="button" onClick={() => { setAssigned(true); window.alert('Senior engineer assignment window opened.'); }} className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700"><Plus className="h-4 w-4" /> [ Assign Senior Engineer ]</button></header>{assigned && <p className="flex items-center gap-2 text-sm font-bold text-emerald-700" role="status"><CheckCircle2 className="h-4 w-4" /> Assignment request created successfully.</p>}<section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="flex items-center gap-3 border-b border-slate-100 bg-slate-50 p-5"><Users className="h-5 w-5 text-blue-700" /><div><h2 className="font-black text-slate-900">Mentor assignments</h2><p className="text-xs text-slate-500">Hackathon Round 2 review board</p></div></div><div className="grid gap-4 p-5 lg:grid-cols-2">{mentors.map((mentor) => <article key={mentor.name} className="rounded-xl border border-slate-200 p-5"><div className="flex items-start justify-between gap-4"><div><h3 className="font-black text-slate-900">{mentor.name}</h3><p className="mt-1 text-sm font-bold text-blue-700">{mentor.company}</p></div><ClipboardCheck className={`h-5 w-5 ${mentor.status === 'Signed' ? 'text-emerald-600' : 'text-amber-600'}`} /></div><p className="mt-5 text-sm text-slate-600">{mentor.assignment}</p><span className={`mt-5 inline-flex rounded-full px-3 py-1 text-xs font-black ${mentor.status === 'Signed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>{mentor.status}</span></article>)}</div></section></div>;
+}
